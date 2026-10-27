@@ -72,6 +72,27 @@ then works on the gene table unchanged.
 
 This file must also exist at `R/count_tables.R` in the participant-env
 repository, because that is the path the exercises tell participants to source.
+It is kept in sync by copying; the website copy is the source of truth.
+
+Note the data path differs between the two repositories, and the helper knows
+both. The website serves `datasets/2-workshop2/`, the Codespace has
+`data/2-workshop2/`. It must not be a bare `data/`, because Workshop 1 ships a
+`data/instructional_dataset/` holding completely different files.
+
+## Checking the participant environment
+
+The participant-env repository has `.devcontainer/smoke-test.R`, which runs the
+whole week once inside the built container: load both tables through the helper,
+build the grouping column, run DESeq2, run both microViz ordinations and a
+PERMANOVA, run fgsea, compute an AUC, then do the same for both group datasets.
+
+Run it after any change to the Dockerfile, the datasets or the helper:
+
+```bash
+Rscript .devcontainer/smoke-test.R
+```
+
+It is the fastest way to find out that Tuesday morning will work.
 
 ## Datasets
 
