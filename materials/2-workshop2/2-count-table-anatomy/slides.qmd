@@ -1,0 +1,383 @@
+---
+title: "Count Table Anatomy"
+subtitle: "Workshop 2, Module 2"
+format: qmdrslides-revealjs
+editor: source
+execute:
+  echo: true
+  message: false
+  warning: false
+  freeze: false
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(patchwork)
+library(knitr)
+pal <- c(navy = "#2b3a67", teal = "#2a9d8f", orange = "#e76f51",
+         gold = "#e9c46a", grey = "#bbbbbb")
+tab_col <- c(species = pal[["teal"]], genes = pal[["orange"]])
+theme_set(theme_minimal(base_size = 15))
+
+res <- "results"
+qc <- read_csv(file.path(res, "sample_qc.csv"), show_col_types = FALSE) |>
+  mutate(table = factor(table, c("species", "genes")))
+fc <- read_csv(file.path(res, "filter_curve.csv"), show_col_types = FALSE) |>
+  mutate(table = factor(table, c("species", "genes")))
+```
+
+## Yesterday you built a count table out of beads {.center}
+
+Today the same table has 220 rows of bacteria, 14,226 rows of human genes, and
+471 columns.
+
+## The files {.smaller}
+
+```{r}
+#| eval: false
+library(tidyverse)
+
+metadata <- read_csv("data/instructional_dataset/01_metadata.csv")
+species  <- read_csv("data/instructional_dataset/02_microbiome_counts.csv")
+genes    <- read_csv("data/instructional_dataset/04_rnaseq_counts.csv.gz")
+```
+
+. . .
+
+```{r}
+#| echo: false
+tibble(
+  file = c("01_metadata.csv", "02_microbiome_counts.csv", "03_microbiome_taxonomy.csv",
+           "04_rnaseq_counts.csv.gz", "05_gene_annotation.csv", "06_cytokines.csv"),
+  `what it holds` = c("one row per sample: participant, visit, outcome, clinical measures",
+                      "220 bacterial species x 471 samples",
+                      "what each species is: domain down to species",
+                      "14,226 human genes x 471 samples",
+                      "what each gene is: Ensembl id, symbol, name",
+                      "measured protein concentrations, for the group projects")
+) |> kable()
+```
+
+## A corner of the species table
+
+```{r}
+#| echo: false
+read_csv(file.path(res, "corner_species.csv"), show_col_types = FALSE) |>
+  kable()
+```
+
+## A corner of the gene table
+
+```{r}
+#| echo: false
+read_csv(file.path(res, "corner_genes.csv"), show_col_types = FALSE) |>
+  kable()
+```
+
+Same shape. Features in rows, samples in columns, counts in the cells.
+
+## Four questions, asked of both tables
+
+::: {.incremental}
+1. How deeply was each sample sequenced?
+2. How many features did we actually see?
+3. How evenly is each sample spread across its features?
+4. Which features can we afford to keep?
+:::
+
+. . .
+
+Answer those and you have done quality control. Nothing else today.
+
+## 1. How deeply was each sample sequenced?
+
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 5
+ggplot(qc, aes(library_size, fill = table)) +
+  geom_histogram(bins = 45, colour = "white") +
+  scale_x_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  scale_fill_manual(values = tab_col) +
+  facet_wrap(~table, scales = "free") +
+  labs(x = "total counts in the sample (log scale)", y = "samples") +
+  theme(legend.position = "none")
+```
+
+Both spread over more than an order of magnitude. Note the axis labels.
+
+## The numbers behind that figure
+
+```{r}
+#| echo: false
+qc |>
+  group_by(table) |>
+  summarise(`median library size` = scales::comma(median(library_size)),
+            smallest = scales::comma(min(library_size)),
+            largest = scales::comma(max(library_size))) |>
+  kable(align = "lrrr")
+```
+
+. . .
+
+One sample has 438 bacterial reads. What would you do with it?
+
+## 2. How many features did we see?
+
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 5
+qc |>
+  mutate(share = features_detected / features_total) |>
+  ggplot(aes(library_size, features_detected, colour = table)) +
+  geom_point(alpha = 0.5, size = 2) +
+  scale_x_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  scale_colour_manual(values = tab_col) +
+  facet_wrap(~table, scales = "free") +
+  labs(x = "library size (log scale)", y = "features with a count above zero") +
+  theme(legend.position = "none")
+```
+
+In the species table, how many you see depends on how hard you looked. In the
+gene table it does not.
+
+## The same picture as a fraction {.smaller}
+
+```{r}
+#| echo: false
+qc |>
+  group_by(table) |>
+  summarise(`features in the table` = scales::comma(first(features_total)),
+            `median detected` = scales::comma(median(features_detected)),
+            `median share detected` = scales::percent(median(features_detected / features_total), 0.1),
+            `median cells that are zero` = scales::percent(median(zero_fraction), 0.1)) |>
+  kable(align = "lrrrr")
+```
+
+. . .
+
+The species table is mostly zeros. The gene table is almost solid.
+
+. . .
+
+This single difference drives every filtering decision you will make.
+
+## 3. How evenly is a sample spread?
+
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 5
+ggplot(qc, aes(top_feature_share, fill = table)) +
+  geom_histogram(bins = 40, colour = "white") +
+  scale_x_continuous(labels = scales::percent) +
+  scale_fill_manual(values = tab_col) +
+  facet_wrap(~table, scales = "free") +
+  labs(x = "share of the sample held by its single largest feature", y = "samples") +
+  theme(legend.position = "none")
+```
+
+Half of our bacterial samples are more than 60% one species. The most extreme
+is 99.9%.
+
+## Richness and evenness, in one number {.smaller}
+
+```{r}
+#| eval: false
+# number of features seen, and how evenly the counts are spread
+richness <- colSums(counts > 0)
+shannon  <- vegan::diversity(t(proportions), index = "shannon")
+```
+
+```{r}
+#| echo: false
+#| fig-width: 13
+#| fig-height: 4.1
+ggplot(qc, aes(shannon, fill = table)) +
+  geom_histogram(bins = 40, colour = "white") +
+  scale_fill_manual(values = tab_col) +
+  facet_wrap(~table, scales = "free") +
+  labs(x = "Shannon diversity", y = "samples") +
+  theme(legend.position = "none")
+```
+
+Species: median `r round(median(qc$shannon[qc$table == "species"]), 2)`. Genes:
+median `r round(median(qc$shannon[qc$table == "genes"]), 2)`.
+
+## Be honest about that second number {.center}
+
+Nobody reports Shannon diversity of a transcriptome.
+
+. . .
+
+But "how many features did I detect" and "how evenly are they spread" are
+exactly the questions you use to decide **which samples to throw away**, in
+both experiments.
+
+. . .
+
+Same question. One field gives it a name and a journal; the other calls it QC.
+
+## 4. Which features can we keep? {.smaller}
+
+```{r}
+#| eval: false
+# keep a feature if it appears in at least 10% of samples
+prevalence <- rowMeans(counts > 0)
+kept <- counts[prevalence >= 0.10, ]
+```
+
+```{r}
+#| echo: false
+#| fig-width: 13
+#| fig-height: 4.3
+fc |>
+  pivot_longer(c(features_kept, share_of_counts_kept)) |>
+  mutate(name = recode(name, features_kept = "features kept",
+                       share_of_counts_kept = "share of all counts kept")) |>
+  ggplot(aes(min_prevalence, value, colour = table)) +
+  geom_line(linewidth = 1.3) +
+  scale_colour_manual(values = tab_col) +
+  scale_x_continuous(labels = scales::percent) +
+  facet_grid(name ~ table, scales = "free") +
+  labs(x = "minimum prevalence required to keep a feature", y = NULL, colour = NULL) +
+  theme(legend.position = "none")
+```
+
+## Read the bottom left panel again {.smaller}
+
+```{r}
+#| echo: false
+fc |>
+  filter(min_prevalence %in% c(0, 0.10, 0.25, 0.50)) |>
+  transmute(table, `prevalence cutoff` = scales::percent(min_prevalence),
+            `features kept` = scales::comma(features_kept),
+            `share of counts kept` = scales::percent(share_of_counts_kept, 0.01)) |>
+  pivot_wider(names_from = table, values_from = c(`features kept`, `share of counts kept`)) |>
+  kable()
+```
+
+::: {.incremental}
+- Species: a 10% prevalence filter drops **161 of 220** features and loses
+  **0.8%** of the data.
+- Genes: the same filter drops **nothing**. Prevalence is the wrong knob here.
+:::
+
+## The right filter is not the same filter {.smaller}
+
+| | sparse table (species) | dense table (genes) |
+|---|---|---|
+| the problem | most features are absent from most samples | nearly everything is present at some level |
+| filter on | prevalence | expression level |
+| typical rule | present in at least 10% of samples | mean CPM of at least 5 |
+| what it buys you | fewer tests, less noise | fewer tests, less noise |
+
+: {tbl-colwidths="[22,39,39]"}
+
+. . .
+
+Different rule, identical motive.
+
+## You cannot compare raw counts {.smaller}
+
+A sample with twice the library size has roughly twice the count for everything.
+
+```{r}
+#| eval: false
+# relative abundance: each column sums to 1
+proportions <- sweep(counts, 2, colSums(counts), "/")
+
+# counts per million: the same thing, scaled so the numbers are readable
+cpm <- proportions * 1e6
+```
+
+. . .
+
+Microbiome papers say "relative abundance". RNA-seq papers say "CPM". It is the
+same division.
+
+## And then you take a log {.smaller}
+
+```{r}
+#| echo: false
+#| fig-width: 13
+#| fig-height: 4.3
+set.seed(4)
+x <- rnbinom(4000, mu = 40, size = 0.35)
+p1 <- tibble(x) |> ggplot(aes(x)) +
+  geom_histogram(bins = 50, fill = pal[["navy"]], colour = "white") +
+  labs(title = "counts per million", x = NULL, y = NULL)
+p2 <- tibble(x) |> ggplot(aes(log2(x + 1))) +
+  geom_histogram(bins = 50, fill = pal[["navy"]], colour = "white") +
+  labs(title = "log2(counts per million + 1)", x = NULL, y = NULL)
+p1 + p2
+```
+
+The `+ 1` is there because `log2(0)` is negative infinity. That choice changes
+your answer, and you should be able to say why you made it.
+
+## Now the pipeline we will use all week {.smaller}
+
+One helper builds the same object from either table.
+
+```{r}
+#| eval: false
+library(microViz)
+source("R/count_tables.R")
+
+species_ps <- as_counts(table = "microbiome")
+genes_ps   <- as_counts(table = "rnaseq")
+```
+
+. . .
+
+microViz was written for microbiome data. It wants a feature table, a sample
+table, and a table saying what each feature *is*.
+
+. . .
+
+A gene annotation is that third table wearing different words, so the same verbs
+work on genes.
+
+## The same call, twice {.smaller}
+
+```{r}
+#| eval: false
+species_ps |>
+  comp_barplot(tax_level = "Genus", n_taxa = 10, sample_order = "bray")
+
+genes_ps |>
+  comp_barplot(tax_level = "symbol", n_taxa = 10, sample_order = "bray")
+```
+
+. . .
+
+The first is a figure in every microbiome paper you have read.
+
+. . .
+
+The second is a figure nobody makes, and looking at why not tells you something
+real about the two experiments.
+
+## What you will do in the next ninety minutes
+
+::: {.incremental}
+1. Load both tables and check their shape against the metadata
+2. Compute library size, features detected and dominance for both
+3. Decide which samples and features to drop, and write down why
+4. Build the one column Tuesday afternoon depends on
+:::
+
+. . .
+
+That last one matters. Do not skip it.
+
+## Your turn {.your-turn}
+
+Open `notebooks/02-count-table-anatomy.qmd` in your Codespace.
+
+```{r}
+#| echo: false
+countdown::countdown(45, left = 0, right = NULL, play_sound = TRUE)
+```

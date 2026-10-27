@@ -1,0 +1,67 @@
+## Exercise 1: What is in these two files?
+
+> Working with the agent. You have Pi in your Codespace for every exercise this
+> week. Use it. Each exercise ends with a part that asks you to check what it
+> produced, because the habit we are actually teaching is catching a confident
+> wrong answer.
+
+Open `notebooks/02-count-table-anatomy.qmd`.
+
+### Part 1 — Predict, before you run anything
+
+Write your answers down. You will compare them to the real numbers in Part 2.
+
+1. The species table has 220 rows. In a single cervicovaginal sample, how many
+   of those 220 species do you expect to see at all? Ten? Fifty? Two hundred?
+2. The gene table has 14,226 rows. Same question.
+3. Which table do you expect to have more zeros, as a fraction of its cells?
+4. One sample in the species table has 438 total reads. The median is about
+   28,700. What do you expect to be wrong with that sample's numbers?
+
+### Part 2 — Build
+
+1. Read `01_metadata.csv`, `02_microbiome_counts.csv` and
+   `04_rnaseq_counts.csv.gz`. Confirm that both count tables have a column for
+   every `sample_id` in the metadata, and that the first column of each count
+   file is the feature name rather than a sample.
+
+2. Turn each count table into a matrix with features as row names, then compute
+   for every sample:
+
+   - `library_size`, the column total
+   - `features_detected`, the number of rows above zero
+   - `zero_fraction`, the share of rows that are zero
+   - `top_feature_share`, the largest single value divided by the column total
+
+3. Put those four numbers for both tables into one tidy data frame with a
+   `table` column saying `"species"` or `"genes"`. You want one data frame, not
+   two, because every plot after this is a facet.
+
+4. Plot `library_size` for both tables. You will need a log scale. Then plot
+   `features_detected` against `library_size`, faceted by table.
+
+5. Find the sample with 438 bacterial reads. Look at its full column. How many
+   species does it show? What is its `top_feature_share`?
+
+### Part 3 — Check the agent
+
+Ask Pi to compute the four summaries for you if you have not already. Then,
+before you believe any of it:
+
+- Do the library sizes it reports match `sum()` of a column you pick by hand?
+- `features_detected` should never exceed the number of rows in the table. Is
+  that true for every sample in its output?
+- Does its data frame have 942 rows, 471 samples for each of two tables? If it
+  has 471, it quietly dropped a table.
+- Ask it: "which samples should I drop and why?" Then ask it what happens to
+  your results if you keep them. See whether the second answer contradicts the
+  first.
+
+### Discussion
+
+- Which of your Part 1 predictions was furthest off?
+- Someone in the room will have decided to drop the 438-read sample and someone
+  will have kept it. Both can defend it. What does each choice cost you?
+- The gene table detects over 98% of its features in nearly every sample. Does
+  that mean all 14,226 genes are expressed, or does it mean something about how
+  the table was built?

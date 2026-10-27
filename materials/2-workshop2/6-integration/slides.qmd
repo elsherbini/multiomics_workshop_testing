@@ -1,0 +1,306 @@
+---
+title: "Putting the Two Tables Together"
+subtitle: "Workshop 2, Module 6"
+format: qmdrslides-revealjs
+editor: source
+execute:
+  echo: true
+  message: false
+  warning: false
+  freeze: false
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(patchwork)
+library(knitr)
+pal <- c(navy = "#2b3a67", teal = "#2a9d8f", orange = "#e76f51",
+         gold = "#e9c46a", grey = "#bbbbbb")
+theme_set(theme_minimal(base_size = 15))
+
+res <- "results"
+person <- read_csv(file.path(res, "scores_per_person.csv"), show_col_types = FALSE)
+models <- read_csv(file.path(res, "model_comparison.csv"), show_col_types = FALSE) |>
+  mutate(model = factor(model, c("microbiome only", "host only", "both")))
+rocs <- read_csv(file.path(res, "roc_curves.csv"), show_col_types = FALSE) |>
+  mutate(model = factor(model, c("microbiome only", "host only", "both")))
+auc_of <- function(m) sprintf("%.2f", models$auc[models$model == m])
+mcol <- c(`microbiome only` = pal[["teal"]], `host only` = pal[["orange"]], both = pal[["navy"]])
+```
+
+## Four days, two tables, separately {.center}
+
+```{r}
+#| echo: false
+#| fig-width: 13
+#| fig-height: 3.6
+tribble(
+  ~day, ~what, ~tbl,
+  "Tue AM", "shape, depth, filtering", "both",
+  "Tue PM", "differential testing", "both",
+  "Wed PM", "distances and ordination", "both",
+  "Thu PM", "sets and enrichment", "both"
+) |>
+  mutate(x = row_number()) |>
+  ggplot(aes(x, 1)) +
+  geom_tile(fill = pal[["navy"]], width = 0.9, height = 0.7, colour = "white", linewidth = 2) +
+  geom_text(aes(label = paste0(day, "\n", what)), colour = "white", size = 4.3,
+            lineheight = 1) +
+  theme_void()
+```
+
+Every method we ran, we ran twice. Never once on both at the same time.
+
+## Today's question {.center}
+
+Does putting the two tables together tell you anything that neither told you
+alone?
+
+. . .
+
+The honest answer is: **sometimes**. And you can find out which.
+
+## When combining helps, and when it cannot {.smaller}
+
+::: {.incremental}
+- If both tables carry the **same** information, combining them adds nothing.
+  You get a slightly better estimate of one thing.
+- If they carry **different** information, combining them can add a lot.
+- If one carries **nothing**, combining them makes your model worse, because you
+  spent degrees of freedom on noise.
+:::
+
+. . .
+
+So the first thing to measure is not a fancy model. It is how much the two
+tables already agree.
+
+## One number per person, from each table {.smaller}
+
+```{r}
+#| eval: false
+# from the species table: how anaerobic is this person, on average
+micro_score <- per_sample |>
+  group_by(participant_id) |>
+  summarise(micro = mean(1 - lacto_fraction))
+
+# from the gene table: how inflamed, using Thursday's gene set
+host_score <- per_sample |>
+  group_by(participant_id) |>
+  summarise(host = mean(inflammatory_score))
+```
+
+Two tables with 14,446 rows between them, reduced to two columns.
+
+## How much do they agree?
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 5
+ggplot(person, aes(micro_score, host_score)) +
+  geom_point(aes(colour = outcome), size = 2.6, alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, colour = "grey40", linetype = 2, linewidth = 0.8) +
+  scale_colour_manual(values = c(preterm = pal[["orange"]], term = pal[["navy"]])) +
+  labs(x = "mean anaerobe fraction, from the species table",
+       y = "mean inflammatory score,\nfrom the gene table", colour = NULL) +
+  theme(legend.position = "top")
+```
+
+Correlation: **`r sprintf("%.2f", cor(person$micro_score, person$host_score))`**.
+
+## Which is the best possible news {.center}
+
+The two tables are telling us about **different** things.
+
+. . .
+
+A disturbed bacterial community and an inflamed epithelium are not the same
+measurement here, and knowing one tells you almost nothing about the other.
+
+. . .
+
+So each has something to add.
+
+## Three models {.smaller}
+
+```{r}
+#| eval: false
+glm(preterm ~ micro_z,           data = per_person, family = binomial)
+glm(preterm ~ host_z,            data = per_person, family = binomial)
+glm(preterm ~ micro_z + host_z,  data = per_person, family = binomial)
+```
+
+```{r}
+#| echo: false
+models |>
+  transmute(model,
+            AUC = sprintf("%.2f", auc),
+            `95% interval` = sprintf("%.2f to %.2f", auc_lo, auc_hi),
+            AIC = round(aic)) |>
+  kable(align = "lrrr")
+```
+
+## The picture
+
+```{r}
+#| echo: false
+#| fig-width: 11
+#| fig-height: 5.2
+ggplot(rocs, aes(fpr, tpr, colour = model)) +
+  geom_abline(slope = 1, intercept = 0, colour = "grey75", linetype = 2) +
+  geom_line(linewidth = 1.3) +
+  scale_colour_manual(values = mcol) +
+  coord_equal() +
+  labs(x = "false positive rate", y = "true positive rate", colour = NULL) +
+  theme(legend.position = "right")
+```
+
+## What integration bought {.smaller}
+
+::: {.incremental}
+- Species table alone: AUC `r auc_of("microbiome only")`
+- Gene table alone: AUC `r auc_of("host only")`
+- Both: AUC `r auc_of("both")`
+:::
+
+. . .
+
+Adding the host score to the microbiome model:
+p = `r format(models$lrt_p_vs_micro[models$model == "both"], digits = 2)`.
+
+. . .
+
+That is the whole argument for multiomics, in one table, with two columns.
+
+## And now the thing you must not forget {.smaller}
+
+On Tuesday, preterm versus term gave **1,698 significant genes**.
+
+. . .
+
+Today, those same genes predict the outcome with an AUC of
+`r auc_of("host only")`.
+
+. . .
+
+::: {.incremental}
+- Significance answers "is there a difference in this group".
+- AUC answers "can you tell which person is which".
+- A great many small differences give you the first and not the second.
+:::
+
+## So: what is your goal? {.smaller}
+
+The method follows from the goal, not the other way round.
+
+| if you want to | you need |
+|---|---|
+| improve a prediction | a model with features from both tables |
+| find features that move together | correlation across tables |
+| find shared sample structure | a joint ordination |
+| describe a mechanism | something more than either |
+
+: {tbl-colwidths="[45,55]"}
+
+## The ladder of methods {.smaller}
+
+::: {.incremental}
+**Simple.** Reduce each table to a few numbers and put them in one model. What
+we just did. Interpretable, cheap, and the baseline everything else must beat.
+
+**Intermediate.** Canonical correlation, partial least squares, sparse PLS. Find
+the combination of features in table A that best tracks a combination in table B.
+
+**Multi-block.** DIABLO, MOFA. Decompose several tables at once into shared and
+table-specific factors.
+
+**Similarity-based.** Procrustes, co-inertia, DiSTATIS. Compare the sample
+configurations rather than the features.
+
+**Networks.** Build a graph across data types and look at its structure.
+:::
+
+## What each one costs you {.smaller}
+
+| | gives you | costs you |
+|---|---|---|
+| scores in one model | interpretability | you chose the scores by hand |
+| sparse PLS | feature pairs | tuning, and unstable selection |
+| DIABLO, MOFA | shared factors | sample size, and hard-to-explain factors |
+| Procrustes | one agreement statistic | no features, no prediction |
+| networks | a picture | almost unlimited freedom to fool yourself |
+
+: {tbl-colwidths="[24,38,38]"}
+
+## The failure mode of all of them {.center}
+
+With 157 people and 14,446 features, you can find a combination that separates
+your groups perfectly.
+
+. . .
+
+It will not replicate.
+
+. . .
+
+Every method on that list needs cross-validation or a held-out set, and the
+fancier the method the more it needs it.
+
+## Our own result, honestly stated {.smaller}
+
+::: {.incremental}
+- We chose both scores **after** looking at the data all week.
+- We never held out a test set.
+- AUC `r auc_of("both")` with a 95% interval of
+  `r sprintf("%.2f to %.2f", models$auc_lo[models$model == "both"], models$auc_hi[models$model == "both"])`.
+- The two intervals for the single-table models overlap each other.
+:::
+
+. . .
+
+The improvement is real and the confidence we should have in its size is modest.
+Say both.
+
+## Talk to your neighbour {.your-turn}
+
+Find someone whose research you do not know.
+
+**Partner A, then swap:**
+
+- What is your research question?
+- What data types do you have, or want?
+- What would combining them tell you that one alone would not?
+
+```{r}
+#| echo: false
+countdown::countdown(15, left = 0, right = NULL, play_sound = TRUE)
+```
+
+## Reporting back {.our-turn}
+
+One volunteer: explain **your partner's** project, and whether integration would
+actually help them.
+
+```{r}
+#| echo: false
+countdown::countdown(10, left = 0, right = NULL, play_sound = TRUE)
+```
+
+## Where to read more {.smaller}
+
+::: {.incremental}
+- The methods deck linked from this module's page, for the full landscape
+- `mixOmics` for CCA, PLS and DIABLO, with good vignettes
+- MOFA, if you have several tables and enough samples
+- *Modern Statistics for Modern Biology*, Holmes and Huber, free online
+:::
+
+## Then: your presentations {.center}
+
+Ten groups. Ninety minutes.
+
+. . .
+
+Tell us what you asked, what you found, and what you do not believe about your
+own result.

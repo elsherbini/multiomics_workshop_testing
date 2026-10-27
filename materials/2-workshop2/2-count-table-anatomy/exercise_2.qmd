@@ -1,0 +1,70 @@
+## Exercise 2: Filtering, normalising, and one column you will need tomorrow
+
+Same notebook, second half.
+
+### Part 1 — Predict
+
+1. If you keep only species present in at least 10% of samples, how many of the
+   220 survive? What share of all the bacterial reads do you lose?
+2. Apply the same 10% prevalence rule to the 14,226 genes. How many survive?
+3. You want to compare one species between two samples. Name the single
+   operation you must do to the counts first.
+
+### Part 2 — Build
+
+1. Compute `prevalence` for every feature in both tables, the share of samples
+   where its count is above zero. Plot the distribution for each table.
+
+2. For prevalence cutoffs from 0 to 0.9, compute how many features survive and
+   what share of total counts survives. Plot both. This is the figure that
+   tells you a prevalence filter is the right tool for one table and the wrong
+   tool for the other.
+
+3. Choose and apply a filter to each table. Write one sentence in your notebook
+   justifying each choice. For the gene table, filter on expression level rather
+   than prevalence, something like a mean CPM of at least 5.
+
+4. Convert both filtered tables to counts per million, then to
+   `log2(cpm + 1)`. Plot a histogram of one feature before and after.
+
+5. **Build the grouping column.** From the species table, compute for each
+   sample the fraction of its reads that belong to the genus *Lactobacillus*.
+   `03_microbiome_taxonomy.csv` tells you which species those are.
+
+   Then make a two-level column:
+
+   - `lactobacillus` if that fraction is 0.5 or more
+   - `anaerobe` if it is below 0.5
+
+   Save your per-sample table, including `sample_id`, `lacto_fraction` and this
+   new column, to a csv in your repository. Tomorrow afternoon starts by reading
+   it back.
+
+6. How many samples land in each group? Does the split change across the three
+   visits?
+
+### Part 3 — Check the agent
+
+- Ask Pi to compute the *Lactobacillus* fraction. Then check: does its answer
+  for one sample you compute by hand agree to three decimal places?
+- A common failure is matching genus names with the wrong case or with partial
+  matching, so that *Lactobacillus* also catches something it should not. Ask it
+  which species names it matched, and read the list.
+- `lacto_fraction` must lie between 0 and 1 for every sample. Check the minimum
+  and maximum.
+- Ask it to justify the 0.5 cutoff. It will produce a confident justification.
+  Decide for yourself whether the justification is real.
+
+### Part 4 — Reach (optional)
+
+Build the same per-sample summary table for one of the group project datasets,
+`group_a_probiotic` or `group_b_contraception`. The column names are identical,
+so your code should run unchanged. If it does not, you hard-coded something.
+
+### Discussion
+
+- What did you filter, and what did you lose?
+- The 0.5 cutoff is arbitrary. What would change in your conclusions if it were
+  0.3, or 0.8?
+- We are about to use a grouping built from the species table to test the gene
+  table. Why is that a fair thing to do, and what would make it unfair?

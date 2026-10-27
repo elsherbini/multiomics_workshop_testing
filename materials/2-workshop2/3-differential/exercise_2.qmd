@@ -1,0 +1,71 @@
+## Exercise 2: The same test, on the species table
+
+Same notebook, second half. Same three lines of code, a 220-row table instead of
+a 14,226-row one, and a grouping that comes from neither count table.
+
+### Part 1 — Predict
+
+1. Why can you not test the species table using the `community` column you built
+   yesterday? Write the one-sentence answer.
+2. You will test species against birth outcome. The species table has 220 rows,
+   but most are nearly always absent. How many do you expect to survive a
+   filter of "present in at least 10% of samples"?
+3. Do you expect the significant species to be higher in the preterm group or
+   the term group?
+
+### Part 2 — Build
+
+1. Subset to `time_point == "week_18"` again. Filter the species table to
+   features present in at least 10% of samples.
+
+2. Run the same three lines with `design = ~ outcome` and
+   `contrast = c("outcome", "preterm", "term")`.
+
+3. How many species are significant? Join `03_microbiome_taxonomy.csv` so you
+   have readable names, and list them with their fold changes.
+
+4. How many are higher in preterm, and how many in term?
+
+5. Plot the relative abundance of the top three species by outcome. Use
+   proportions, not raw counts, and consider a log scale.
+
+6. Now run the test a second way, on the gene table, with the same
+   `~ outcome` design. Compare the two result sets:
+
+   - how many features were tested in each
+   - how many were significant in each
+   - what share of the significant ones changed by more than a factor of two
+
+   Write down what that comparison tells you about where the outcome signal
+   lives.
+
+### Part 3 — Check the agent
+
+- A filter on a sparse table is easy to get wrong. Ask Pi how many species it
+  kept and recompute that number yourself from `rowMeans(counts > 0)`.
+- Ask it whether DESeq2 is an appropriate method for microbiome counts. Read its
+  answer critically; this is a genuine controversy and a confident one-sided
+  answer is a warning sign.
+- Ask it to name the significant species. Then check two of them against
+  `03_microbiome_taxonomy.csv` by hand. Agents invent plausible species names.
+- Ask it to also run the test with `~ nugent >= 7` as the grouping instead of
+  outcome. Fewer samples have a Nugent score, so the sample count drops. Make
+  sure it tells you that it dropped samples.
+
+### Part 4 — Reach (optional)
+
+Run your species-by-outcome analysis on all 471 samples, with each participant
+appearing three times. Compare the number of significant species to your
+157-sample result.
+
+More samples gave you more hits. Are they real? What assumption did you break?
+
+### Discussion
+
+- The significant species are recognisable to anyone who works on bacterial
+  vaginosis. Does that make the result more believable or less interesting?
+- One group found many more hits in the gene table than the species table, and
+  another found the reverse depending on their filter. What does that say about
+  how much of a differential analysis is decided before the test runs?
+- Both tables show an outcome signal. If you had to pick one to predict preterm
+  birth, which would you pick, and what would you want to know first?

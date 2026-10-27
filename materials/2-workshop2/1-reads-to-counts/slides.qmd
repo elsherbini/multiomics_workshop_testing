@@ -1,0 +1,233 @@
+---
+title: "From Reads to Count Tables"
+subtitle: "Workshop 2, Module 1"
+format: qmdrslides-revealjs
+editor: source
+execute:
+  echo: false
+  message: false
+  warning: false
+  freeze: false
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(patchwork)
+pal <- c(navy = "#2b3a67", teal = "#2a9d8f", orange = "#e76f51",
+         gold = "#e9c46a", grey = "#bbbbbb")
+theme_set(theme_minimal(base_size = 15))
+set.seed(11)
+```
+
+## This afternoon {.center}
+
+We are not running any software.
+
+. . .
+
+By the end you should be able to say, in your own words, where each number in a
+count table came from.
+
+## A sequencer returns text
+
+```
+@A00984:412:HTKJ7DSXX:1:1101:2645:1000 1:N:0:ACTGAGCG
+TACGTAGGGTGCGAGCGTTGTCCGGATTTATTGGGCGTAAAGCGCGCGCAGGCGGTTTGTT
++
+FFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFF,FFFFFFFFFFFFFFFFFF,FFF
+```
+
+. . .
+
+Millions of these per sample. A name, a sequence, and a quality score per base.
+
+. . .
+
+Everything that follows is an attempt to answer one question: **what was in the
+tube, and how much of it?**
+
+## Two experiments, two paths, one destination
+
+```{r}
+#| fig-width: 15
+#| fig-height: 6
+steps <- tribble(
+  ~path, ~step, ~label,
+  "16S", 1, "cervicovaginal\nswab",
+  "16S", 2, "amplify the\n16S V3-V4 region",
+  "16S", 3, "sequence",
+  "16S", 4, "denoise into\nexact sequences",
+  "16S", 5, "classify against\na reference",
+  "16S", 6, "counts per\nspecies",
+  "RNA", 1, "cervicovaginal\nswab",
+  "RNA", 2, "capture mRNA,\nmake cDNA",
+  "RNA", 3, "sequence",
+  "RNA", 4, "align to the\nhuman genome",
+  "RNA", 5, "count reads\nper gene model",
+  "RNA", 6, "counts per\ngene"
+) |>
+  mutate(y = if_else(path == "16S", 2, 1),
+         fill = case_when(step == 6 ~ pal[["navy"]],
+                          path == "16S" ~ pal[["teal"]],
+                          TRUE ~ pal[["orange"]]))
+
+ggplot(steps, aes(step, y)) +
+  geom_segment(aes(x = step, xend = step + 0.98, y = y, yend = y),
+               data = steps |> filter(step < 6),
+               colour = pal[["grey"]], linewidth = 0.8,
+               arrow = arrow(length = unit(0.18, "cm"), type = "closed")) +
+  geom_tile(aes(fill = fill), width = 0.86, height = 0.62, colour = "white", linewidth = 2) +
+  geom_text(aes(label = label), colour = "white", size = 3.8, lineheight = 0.95,
+            fontface = "bold") +
+  scale_fill_identity() +
+  scale_y_continuous(breaks = c(2, 1), labels = c("16S", "RNA-seq"), limits = c(0.5, 2.5)) +
+  labs(x = NULL, y = NULL) +
+  theme_void(base_size = 16) +
+  theme(axis.text.y = element_text(face = "bold", colour = "grey25", hjust = 1,
+                                   margin = margin(r = 10)))
+```
+
+Different biology, different software, same final object.
+
+## 16S: one gene, every bacterium {.smaller}
+
+::: {.columns}
+::: {.column width="55%"}
+The 16S ribosomal RNA gene is in every bacterium, and parts of it differ between
+species.
+
+::: {.incremental}
+- amplify one variable region with PCR
+- sequence only that amplicon
+- group identical sequences together
+- look each one up in a reference database
+:::
+:::
+::: {.column width="45%"}
+```{r}
+#| fig-width: 6.5
+#| fig-height: 4.2
+tibble(x = seq(0, 10, length.out = 500)) |>
+  mutate(conserved = 0.15 + 0.1 * sin(x * 3),
+         variable = if_else(x > 3 & x < 5 | x > 7 & x < 8.5, 0.9, 0.15)) |>
+  ggplot(aes(x)) +
+  geom_area(aes(y = variable), fill = pal[["teal"]], alpha = 0.85) +
+  annotate("text", x = 4, y = 1.05, label = "V3", size = 5, fontface = "bold") +
+  annotate("text", x = 7.75, y = 1.05, label = "V4", size = 5, fontface = "bold") +
+  annotate("text", x = 1.5, y = 0.33, label = "conserved", size = 4, colour = "grey30") +
+  labs(x = "position along the 16S gene", y = "variation between species") +
+  ylim(0, 1.15) +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.y = element_blank(), panel.grid.minor = element_blank())
+```
+:::
+:::
+
+## What a 16S count means
+
+A cell in the species table is: **the number of amplicon reads in this sample
+that matched this species.**
+
+. . .
+
+That is not the number of bacteria. Between the cell and the count sit
+
+::: {.incremental}
+- how many copies of the 16S gene that species carries
+- how well the primers bind to it
+- how completely the cells lysed
+- how deeply the sample was sequenced
+:::
+
+## RNA-seq: every gene, one organism {.smaller}
+
+::: {.columns}
+::: {.column width="52%"}
+::: {.incremental}
+- pull out messenger RNA
+- copy it to cDNA and fragment it
+- sequence the fragments
+- find where each fragment belongs in the genome
+- count fragments overlapping each gene
+:::
+:::
+::: {.column width="48%"}
+```{r}
+#| fig-width: 6.5
+#| fig-height: 4.2
+reads <- tibble(start = runif(26, 0, 9), y = rep(1:13, each = 2) * 0.07 + 0.25)
+tibble(x = 0) |>
+  ggplot() +
+  annotate("rect", xmin = 0, xmax = 10, ymin = 0.05, ymax = 0.17,
+           fill = pal[["grey"]]) +
+  annotate("rect", xmin = c(1, 4.2, 7.5), xmax = c(2.6, 6, 9.2), ymin = 0.05, ymax = 0.17,
+           fill = pal[["navy"]]) +
+  annotate("text", x = 1.8, y = 0.01, label = "exon", size = 4, colour = "grey30") +
+  geom_segment(data = reads, aes(x = start, xend = start + 0.75, y = y, yend = y),
+               colour = pal[["orange"]], linewidth = 1.6) +
+  labs(x = "position along the gene", y = NULL) +
+  xlim(0, 10) +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.y = element_blank(), panel.grid = element_blank())
+```
+:::
+:::
+
+## What an RNA-seq count means
+
+A cell in the gene table is: **the number of fragments in this sample assigned
+to this gene.**
+
+. . .
+
+Also not a molecule count. Between the transcript and the count sit
+
+::: {.incremental}
+- how long the gene is
+- how well the capture chemistry worked
+- whether the read could be placed uniquely
+- how deeply the sample was sequenced
+:::
+
+## The sentence to remember {.center}
+
+A count table is **not** a measurement of how much was there.
+
+. . .
+
+It is a measurement of how much was there, **relative to everything else in that
+tube**, multiplied by how hard we looked.
+
+## Which is why every analysis starts the same way
+
+::: {.incremental}
+1. How deeply was each sample sequenced?
+2. Which features are we even able to see?
+3. Only then: does anything differ between groups?
+:::
+
+. . .
+
+Tomorrow morning is step 1 and step 2, on both tables at once.
+
+## One more label we will keep {.smaller}
+
+Our gene table was produced in **two sequencing batches**.
+
+. . .
+
+We could have hidden that. We left it in, because on Wednesday you will measure
+how much of the table it explains, and the answer is uncomfortable.
+
+. . .
+
+Keep every technical label your sequencing facility gives you. You cannot check
+for a problem you did not write down.
+
+## On your feet {.center}
+
+Put the laptops away.
+
+. . .
+
+The next ninety minutes we build count tables out of objects.

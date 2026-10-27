@@ -1,0 +1,22 @@
+---
+title: "From Reads to Count Tables"
+format:
+  html:
+    toc: true
+---
+
+> How sequencing reads become a table of counts, for bacteria and for human
+> genes, and what that table does and does not tell you.
+
+No laptops this afternoon. The first ninety minutes are a lecture. The second
+ninety minutes you spend on your feet, building count tables out of paper and
+objects.
+
+## Slides
+[Make slides full screen](slides.qmd)
+
+```{=html}
+<iframe class="slide-deck" src="slides.html" height="420" width="747" style="border: 1px solid #2e3846;"></iframe>
+```
+
+{{< include analog_activities.qmd >}}

@@ -1,0 +1,75 @@
+## Exercise 2: The same function, on 53 species
+
+Same notebook. You will now use the identical `fgsea()` call on a table with 53
+features instead of 13,738, with sets built from taxonomy instead of curation.
+
+### Part 1 — Predict
+
+1. A gene set holds about 200 genes. A genus in our table holds between 2 and 12
+   species. What does that do to your ability to detect enrichment?
+2. Which genus do you expect to come out associated with preterm birth?
+3. Will testing ten genus sets need as aggressive a multiple-testing correction
+   as testing fifty gene sets?
+
+### Part 2 — Build
+
+1. Take your species-by-outcome DESeq2 results from Tuesday. Build the ranking
+   vector from `stat` as before.
+
+2. Join `03_microbiome_taxonomy.csv` so each species carries its `Genus` and
+   `Family`.
+
+3. Build the sets:
+
+   ```r
+   genus_sets <- split(results$feature, results$Genus)
+   genus_sets <- genus_sets[lengths(genus_sets) >= 2]
+   ```
+
+   How many genus sets do you have? How many species are in the largest?
+
+4. Run `fgsea(genus_sets, species_stat, minSize = 2, maxSize = 50)`. Which
+   genera are significant?
+
+5. Repeat with `Family` instead of `Genus`. Does the answer agree? It should, in
+   a specific way: check whether the significant family contains the significant
+   genus.
+
+6. Now do it the simple way. Just sort your 53 species by `stat` and print the
+   table with genus labels. Would you have reached the same conclusion without
+   any enrichment analysis at all?
+
+7. Write two or three sentences in your notebook answering: for which of our two
+   tables was set-based analysis worth doing, and what feature of the table
+   decides that?
+
+### Part 3 — Check the agent
+
+- Ask Pi to build the genus sets. Then check that no species appears in two
+  sets, and that the set sizes sum to no more than the number of species you
+  ranked.
+- Species with a missing genus become a set called `NA` if you are careless.
+  Check whether that happened.
+- Ask Pi whether enrichment analysis was useful on the species table. Then ask
+  it to defend the opposite position. Compare the two answers and decide which
+  argument is stronger.
+
+### Part 4 — Reach (optional)
+
+Invent a better set definition for the species table. Rather than taxonomy, group
+species by something functional: whether they are *Lactobacillus* or not, whether
+they are strict anaerobes, whether they are on a published list of
+BV-associated organisms.
+
+Run `fgsea` with your hand-built sets. A set definition that encodes real biology
+can beat a taxonomic one, and building one is a legitimate piece of research.
+
+### Discussion
+
+- The significant genus is the one every clinician would have guessed. Is that
+  reassuring or is it a sign the analysis added nothing?
+- Taxonomy is a hierarchy and gene sets are a flat list. Does that difference
+  matter for how you correct for multiple testing?
+- Thursday finishes the single-table week. Tomorrow we put the two tables
+  together. Before you leave, write down what you think combining them could
+  tell you that neither told you alone.

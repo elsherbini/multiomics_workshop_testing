@@ -1,0 +1,20 @@
+---
+title: "Distances and Ordination"
+format:
+  html:
+    toc: true
+---
+
+> How similar are two samples? Pick a distance, draw the picture, then put a
+> number on whatever you think you see.
+
+## Slides
+[Make slides full screen](slides.qmd)
+
+```{=html}
+<iframe class="slide-deck" src="slides.html" height="420" width="747" style="border: 1px solid #2e3846;"></iframe>
+```
+
+{{< include exercise_1.qmd >}}
+
+{{< include exercise_2.qmd >}}

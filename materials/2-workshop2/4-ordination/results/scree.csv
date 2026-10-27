@@ -1,0 +1,21 @@
+table,axis,variance_share
+species / Bray-Curtis,1,0.274928090253633
+species / Bray-Curtis,2,0.2127412217943075
+species / Bray-Curtis,3,0.06307408463534145
+species / Bray-Curtis,4,0.04385828119363617
+species / Bray-Curtis,5,0.04203075725130296
+species / Bray-Curtis,6,0.030602164387396484
+species / Bray-Curtis,7,0.025542193192421733
+species / Bray-Curtis,8,0.02169861280153043
+species / Bray-Curtis,9,0.01957813459294639
+species / Bray-Curtis,10,0.018312386289291563
+genes / Aitchison,1,0.16290789591589147
+genes / Aitchison,2,0.12736277048680925
+genes / Aitchison,3,0.08424814747079157
+genes / Aitchison,4,0.044092820231346815
+genes / Aitchison,5,0.03589507781186285
+genes / Aitchison,6,0.02837107298039811
+genes / Aitchison,7,0.021807343263963535
+genes / Aitchison,8,0.019448494288605414
+genes / Aitchison,9,0.017733599424516227
+genes / Aitchison,10,0.01612941356666339

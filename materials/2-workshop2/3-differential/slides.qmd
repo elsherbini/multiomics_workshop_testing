@@ -1,0 +1,311 @@
+---
+title: "Differential Testing"
+subtitle: "Workshop 2, Module 3"
+format: qmdrslides-revealjs
+editor: source
+execute:
+  echo: true
+  message: false
+  warning: false
+  freeze: false
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(patchwork)
+library(knitr)
+pal <- c(navy = "#2b3a67", teal = "#2a9d8f", orange = "#e76f51",
+         gold = "#e9c46a", grey = "#bbbbbb")
+theme_set(theme_minimal(base_size = 15))
+
+res <- "results"
+gc <- read_csv(file.path(res, "genes_by_community.csv.gz"), show_col_types = FALSE)
+go <- read_csv(file.path(res, "genes_by_outcome.csv.gz"), show_col_types = FALSE)
+sp <- read_csv(file.path(res, "species_by_outcome.csv"), show_col_types = FALSE)
+cs <- read_csv(file.path(res, "contrast_summary.csv"), show_col_types = FALSE)
+grp <- read_csv(file.path(res, "sample_groups.csv"), show_col_types = FALSE)
+n_sig <- function(x) sum(x$padj < 0.05, na.rm = TRUE)
+```
+
+## This morning you built a column {.center}
+
+```{r}
+#| echo: false
+grp |> filter(time_point == "week_18") |> count(community) |> kable()
+```
+
+37 anaerobe-dominant samples and 120 Lactobacillus-dominant samples, at week 18.
+
+. . .
+
+Built from the **species** table. We are about to test the **gene** table with it.
+
+## The question {.center}
+
+For each feature, is its count systematically different between two groups of
+samples?
+
+. . .
+
+Fourteen thousand features. One question, asked fourteen thousand times.
+
+## Why not just run a t-test {.smaller}
+
+::: {.incremental}
+- Counts are not normally distributed. They are bounded below by zero and skewed.
+- The variance depends on the mean. A gene at 10 counts and a gene at 10,000
+  counts behave differently.
+- Library sizes differ, so raw counts are not comparable between columns.
+- With 14,000 tests, estimating each feature's variance from 157 samples
+  independently is wasteful.
+:::
+
+## The variance really does track the mean
+
+```{r}
+#| echo: false
+#| fig-width: 13
+#| fig-height: 4.8
+gc |>
+  filter(!is.na(lfcSE), baseMean > 0) |>
+  ggplot(aes(baseMean, lfcSE)) +
+  geom_point(alpha = 0.12, size = 0.8, colour = pal[["navy"]]) +
+  geom_smooth(colour = pal[["orange"]], linewidth = 1.3, se = FALSE) +
+  scale_x_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  scale_y_log10() +
+  labs(x = "mean count across samples (log scale)",
+       y = "uncertainty in the fold change (log scale)")
+```
+
+Low-count features carry more uncertainty. A good method knows this and borrows
+information across features.
+
+## Three lines {.smaller}
+
+```{r}
+#| eval: false
+library(DESeq2)
+
+dds <- DESeqDataSetFromMatrix(
+  countData = gene_counts,          # features x samples, raw counts
+  colData   = sample_table,         # one row per sample, same order
+  design    = ~ community
+)
+
+dds <- DESeq(dds)
+res <- results(dds, contrast = c("community", "anaerobe", "lactobacillus"))
+```
+
+. . .
+
+Raw counts go in. Never CPM, never logged. The method does its own
+normalisation, and feeding it normalised data breaks it.
+
+## What those three lines did {.smaller}
+
+::: {.incremental}
+1. **Size factors.** Worked out how deeply each sample was sequenced, so columns
+   become comparable.
+2. **Dispersion.** Estimated each feature's variance, then pulled extreme
+   estimates toward the trend you just saw.
+3. **Test.** Fitted a model per feature and tested whether the group term is
+   zero.
+:::
+
+## What comes back {.smaller}
+
+```{r}
+#| echo: false
+gc |> filter(!is.na(padj)) |> arrange(padj) |>
+  transmute(gene = symbol, baseMean = round(baseMean), log2FoldChange = round(log2FoldChange, 2),
+            stat = round(stat, 1), pvalue = format(pvalue, digits = 2), padj = format(padj, digits = 2)) |>
+  head(6) |> kable(align = "lrrrrr")
+```
+
+::: {.incremental}
+- `log2FoldChange` of 1 means twice as much. Of -1, half as much.
+- `pvalue` is per feature, before any correction.
+- `padj` is what you report.
+:::
+
+## Fourteen thousand tests {.center}
+
+If nothing at all were different, how many features would have `pvalue` below
+0.05?
+
+. . .
+
+About **687**.
+
+. . .
+
+That is why `padj` exists. Benjamini-Hochberg asks for a different promise: of
+the features you call significant, roughly 5% are wrong.
+
+## The result
+
+```{r}
+#| echo: false
+#| fig-width: 13
+#| fig-height: 5
+gc |>
+  filter(!is.na(padj)) |>
+  mutate(call = case_when(padj >= 0.05 ~ "not significant",
+                          log2FoldChange > 0 ~ "up in anaerobe",
+                          TRUE ~ "up in Lactobacillus")) |>
+  ggplot(aes(log2FoldChange, -log10(padj), colour = call)) +
+  geom_point(alpha = 0.45, size = 1) +
+  geom_hline(yintercept = -log10(0.05), linetype = 2, colour = "grey40") +
+  scale_colour_manual(values = c("not significant" = pal[["grey"]],
+                                 "up in anaerobe" = pal[["orange"]],
+                                 "up in Lactobacillus" = pal[["teal"]])) +
+  labs(x = "log2 fold change", y = "-log10 adjusted p", colour = NULL) +
+  theme(legend.position = "top")
+```
+
+## `r scales::comma(n_sig(gc))` genes, and they are not random {.smaller}
+
+```{r}
+#| echo: false
+gc |> filter(!is.na(padj)) |> arrange(padj) |>
+  transmute(gene = symbol, name = str_trunc(gene_name, 46),
+            log2FoldChange = round(log2FoldChange, 2)) |>
+  head(7) |> kable(align = "llr")
+```
+
+Mucins, filaggrin, cornified envelope proteins. Epithelial barrier genes, higher
+where Lactobacillus dominates.
+
+. . .
+
+We did not put that there. It came with the real samples.
+
+## Significant is not the same as large {.smaller}
+
+```{r}
+#| echo: false
+cs |>
+  mutate(contrast = recode(contrast,
+    genes_by_community = "genes ~ community (from the 16S table)",
+    genes_by_outcome   = "genes ~ birth outcome",
+    genes_by_bv        = "genes ~ Nugent-defined BV",
+    species_by_outcome = "species ~ birth outcome")) |>
+  transmute(contrast, `features tested` = scales::comma(features_in),
+            samples, `padj < 0.05` = scales::comma(n_sig),
+            `and |log2FC| > 1` = scales::comma(n_sig_lfc1)) |>
+  kable(align = "lrrrr")
+```
+
+. . .
+
+Read the last two columns of the first two rows against each other.
+
+## The same number of hits, a different kind of hit {.smaller}
+
+::: {.columns}
+::: {.column width="50%"}
+**genes ~ community**
+
+`r scales::comma(n_sig(gc))` significant
+
+`r scales::comma(sum(gc$padj < 0.05 & abs(gc$log2FoldChange) > 1, na.rm = TRUE))` of them more than
+doubled
+
+A strong, local contrast.
+:::
+::: {.column width="50%"}
+**genes ~ birth outcome**
+
+`r scales::comma(n_sig(go))` significant
+
+`r scales::comma(sum(go$padj < 0.05 & abs(go$log2FoldChange) > 1, na.rm = TRUE))` of them more than
+doubled
+
+A weak shift in a great many genes.
+:::
+:::
+
+. . .
+
+Friday we come back to this: thousands of significant genes, and still a poor
+prediction of who delivers early.
+
+## And a warning about proxies {.smaller}
+
+```{r}
+#| echo: false
+cs |> filter(contrast %in% c("genes_by_community", "genes_by_bv")) |>
+  mutate(grouping = recode(contrast,
+    genes_by_community = "Lactobacillus fraction, computed from the 16S table",
+    genes_by_bv = "Nugent score of 7 or more, read down a microscope")) |>
+  transmute(grouping, samples, `genes at padj < 0.05` = n_sig) |>
+  kable(align = "lrr")
+```
+
+. . .
+
+Two ways of asking "is this community disturbed". One of them is built from the
+data you already have, and finds two hundred times as much.
+
+## Other people's tools {.smaller}
+
+We used DESeq2 on both tables, because the point this week is that both tables
+are count tables. That is not what everyone does.
+
+| for gene counts | for microbial counts |
+|---|---|
+| DESeq2, edgeR | ALDEx2, ANCOM-BC |
+| limma-voom | MaAsLin 2, corncob |
+| | DESeq2, still, often |
+
+: {tbl-colwidths="[50,50]"}
+
+. . .
+
+The microbiome tools exist because that table is compositional and sparse in a
+way gene tables are not. The argument is real and worth reading about.
+
+## One trap, before you start {.center}
+
+You built `community` from the species table.
+
+. . .
+
+Testing the **gene** table with it is fine.
+
+. . .
+
+Testing the **species** table with it is not. You would be asking whether
+samples with lots of Lactobacillus have lots of Lactobacillus.
+
+## So your exercise asks a different question {.smaller}
+
+```{r}
+#| eval: false
+# the grouping comes from the clinic, not from either count table
+dds <- DESeqDataSetFromMatrix(species_counts, sample_table, ~ outcome)
+```
+
+. . .
+
+```{r}
+#| echo: false
+sp |> filter(!is.na(padj), padj < 0.05) |> arrange(padj) |>
+  transmute(species = str_replace_all(species, "_", " "),
+            log2FoldChange = round(log2FoldChange, 2),
+            padj = format(padj, digits = 2)) |>
+  head(6) |> kable(align = "lrr")
+```
+
+`r n_sig(sp)` of `r cs$features_in[cs$contrast == "species_by_outcome"]` species,
+and `r sum(sp$padj < 0.05 & sp$log2FoldChange > 0, na.rm = TRUE)` of them are
+higher in the people who delivered early.
+
+## Your turn {.your-turn}
+
+Open `notebooks/03-differential.qmd`.
+
+```{r}
+#| echo: false
+countdown::countdown(45, left = 0, right = NULL, play_sound = TRUE)
+```

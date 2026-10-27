@@ -1,0 +1,20 @@
+---
+title: "Differential Testing"
+format:
+  html:
+    toc: true
+---
+
+> Which features differ between two groups of samples? One method, both tables,
+> and a careful look at what a significant result is actually worth.
+
+## Slides
+[Make slides full screen](slides.qmd)
+
+```{=html}
+<iframe class="slide-deck" src="slides.html" height="420" width="747" style="border: 1px solid #2e3846;"></iframe>
+```
+
+{{< include exercise_1.qmd >}}
+
+{{< include exercise_2.qmd >}}

@@ -1,0 +1,5 @@
+contrast,features_in,samples,n_sig,n_sig_lfc1
+genes_by_community,13738,157,1815,303
+species_by_outcome,53,157,19,19
+genes_by_outcome,13738,157,1698,50
+genes_by_bv,13721,97,7,3

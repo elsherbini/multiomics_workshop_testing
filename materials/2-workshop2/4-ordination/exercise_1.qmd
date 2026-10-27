@@ -1,0 +1,68 @@
+## Exercise 1: Distances and ordination on the species table
+
+Open `notebooks/04-ordination.qmd`.
+
+### Part 1 — Predict
+
+1. Bray-Curtis uses abundances. Jaccard uses only presence and absence. Our
+   species table is about 89% zeros. Which of the two do you expect to separate
+   the two community types more clearly, and why?
+2. If you shuffled the `outcome` label randomly across all 471 samples, what
+   `R2` would PERMANOVA report? Give a number.
+3. One sample has 438 reads. Where do you expect it to sit in a Bray-Curtis
+   ordination?
+
+### Part 2 — Build
+
+1. Build the phyloseq object for the species table:
+
+   ```r
+   library(microViz)
+   source("R/count_tables.R")
+   ps <- as_counts(table = "microbiome")
+   ```
+
+   Inspect it. How many taxa, how many samples, how many sample variables? Add
+   the `community` column you built on Tuesday if it is not already there.
+
+2. Run the pipeline three times, changing only the transform and the distance:
+
+   - `"identity"` with `"bray"`
+   - `"binary"` with `"jaccard"`
+   - `"clr"` with `"euclidean"`
+
+   Plot all three, coloured by `community`. Put them side by side.
+
+3. Colour your Bray-Curtis ordination by `outcome` instead. Then by
+   `time_point`. Then by `nugent`.
+
+4. Run `dist_permanova()` on the Bray-Curtis distance with `community`,
+   `outcome`, `time_point` and `rnaseq_batch` as variables. Report the `R2`
+   for each.
+
+5. Find your 438-read sample in the ordination. Was your Part 1 prediction
+   right? Re-run the Bray-Curtis ordination with that sample removed and see
+   whether anything else moves.
+
+6. Make a stacked bar plot of community composition with
+   `comp_barplot(tax_level = "Genus", n_taxa = 10)`, faceted or ordered by
+   `community`. This is the figure your 16S papers open with.
+
+### Part 3 — Check the agent
+
+- Ask Pi for the `R2` of `outcome`. Then ask it what the `R2` of a random label
+  would be. If it does not say "close to zero but not zero", push back.
+- PERMANOVA with `by = "margin"` and `by = "terms"` give different answers when
+  variables are correlated. Ask Pi which it used and why it matters.
+- Ask it to interpret your ordination. It will produce a paragraph of confident
+  biological narrative about axis 1. Ask it what axis 1 actually is. It cannot
+  know, and neither can you, which is the point.
+- Ask it whether your three distance choices "agree". Then look at the three
+  plots yourself and decide if its answer matches what you see.
+
+### Discussion
+
+- Which of the three distances would you publish? Defend it in one sentence.
+- `community` explains a very large share of this table. Is that a finding?
+- Your ordination shows visit structure. Each participant appears three times.
+  Does PERMANOVA know that, and does it matter?

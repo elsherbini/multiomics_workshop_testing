@@ -10,7 +10,77 @@ format:
 
 [Download here](https://docs.google.com/spreadsheets/d/e/2PACX-1vRD_PMPFbTkZmIhXcc0y70IEznxMDpaw8tvsD64JvWLT-aogEnMoVjAWTlvLtHiLCUyTRbsA6ePgQnN/pub?gid=1324386097&single=true&output=csv)
 
-## Download the instructional dataset:
+## Workshop 2: multiomics datasets
+
+Three datasets, all with the same six files and the same column names. Each has
+a bacterial 16S count table and a human RNA-seq count table measured on the same
+samples.
+
+::: {.callout-important}
+## These data are constructed
+
+Every count in both tables is real sequencing output from a real sample. The
+study around them, the visit labels and the birth outcomes, was built for this
+workshop. Analyse them properly, and do not cite the results.
+:::
+
+### Instructional dataset: a pregnancy cohort
+
+157 participants sampled at three visits, 471 samples in all, with term or
+preterm birth as the outcome.
+
+- [`01_metadata.csv`](datasets/2-workshop2/instructional_dataset/01_metadata.csv)
+
+`sample_id` – sample id, formed as participant and visit
+`participant_id` – participant id, P001 to P157
+`time_point` – `week_18`, `week_24` or `week_34` of pregnancy
+`outcome` – `term` or `preterm`, one value per participant
+`age` – age in years
+`ph` – vaginal pH
+`nugent` – [Nugent score](https://en.wikipedia.org/wiki/Nugent_score), 0 to 10
+`amine_test`, `clue_cells`, `discharge` – [Amsel criteria](https://en.wikipedia.org/wiki/Bacterial_vaginosis#Amsel_criteria)
+`rnaseq_batch` – `B1` or `B2`, the sequencing batch of the RNA. Keep it; you will need it.
+
+- [`02_microbiome_counts.csv`](datasets/2-workshop2/instructional_dataset/02_microbiome_counts.csv)
+
+220 bacterial species in rows, 471 samples in columns. First column is `taxon`.
+
+- [`03_microbiome_taxonomy.csv`](datasets/2-workshop2/instructional_dataset/03_microbiome_taxonomy.csv)
+
+One row per species: `taxon`, then `Domain` through `Genus`, then `species`.
+
+- [`04_rnaseq_counts.csv.gz`](datasets/2-workshop2/instructional_dataset/04_rnaseq_counts.csv.gz)
+
+14,226 human genes in rows, 471 samples in columns. First column is
+`ensembl_gene_id`. `read_csv()` opens the gzip directly.
+
+- [`05_gene_annotation.csv`](datasets/2-workshop2/instructional_dataset/05_gene_annotation.csv)
+
+One row per gene: `ensembl_gene_id`, `symbol`, `gene_name`, `locus_group`.
+
+- [`06_cytokines.csv`](datasets/2-workshop2/instructional_dataset/06_cytokines.csv)
+
+Measured protein concentrations per sample. Not used in the modules; available
+for the group projects.
+
+### Group Study A: a probiotic trial
+
+176 participants, sampled before and after treatment, 352 samples.
+`01_metadata.csv` carries `arm` (`probiotic` or `placebo`) and `time_point`
+(`pre` or `post`) in place of `outcome`.
+
+[Browse the folder](datasets/2-workshop2/group_a_probiotic/) — the six files are
+named exactly as above.
+
+### Group Study B: three contraceptive methods
+
+93 participants, one sample each. `01_metadata.csv` carries `arm`
+(`injectable`, `pill` or `ring`), `bv`, `nugent`, `ph` and `any_sti`.
+
+[Browse the folder](datasets/2-workshop2/group_b_contraception/) — the six files
+are named exactly as above.
+
+## Workshop 1: download the instructional dataset:
 
 The main data set for use in lectures is split into 5 tables. The idea of this dataset is that there is a randomized controlled trial of a drug aimed at reducing HIV risk by reducing inflammation. There were 23 participants in the placebo arm and 21 in the treatment arm. There were 3 visits for the trial – baseline (before any treatment occurred), week_1 (1 week after treatment) and week_7 (7 weeks after treatment). At each time point inflammation was measured using luminex (elisa_cytokines table) and immune cells counts were measured from a pap-smear (flow_cytometry table).  
 
@@ -53,7 +123,7 @@ All other columns – the integer count of this type of cell in this sample
 
 `cd4_t_cells` might best be analyzed as a proportion of `cd3_t_cells`...
 
-## Download the yogurt dataset (Odd number groups)
+## Workshop 1: download the yogurt dataset (Odd number groups)
 
 - [`00_sample_ids_yogurt.csv`](datasets/group_dataset_a/00_sample_ids_yogurt.csv)
 - [`01_participant_metadata_yogurt.csv`](datasets/group_dataset_a/01_participant_metadata_yogurt.csv)

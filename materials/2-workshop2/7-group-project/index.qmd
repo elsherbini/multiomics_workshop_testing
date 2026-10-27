@@ -1,0 +1,121 @@
+---
+title: "Group Project"
+format:
+  html:
+    toc: true
+---
+
+> Two datasets, ten groups, two working sessions and one presentation. Nobody
+> tells you the answer.
+
+## How it works
+
+Ten groups of six. Five groups take Study A, five take Study B. You meet your
+group on Wednesday morning and present on Friday.
+
+| when | how long | what |
+|---|---|---|
+| Wednesday AM | 3 hours | meet, read the data, agree a question, first analysis |
+| Thursday AM | 3 hours | finish the analysis, build the figures, write the talk |
+| Friday AM | 8 minutes each | present |
+
+: {tbl-colwidths="[18,16,66]"}
+
+Both datasets have exactly the file layout you have been using all week, with the
+same column names. Your code from the modules should run on them with the file
+path changed and nothing else.
+
+```r
+source("R/count_tables.R")
+d <- read_counts("group_a")   # or "group_b"
+```
+
+## Study A: does a vaginal probiotic change the community?
+
+A randomised trial. Participants received either a live *Lactobacillus crispatus*
+product or a placebo, and were sampled before and after the course of treatment.
+
+| | |
+|---|---|
+| participants | 176 |
+| samples | 352, one before and one after per person |
+| arms | 121 probiotic, 55 placebo |
+| metadata | `arm`, `time_point` (`pre`, `post`), age, pH, Nugent score, Amsel criteria |
+
+: {tbl-colwidths="[30,70]"}
+
+**The obvious question.** Did the product change the bacterial community, and did
+it change host gene expression?
+
+**The less obvious questions.** Did it work in everyone, or only in people whose
+community was already a particular way before treatment? Does the host response
+track the community change, or move on its own? Is a difference after treatment
+meaningful if the two arms already differed before it?
+
+**One warning.** The arms are unbalanced, 121 against 55. Check your baseline
+before you interpret anything about the follow-up.
+
+## Study B: do hormonal contraceptives differ in their effect?
+
+A cross-sectional comparison of three contraceptive methods, each person sampled
+once.
+
+| | |
+|---|---|
+| participants | 93, one sample each |
+| arms | 39 injectable, 28 pill, 26 ring |
+| metadata | `arm`, `bv` (Amsel), `nugent`, `ph`, `any_sti` |
+
+: {tbl-colwidths="[30,70]"}
+
+**The obvious question.** Do the three methods differ in bacterial community
+composition, in host gene expression, or in both?
+
+**The less obvious questions.** One of the three is delivered locally and two are
+systemic. Does that grouping explain more than the three-way split does? Is
+bacterial vaginosis more common in one arm, and if so is that the explanation for
+everything else you find? With 93 samples and three groups, which of your
+comparisons is actually powered?
+
+**One warning.** This is cross-sectional. Nobody was randomised to a method, and
+people who choose different methods differ in other ways.
+
+## What to deliver
+
+An eight-minute presentation with no more than eight slides, containing:
+
+1. **The question** you settled on, in one sentence
+2. **What you did**, including what you filtered and why
+3. **Two or three figures**, each with a caption you read out
+4. **The answer**, stated as plainly as the data allow
+5. **What you do not believe** about your own result
+
+That last slide is not optional and it is the one we will ask about. Every
+analysis this week had something wrong with it. Find yours before we do.
+
+## Advice from the modules
+
+::: {.callout-tip}
+## Things that bit people earlier in the week
+
+- Check your sample table and your count matrix are in the same order before you
+  run any test.
+- Decide your filter before you look at the result, and write down why.
+- Define a grouping from one table and test the other, never the same table
+  twice.
+- Look at how lopsided a ranking is before you believe an enrichment.
+- Your dataset has an `rnaseq_batch` column. Cross-tabulate it against your
+  groups early, and find out whether you have a confound rather than a finding.
+:::
+
+## Using the agent
+
+Use Pi freely. It will write most of your code faster than you can, and the
+groups that get furthest will be the ones who use it well.
+
+It will also, at some point this week, hand you a confident and wrong answer.
+Before any number goes on a slide, one person in the group who did not write the
+code should be able to say where it came from.
+
+Divide the work: someone drives the analysis, someone checks it, someone builds
+the figures, someone writes the talk. Swap at least once.

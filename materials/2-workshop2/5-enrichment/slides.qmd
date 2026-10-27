@@ -1,0 +1,327 @@
+---
+title: "Sets and Enrichment"
+subtitle: "Workshop 2, Module 5"
+format: qmdrslides-revealjs
+editor: source
+execute:
+  echo: true
+  message: false
+  warning: false
+  freeze: false
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(patchwork)
+library(knitr)
+pal <- c(navy = "#2b3a67", teal = "#2a9d8f", orange = "#e76f51",
+         gold = "#e9c46a", grey = "#bbbbbb")
+theme_set(theme_minimal(base_size = 15))
+
+res <- "results"
+gsea <- read_csv(file.path(res, "gsea_hallmark.csv"), show_col_types = FALSE) |>
+  mutate(short = pathway |> str_remove("^HALLMARK_") |> str_replace_all("_", " ") |> str_to_sentence())
+run <- read_csv(file.path(res, "running_score.csv.gz"), show_col_types = FALSE)
+tax <- read_csv(file.path(res, "tax_set_enrichment.csv"), show_col_types = FALSE)
+sprank <- read_csv(file.path(res, "species_ranking_outcome.csv"), show_col_types = FALSE)
+out <- gsea |> filter(ranking == "preterm vs term")
+comm <- gsea |> filter(ranking == "anaerobe vs Lactobacillus")
+```
+
+## Tuesday you produced this {.center}
+
+1,698 genes with an adjusted p-value below 0.05.
+
+. . .
+
+What is the finding?
+
+## A list of 1,698 names is not a finding {.center}
+
+::: {.incremental}
+- You cannot read it
+- You cannot put it in an abstract
+- Two groups with the same data will hand you two different lists
+:::
+
+. . .
+
+You need to say what the genes have **in common**.
+
+## Two ways to do that {.smaller}
+
+::: {.incremental}
+**Cut, then count.** Take your significant list, take a predefined set of genes,
+and ask whether the overlap is bigger than chance. A hypergeometric test. Simple,
+and it throws away everything below your cutoff.
+
+**Rank, then look.** Order every gene you tested from most up to most down, and
+ask whether a set's members pile up at one end. No cutoff at all. This is gene
+set enrichment analysis.
+:::
+
+. . .
+
+We will do the second one, because the first one makes your answer depend on a
+threshold you chose arbitrarily.
+
+## What a gene set is
+
+A named list of genes someone curated.
+
+. . .
+
+We use the **Hallmark** collection: 50 sets, each a broad biological program,
+each about 200 genes.
+
+. . .
+
+`HALLMARK_INFLAMMATORY_RESPONSE`. `HALLMARK_TNFA_SIGNALING_VIA_NFKB`.
+`HALLMARK_INTERFERON_GAMMA_RESPONSE`.
+
+## Rank by the test statistic {.smaller}
+
+```{r}
+#| eval: false
+# res is your DESeq2 result table
+stat <- res$stat
+names(stat) <- rownames(res)
+stat <- stat[!is.na(stat)]
+```
+
+::: {.incremental}
+- Not the p-value, which throws away direction.
+- Not the fold change alone, which lets a noisy low-count gene lead the list.
+- The statistic, which carries both size and confidence.
+:::
+
+## Walk down the list and keep score
+
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 5
+set.seed(1)
+curve <- run |> filter(rank %% 7 == 0 | hit)
+hits <- run |> filter(hit)
+peak <- run$rank[which.max(run$running)]
+
+p_top <- ggplot(curve, aes(rank, running)) +
+  geom_hline(yintercept = 0, colour = "grey70") +
+  geom_line(colour = pal[["orange"]], linewidth = 1.1) +
+  geom_vline(xintercept = peak, linetype = 2, colour = "grey45") +
+  labs(x = NULL, y = "running score",
+       title = "HALLMARK_TNFA_SIGNALING_VIA_NFKB, genes ranked from preterm-high to term-high") +
+  theme(axis.text.x = element_blank())
+p_bot <- ggplot(hits, aes(rank, y = 1)) +
+  geom_segment(aes(xend = rank, y = 0, yend = 1), colour = pal[["navy"]], alpha = 0.5) +
+  labs(x = "rank of the gene", y = NULL) +
+  xlim(1, max(run$rank)) +
+  theme(axis.text.y = element_blank(), panel.grid = element_blank())
+p_top / p_bot + plot_layout(heights = c(3, 1))
+```
+
+Each tick is a set member. The score climbs on a hit and drifts down otherwise.
+
+## The number you report {.smaller}
+
+The highest point the score reaches is the enrichment score. Shuffle the gene
+labels many times to find out how surprising that peak is.
+
+```{r}
+#| eval: false
+library(fgsea)
+library(msigdbr)
+
+hallmark <- msigdbr(species = "Homo sapiens", collection = "H")
+sets <- split(hallmark$ensembl_gene, hallmark$gs_name)
+
+fgsea(sets, stat, minSize = 15, maxSize = 500)
+```
+
+. . .
+
+`NES` is the peak, normalised so sets of different sizes are comparable. Sign
+tells you which end.
+
+## Preterm versus term
+
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 5.4
+out |> slice_min(padj, n = 12) |>
+  mutate(short = fct_reorder(short, NES)) |>
+  ggplot(aes(NES, short, fill = NES > 0)) +
+  geom_col() +
+  scale_fill_manual(values = c(`TRUE` = pal[["orange"]], `FALSE` = pal[["navy"]]),
+                    labels = c("higher in term", "higher in preterm")) +
+  labs(x = "normalised enrichment score", y = NULL, fill = NULL) +
+  theme(legend.position = "top")
+```
+
+## In words {.smaller}
+
+```{r}
+#| echo: false
+out |> slice_min(padj, n = 6) |>
+  transmute(set = short, size, NES = round(NES, 2), padj = format(padj, digits = 2)) |>
+  kable(align = "lrrr")
+```
+
+. . .
+
+Inflammatory signalling, tumour necrosis factor, interferon and complement are
+all shifted up in the people who delivered early.
+
+. . .
+
+**That** is a sentence you can put in an abstract. It came from the same 13,738
+numbers that gave you an unreadable list.
+
+## Now be suspicious {.smaller}
+
+Run the same analysis on Tuesday's other contrast, anaerobe versus
+Lactobacillus.
+
+```{r}
+#| echo: false
+comm |> slice_min(padj, n = 6) |>
+  transmute(set = short, size, NES = round(NES, 2), padj = format(padj, digits = 2)) |>
+  kable(align = "lrrr")
+```
+
+. . .
+
+`r sum(comm$padj < 0.05, na.rm = TRUE)` of 50 sets are significant, and
+`r sum(comm$padj < 0.05 & comm$NES < 0, na.rm = TRUE)` of those point the same
+way. Does that look like biology to you?
+
+## Look at the list itself {.smaller}
+
+```{r}
+#| echo: false
+tibble(
+  ranking = c("preterm vs term", "anaerobe vs Lactobacillus"),
+  `significant genes up` = c(838, 554),
+  `significant genes down` = c(860, 1261),
+  `significant sets` = c(sum(out$padj < 0.05, na.rm = TRUE), sum(comm$padj < 0.05, na.rm = TRUE)),
+  `sets pointing one way` = c(
+    max(sum(out$padj < 0.05 & out$NES > 0, na.rm = TRUE), sum(out$padj < 0.05 & out$NES < 0, na.rm = TRUE)),
+    max(sum(comm$padj < 0.05 & comm$NES > 0, na.rm = TRUE), sum(comm$padj < 0.05 & comm$NES < 0, na.rm = TRUE)))
+) |> kable(align = "lrrrr")
+```
+
+::: {.incremental}
+- Outcome: the gene list is balanced, and the sets still agree. Trust it.
+- Community: the gene list leans two to one, and then every set leans the same
+  way. That is the imbalance, not a program.
+:::
+
+## This does not undo Tuesday {.smaller}
+
+The individual genes from the community contrast are still real. Mucins and
+filaggrin were up in Lactobacillus-dominant samples by a factor of eight, with
+adjusted p-values near ten to the minus eighteen.
+
+. . .
+
+What the imbalance undermines is the **set-level** claim, that a named program
+is coordinately shifted. Large generic sets drift with a lopsided list.
+
+. . .
+
+Strong individual hits and a trustworthy enrichment are two different claims,
+and they need two different checks.
+
+## The check to run every time {.center}
+
+Before you believe an enrichment, ask how lopsided the ranking was.
+
+. . .
+
+If 70% of your genes drift one way, every large set will come out enriched that
+way, and the method will give you a very small p-value for it.
+
+## Three more things that are true of all gene sets {.smaller}
+
+::: {.incremental}
+- **They overlap.** TNFA signalling and inflammatory response share many genes,
+  so their p-values are not independent and you cannot count them as separate
+  findings.
+- **They are curated by people**, mostly from experiments in cell lines and
+  mostly not from cervical tissue.
+- **There is no set for what you study.** If your biology does not have a
+  curated set, enrichment cannot find it.
+:::
+
+## The same idea, on bacteria {.center}
+
+A gene set is just a label that groups features.
+
+. . .
+
+Species have labels that group them too. They are called **genus** and
+**family**.
+
+## Rank species, test taxonomy {.smaller}
+
+```{r}
+#| eval: false
+# the same fgsea call; only the sets changed
+genus_sets <- split(species_results$feature, species_results$Genus)
+fgsea(genus_sets, species_stat, minSize = 2, maxSize = 50)
+```
+
+```{r}
+#| echo: false
+tax |> filter(ranking == "genus") |> slice_min(padj, n = 5) |>
+  transmute(genus = pathway, size, NES = round(NES, 2), padj = format(padj, digits = 2)) |>
+  kable(align = "lrrr")
+```
+
+*Gardnerella* comes out, with three species pulling together toward preterm.
+
+## But look at the scale of it {.smaller}
+
+```{r}
+#| echo: false
+tibble(
+  ` ` = c("features ranked", "sets tested", "typical set size", "sets significant"),
+  genes = c("13,738", "50", "about 190", as.character(sum(out$padj < 0.05, na.rm = TRUE))),
+  species = c(as.character(nrow(sprank)), as.character(sum(tax$ranking == "genus")),
+              "2 to 12", as.character(sum(tax$padj < 0.05 & tax$ranking == "genus", na.rm = TRUE)))
+) |> kable(align = "lrr")
+```
+
+. . .
+
+Set-level thinking earns its keep when you have thousands of features and
+hundreds of curated groups. With 53 species in ten genera, you are better off
+reading the species list.
+
+## Which is the real lesson {.center}
+
+The machinery is identical. The payoff is not.
+
+. . .
+
+Match the method to the shape of your table, not to the field it came from.
+
+## What you will do {.smaller}
+
+::: {.incremental}
+1. Rank your genes and run fgsea against Hallmark
+2. Check your ranking for imbalance before you believe the result
+3. Pull out a leading edge and look at the actual genes
+4. Build taxonomic sets and run the same function on 53 species
+:::
+
+## Your turn {.your-turn}
+
+Open `notebooks/05-enrichment.qmd`.
+
+```{r}
+#| echo: false
+countdown::countdown(45, left = 0, right = NULL, play_sound = TRUE)
+```

@@ -1,0 +1,69 @@
+## Exercise 2: The identical pipeline on 14,000 genes
+
+Same notebook. Change three words in your code from Exercise 1 and run it again
+on a table sixty times larger.
+
+### Part 1 — Predict
+
+1. Bray-Curtis is standard for microbiome data. Would you use it on gene counts?
+   Say why or why not before you try.
+2. `community` explained about 18% of the species table. What share do you
+   expect it to explain of the gene table?
+3. The gene table was produced in two sequencing batches. What share do you
+   expect `rnaseq_batch` to explain?
+
+### Part 2 — Build
+
+1. Build the gene object, filtering as you go:
+
+   ```r
+   ps_genes <- as_counts(table = "rnaseq", min_count = 10, min_samples = 100)
+   ```
+
+2. Run the pipeline with `"clr"` and `"euclidean"`, aggregating at
+   `rank = "symbol"`. Plot it coloured by `community`, then `outcome`, then
+   `rnaseq_batch`.
+
+3. Run `dist_permanova()` with the same four variables you used on the species
+   table. Put the two sets of `R2` values side by side in one small table.
+
+4. Look at the batch row. Then do something about it: add `rnaseq_batch` to the
+   PERMANOVA formula before `outcome` and see whether the outcome `R2` changes.
+
+5. Check whether batch is confounded with anything you care about. A
+   cross-tabulation of `rnaseq_batch` against `outcome` and against `community`
+   is enough. If the groups were unbalanced across batches, what would that
+   mean for Tuesday's differential results?
+
+6. Also try Bray-Curtis on the gene table, just to see. Compare it to your CLR
+   ordination and decide which you believe.
+
+### Part 3 — Check the agent
+
+- Ask Pi to compare the species and gene `R2` tables and tell you what it means.
+  Its answer will probably say the gene table has "weaker biological signal".
+  That is a claim about biology drawn from an ordination. Is it justified, given
+  that Tuesday found almost two thousand differentially expressed genes?
+- Ask it whether you should remove the batch effect. Then ask it to actually do
+  it. Look closely at what it does, because "batch correction" covers several
+  very different operations with very different consequences.
+- CLR cannot handle zeros without a pseudocount. Ask Pi what pseudocount it used
+  and where that choice came from.
+
+### Part 4 — Reach (optional)
+
+Take the first two axes of your gene ordination and the first two of your species
+ordination, and plot gene axis 1 against species axis 1 for the same samples. Are
+they related?
+
+That scatter plot is the simplest possible multiomics integration, and it is
+Friday morning's opening question.
+
+### Discussion
+
+- Both tables showed a significant outcome effect of about 2% or less. Would you
+  write that in a paper, and how would you phrase it?
+- The batch effect is as large as the biological effect. What should the people
+  who generated this data have done differently?
+- You now have two ordinations of the same 471 samples. What would it take to
+  combine them, and what would you hope to gain?

@@ -1,0 +1,125 @@
+## Analog activities (90 minutes, no computers)
+
+Four activities, run in this order. Everyone is standing and moving for the
+first three. Each one plants a number that Tuesday and Wednesday then compute
+in code.
+
+### What to bring
+
+| item | how many | used for |
+|---|---|---|
+| Opaque cloth or paper bags | one per participant, 61 | all four |
+| Coloured beads, buttons or dried beans, 6 colours | about 6,000 total | all four |
+| Flip chart sheets | one per table of six, 10 | activity 3 |
+| Thick markers | two per table | activity 3 |
+| Sticky dots | one sheet per table | activity 4 |
+| Pre-printed blank count-table grids | 10 | activity 3 |
+
+Fill the bags before the session. Give most bags 100 pieces, but deliberately
+give **six bags only 20 pieces** and **two bags 400 pieces**. Nobody is told
+this. It is the point of activity 4.
+
+Mix the compositions on purpose, so the room contains:
+
+- about 20 bags that are 90% one colour
+- about 20 bags that are 60% one colour with three others present
+- about 20 bags that are spread evenly across five or six colours
+
+### Activity 1 — You are a sample (15 min)
+
+Each person takes a bag. Without counting precisely, look at your bag and
+describe your community out loud to the person next to you: which colour
+dominates, how many colours you can see.
+
+Then: **find the three people in the room whose bags look most like yours.**
+Stand together. You now have clusters.
+
+Ask the room:
+
+- How did you decide who was similar to you? What rule were you using?
+- Did anyone belong to two clusters?
+- Did the people with very few pieces have trouble finding a group?
+
+> The rule they invented is a distance metric. Wednesday afternoon gives it a
+> name and a formula.
+
+### Activity 2 — Draw ten (20 min)
+
+Without looking, draw ten pieces from your own bag and lay them out. Record on
+paper: how many colours did you get, and how many of each.
+
+Now put them back, shake, and draw ten again. Record again.
+
+Ask the room:
+
+- Did you get the same answer twice? Who got a colour the second time that they
+  missed the first time?
+- Whose two draws disagreed the most? Look at their bag. Why?
+- If you drew only three pieces, what would happen?
+
+> This is sampling depth. A rare feature can be present in the tube and absent
+> from the count table, and whether you see it depends on how many reads you
+> took. Tuesday morning you will find the sample in our real data with 438
+> reads and decide what to do about it.
+
+### Activity 3 — Build the table (30 min)
+
+In table groups of six. Pool your six bags. On the flip chart, build a count
+table by hand:
+
+- one **row per colour**, so rows are features
+- one **column per person**, so columns are samples
+- in each cell, the count of that colour in that person's bag
+
+You do not have to count every piece. Estimate, but estimate consistently.
+
+Then, on the same sheet, write underneath each column:
+
+1. the **column total**, the number of pieces that person had
+2. the number of **rows with a zero** in that column
+3. the colour with the **largest share** of that column, as a percentage
+
+Finally, as a group, answer in writing on the sheet:
+
+- Which two people look most alike? Which two look least alike?
+- One person has far fewer pieces than the others. Does that make their
+  community different, or just less well measured?
+- If you wanted to compare person A to person B fairly, what would you do to
+  these numbers first?
+
+Tape the sheets to the wall. They stay up all week.
+
+> Those three numbers under each column are library size, sparsity and
+> dominance. They are the first three things you will compute tomorrow morning,
+> on both of our real tables.
+
+### Activity 4 — The unfair comparison (15 min)
+
+Ask the six people whose bags held only 20 pieces to come to the front, and two
+people whose bags held 400.
+
+On a flip chart, write each of their richness values: how many distinct colours
+they found.
+
+Ask the room:
+
+- The 400-piece bags found more colours. Are those communities more diverse, or
+  were they just measured harder?
+- How could we make the comparison fair? Take suggestions and write all of them
+  down.
+- Someone will suggest "take the same number from everyone". Someone may
+  suggest "use proportions instead of counts". Both are real strategies with
+  real costs.
+
+> You have just invented rarefaction and relative abundance, and found the
+> argument the microbiome field has been having for fifteen years. Wednesday we
+> pick one and say why.
+
+### Closing the session (10 min)
+
+Leave the wall of flip charts up. Point at them and make the week's promise
+explicit:
+
+> Tomorrow morning the same table has 220 rows of bacteria and 14,226 rows of
+> human genes instead of six colours, and 471 columns instead of six people.
+> Nothing else changes.

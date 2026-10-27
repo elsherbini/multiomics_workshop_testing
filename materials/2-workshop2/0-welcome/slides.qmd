@@ -1,0 +1,198 @@
+---
+title: "Welcome to the Multiomics Workshop"
+subtitle: "Workshop 2, Module 0"
+format: qmdrslides-revealjs
+editor: source
+execute:
+  echo: false
+  message: false
+  warning: false
+  freeze: false
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(patchwork)
+pal <- c(navy = "#2b3a67", teal = "#2a9d8f", orange = "#e76f51",
+         gold = "#e9c46a", grey = "#bbbbbb")
+theme_set(theme_minimal(base_size = 15))
+set.seed(2026)
+```
+
+## Nairobi, 9 to 13 November 2026 {.center}
+
+Golden Tulip Westlands
+
+::: {.incremental}
+- 61 of us, from 12 countries
+- Ten groups of six
+- Five days
+:::
+
+## The week {.smaller}
+
+```{r}
+#| fig-width: 15
+#| fig-height: 5.2
+blocks <- tribble(
+  ~day, ~half, ~label, ~kind,
+  "Mon", "AM", "Welcome\nKeynote\nWet lab", "other",
+  "Mon", "PM", "Reads to\ncount tables", "lecture",
+  "Tue", "AM", "Count table\nanatomy", "module",
+  "Tue", "PM", "Differential\ntesting", "module",
+  "Wed", "AM", "Group\nproject I", "project",
+  "Wed", "PM", "Distances and\nordination", "module",
+  "Thu", "AM", "Group\nproject II", "project",
+  "Thu", "PM", "Sets and\nenrichment", "module",
+  "Fri", "AM", "Integration\n+ presentations", "lecture",
+  "Fri", "PM", "Keynote\nCertificates", "other"
+) |>
+  mutate(x = match(day, c("Mon", "Tue", "Wed", "Thu", "Fri")),
+         y = if_else(half == "AM", 2, 1))
+
+ggplot(blocks, aes(x, y, fill = kind)) +
+  geom_tile(colour = "white", linewidth = 3, width = 0.97, height = 0.95) +
+  geom_text(aes(label = label), colour = "white", size = 4.6, lineheight = 0.95,
+            fontface = "bold") +
+  scale_fill_manual(values = c(module = pal[["navy"]], lecture = pal[["teal"]],
+                               project = pal[["orange"]], other = pal[["grey"]])) +
+  scale_x_continuous(breaks = 1:5, labels = c("Mon", "Tue", "Wed", "Thu", "Fri"),
+                     position = "top") +
+  scale_y_continuous(breaks = c(2, 1), labels = c("AM", "PM")) +
+  labs(x = NULL, y = NULL) +
+  theme_void(base_size = 17) +
+  theme(axis.text = element_text(face = "bold", colour = "grey25"),
+        axis.text.y = element_text(hjust = 1, margin = margin(r = 8)),
+        legend.position = "none")
+```
+
+Four coding modules. Two group project sessions. Everything else is talking.
+
+## One idea holds the week together {.center}
+
+. . .
+
+Human gene expression and bacterial communities arrive as **the same kind of
+object**: a table of counts.
+
+. . .
+
+Learn the table once, and you can analyse both.
+
+## Two tables, one shape
+
+```{r}
+#| fig-width: 14
+#| fig-height: 5
+grid_plot <- function(n_row, n_col, title, subtitle, fill) {
+  expand_grid(r = seq_len(n_row), c = seq_len(n_col)) |>
+    mutate(v = runif(n())) |>
+    ggplot(aes(c, -r, fill = v)) +
+    geom_tile(colour = "white", linewidth = 0.4) +
+    scale_fill_gradient(low = "white", high = fill) +
+    labs(title = title, subtitle = subtitle) +
+    theme_void(base_size = 15) +
+    theme(legend.position = "none",
+          plot.title = element_text(face = "bold", size = 17),
+          plot.subtitle = element_text(colour = "grey35"))
+}
+grid_plot(10, 14, "Bacterial species", "220 rows x 471 columns", pal[["teal"]]) +
+  grid_plot(10, 14, "Human genes", "14,226 rows x 471 columns", pal[["orange"]])
+```
+
+Rows are features. Columns are samples. Cells are counts of sequencing reads.
+
+## The same five questions, twice {.smaller}
+
+| | you will ask it of species | and of genes |
+|---|---|---|
+| How much did we sequence? | library size | library size |
+| What is here at all? | prevalence | expression level |
+| Which features differ between groups? | differential abundance | differential expression |
+| How similar are two samples? | beta diversity | sample distance |
+| What do the hits have in common? | taxonomy | gene sets |
+
+: {tbl-colwidths="[28,36,36]"}
+
+## The study we will work on {.smaller}
+
+A pregnancy cohort. 157 participants, sampled three times.
+
+::: {.columns}
+::: {.column width="55%"}
+- **weeks 18, 24 and 34** of pregnancy
+- **cervicovaginal samples** at each visit
+- **two measurements** per sample: bacterial 16S and human gene expression
+- **one outcome** per person: term or preterm birth
+:::
+::: {.column width="45%"}
+```{r}
+#| fig-width: 6
+#| fig-height: 4
+tibble(visit = c("week 18", "week 24", "week 34")) |>
+  mutate(x = row_number()) |>
+  ggplot(aes(x, 1)) +
+  geom_segment(aes(x = 1, xend = 3, y = 1, yend = 1), colour = pal[["grey"]], linewidth = 1.5) +
+  geom_point(size = 16, colour = pal[["navy"]]) +
+  geom_text(aes(label = visit), vjust = 3.2, size = 5) +
+  annotate("text", x = 3.6, y = 1, label = "birth", size = 5, fontface = "bold",
+           colour = pal[["orange"]]) +
+  annotate("segment", x = 3.15, xend = 3.4, y = 1, yend = 1,
+           arrow = arrow(length = unit(0.25, "cm")), colour = pal[["orange"]], linewidth = 1.2) +
+  xlim(0.7, 3.9) +
+  theme_void()
+```
+:::
+:::
+
+## Say this out loud once {.center}
+
+These data are **constructed**.
+
+. . .
+
+The sequencing is real. Every count in both tables came off a real machine from
+a real sample.
+
+. . .
+
+The study around it, the visit labels and the birth outcomes, is ours. We built
+it so the week has something worth finding.
+
+. . .
+
+So: do the analysis properly, and do not cite the result.
+
+## How the days are built
+
+::: {.incremental}
+- **One hour** of us talking, with code on the screen
+- **Ninety minutes** of you writing code
+- Two exercises per module, discussion in between
+:::
+
+. . .
+
+You will have an AI coding agent the whole time. Every exercise ends by asking
+you to check what it did.
+
+## What you need by Tuesday morning {.smaller}
+
+::: {.incremental}
+1. A GitHub account
+2. The workshop Codespace, opened once, so the container is built
+3. `library(tidyverse)` running without error
+:::
+
+. . .
+
+Teaching assistants are in the room all of Monday. Use them Monday, not Tuesday.
+
+## Questions {.your-turn}
+
+What do you want to be able to do on Friday that you cannot do today?
+
+```{r}
+#| echo: false
+countdown::countdown(3, left = 0, right = NULL, play_sound = TRUE)
+```

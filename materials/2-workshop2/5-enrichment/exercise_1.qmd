@@ -1,0 +1,70 @@
+## Exercise 1: From a gene list to a sentence
+
+Open `notebooks/05-enrichment.qmd`. You need Tuesday's DESeq2 results. If you no
+longer have them, rerun the three lines; the whole point of a script is that you
+can.
+
+### Part 1 — Predict
+
+1. You are about to test 50 gene sets. If none were truly enriched, how many
+   would come out with `padj < 0.05`?
+2. Your preterm-versus-term gene list had 838 genes up and 860 down, which is
+   almost perfectly balanced. Does that make you more or less willing to believe
+   an enrichment result?
+3. Name one biological program you expect to be elevated in the people who
+   delivered preterm. You will check this against the answer.
+
+### Part 2 — Build
+
+1. Build the ranking vector from your outcome results: `res$stat`, named by
+   gene, with missing values dropped. How many genes are in it?
+
+2. Get the Hallmark sets:
+
+   ```r
+   hallmark <- msigdbr::msigdbr(species = "Homo sapiens", collection = "H")
+   sets <- split(hallmark$ensembl_gene, hallmark$gs_name)
+   ```
+
+   Check that the identifiers in `sets` are the same kind as the names of your
+   ranking vector. If one is Ensembl and the other is a symbol, nothing will
+   match and `fgsea` will return almost nothing rather than an error.
+
+3. Run `fgsea(sets, stat, minSize = 15, maxSize = 500)`. Sort by `padj`. How
+   many sets are significant, and how many point in each direction?
+
+4. Plot the top twelve as a bar chart of `NES`, coloured by direction.
+
+5. **Check for imbalance.** What share of your ranking statistic is positive?
+   What is its mean? Now do the same for your anaerobe-versus-Lactobacillus
+   ranking, and run `fgsea` on that too. Compare the two in a small table:
+   genes up, genes down, sets significant, sets pointing one way.
+
+   Write one sentence saying which of the two enrichment results you trust and
+   why.
+
+6. Take the leading edge of your top set. Map those Ensembl identifiers to
+   symbols with `05_gene_annotation.csv` and read the list. Plot normalised
+   counts for two of them by outcome.
+
+### Part 3 — Check the agent
+
+- Ask Pi to run the enrichment. Then ask how many of your genes matched into any
+  set at all. A silent identifier mismatch is the most common failure here and
+  it produces plausible-looking output.
+- Ask it to interpret the top five sets. It will write a confident paragraph
+  about inflammation and preterm birth. Ask it which of those five sets share
+  genes with each other. Overlapping sets are not independent findings.
+- Ask it whether your result could be an artifact of the ranking being lopsided.
+  See whether it checks or just reassures you.
+- Ask it for the hypergeometric version using only your significant genes.
+  Compare the two answers. Where they disagree, work out which is throwing away
+  information.
+
+### Discussion
+
+- Was your Part 1 prediction of the elevated program right?
+- Two of the top sets overlap heavily. How would you report them without double
+  counting?
+- Tuesday the outcome contrast gave 1,698 genes and a shrug. Today it gives a
+  sentence. What did enrichment actually add, and what did it hide?
