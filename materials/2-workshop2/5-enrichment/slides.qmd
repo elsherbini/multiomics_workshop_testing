@@ -24,6 +24,8 @@ gsea <- read_csv(file.path(res, "gsea_hallmark.csv"), show_col_types = FALSE) |>
 run <- read_csv(file.path(res, "running_score.csv.gz"), show_col_types = FALSE)
 tax <- read_csv(file.path(res, "tax_set_enrichment.csv"), show_col_types = FALSE)
 sprank <- read_csv(file.path(res, "species_ranking_outcome.csv"), show_col_types = FALSE)
+bal <- read_csv(file.path(res, "ranking_balance.csv"), show_col_types = FALSE)
+balsum <- read_csv(file.path(res, "ranking_balance_summary.csv"), show_col_types = FALSE)
 out <- gsea |> filter(ranking == "preterm vs term")
 comm <- gsea |> filter(ranking == "anaerobe vs Lactobacillus")
 ```
@@ -197,25 +199,86 @@ comm |> slice_min(padj, n = 6) |>
 `r sum(comm$padj < 0.05 & comm$NES < 0, na.rm = TRUE)` of those point the same
 way. Does that look like biology to you?
 
-## Look at the list itself {.smaller}
+## The obvious check, which fails {.smaller}
+
+Is the distribution of test statistics centred?
+
+```{r}
+#| echo: false
+balsum |>
+  transmute(ranking,
+            `share of all genes positive` = scales::percent(share_positive_all, 0.1)) |>
+  kable(align = "lr")
+```
+
+. . .
+
+Both are near half. By that test, both rankings look fine.
+
+. . .
+
+That test is wrong, because GSEA does not weight genes equally. It weights them
+by how large their statistic is.
+
+## So look at the strong effects only
+
+```{r}
+#| echo: false
+#| fig-width: 13
+#| fig-height: 5
+ggplot(bal, aes(min_abs_stat, share_positive, colour = ranking)) +
+  geom_hline(yintercept = 0.5, linetype = 2, colour = "grey50") +
+  geom_line(linewidth = 1.4) +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  scale_colour_manual(values = c(`preterm vs term` = pal[["navy"]],
+                                 `anaerobe vs Lactobacillus` = pal[["orange"]])) +
+  labs(x = "keep only genes with |statistic| at least this large",
+       y = "share of those genes that are positive", colour = NULL) +
+  theme(legend.position = "top")
+```
+
+## The numbers {.smaller}
+
+```{r}
+#| echo: false
+balsum |>
+  transmute(ranking,
+            `all genes` = scales::percent(share_positive_all, 0.1),
+            `significant genes` = scales::percent(share_positive_significant, 0.1),
+            `500 strongest` = scales::percent(share_positive_top500, 0.1)) |>
+  kable(align = "lrrr")
+```
+
+::: {.incremental}
+- Outcome: balanced at every level. Nothing is driving the sets one way.
+- Community: looks balanced overall, but of the 500 strongest effects, only
+  `r scales::percent(balsum$share_positive_top500[balsum$ranking == "anaerobe vs Lactobacillus"], 0.1)`
+  are positive.
+:::
+
+. . .
+
+Every large gene set will be dragged toward the Lactobacillus end, and the
+method will hand you a very small p-value for it.
+
+## And the sets follow the tail {.smaller}
 
 ```{r}
 #| echo: false
 tibble(
   ranking = c("preterm vs term", "anaerobe vs Lactobacillus"),
-  `significant genes up` = c(838, 554),
-  `significant genes down` = c(860, 1261),
   `significant sets` = c(sum(out$padj < 0.05, na.rm = TRUE), sum(comm$padj < 0.05, na.rm = TRUE)),
-  `sets pointing one way` = c(
+  `pointing one way` = c(
     max(sum(out$padj < 0.05 & out$NES > 0, na.rm = TRUE), sum(out$padj < 0.05 & out$NES < 0, na.rm = TRUE)),
     max(sum(comm$padj < 0.05 & comm$NES > 0, na.rm = TRUE), sum(comm$padj < 0.05 & comm$NES < 0, na.rm = TRUE)))
-) |> kable(align = "lrrrr")
+) |> kable(align = "lrr")
 ```
 
 ::: {.incremental}
-- Outcome: the gene list is balanced, and the sets still agree. Trust it.
-- Community: the gene list leans two to one, and then every set leans the same
-  way. That is the imbalance, not a program.
+- Outcome: the strong effects are balanced, and the sets still agree with each
+  other. That agreement is biology.
+- Community: the strong effects nearly all point one way, and so do the sets.
+  That agreement is arithmetic.
 :::
 
 ## This does not undo Tuesday {.smaller}
@@ -236,12 +299,17 @@ and they need two different checks.
 
 ## The check to run every time {.center}
 
-Before you believe an enrichment, ask how lopsided the ranking was.
+Before you believe an enrichment, sort your genes by the size of their effect
+and look at the top few hundred.
 
 . . .
 
-If 70% of your genes drift one way, every large set will come out enriched that
+If those nearly all point one way, every large set will come out enriched that
 way, and the method will give you a very small p-value for it.
+
+. . .
+
+Checking that the whole distribution is centred is not enough. Ours was.
 
 ## Three more things that are true of all gene sets {.smaller}
 

@@ -66,6 +66,42 @@ running_score <- function(stat, set) {
 write_csv(running_score(stat_out, hallmark_sets[[top_set]]) |> mutate(set = top_set),
           file.path(out, "running_score.csv.gz"))
 
+# --- how lopsided is each ranking? the check module 5 teaches ---------------
+#
+# The naive check, "is the distribution of statistics centred", passes both of
+# our rankings. It is the wrong check. GSEA weights genes by the magnitude of
+# their statistic, so what matters is whether the STRONGEST effects point one
+# way. We therefore report the share positive as a function of how large an
+# effect you insist on.
+balance_inputs <- list(`preterm vs term` = stat_out,
+                       `anaerobe vs Lactobacillus` = stat_comm)
+
+tail_balance <- imap_dfr(balance_inputs, function(st, nm) {
+  tibble(min_abs_stat = seq(0, 8, by = 0.25)) |>
+    rowwise() |>
+    mutate(n_genes = sum(abs(st) >= min_abs_stat),
+           share_positive = mean(st[abs(st) >= min_abs_stat] > 0)) |>
+    ungroup() |>
+    filter(n_genes >= 50) |>
+    mutate(ranking = nm)
+})
+write_csv(tail_balance, file.path(out, "ranking_balance.csv"))
+
+balance_summary <- imap_dfr(balance_inputs, function(st, nm) {
+  res <- read_csv(file.path(m3, if (nm == "preterm vs term") "genes_by_outcome.csv.gz"
+                            else "genes_by_community.csv.gz"), show_col_types = FALSE) |>
+    filter(!is.na(stat))
+  top500 <- res |> slice_max(abs(stat), n = 500)
+  tibble(ranking = nm,
+         n_genes = length(st),
+         share_positive_all = mean(st > 0),
+         n_significant = sum(res$padj < 0.05, na.rm = TRUE),
+         share_positive_significant = mean(res$stat[which(res$padj < 0.05)] > 0),
+         share_positive_top500 = mean(top500$stat > 0))
+})
+write_csv(balance_summary, file.path(out, "ranking_balance_summary.csv"))
+print(balance_summary)
+
 # --- taxonomic ranks as sets over the species ranking -----------------------
 sp <- read_csv(file.path(m3, "species_by_outcome.csv"), show_col_types = FALSE) |> filter(!is.na(stat))
 stat_sp <- setNames(sp$stat, sp$feature)

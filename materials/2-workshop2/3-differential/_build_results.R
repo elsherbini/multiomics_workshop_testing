@@ -38,7 +38,9 @@ deseq_contrast <- function(counts, meta, group_col, hi, lo, min_count, min_frac)
   dds <- DESeqDataSetFromMatrix(m[keep, ], as.data.frame(meta), design)
   dds <- DESeq(dds, quiet = TRUE)
   res <- results(dds, contrast = c(group_col, hi, lo))
-  list(n_in = sum(keep), n_tested = ncol(m),
+  list(n_in = sum(keep), n_tested = ncol(m), dds = dds,
+       norm = counts(dds, normalized = TRUE),
+       meta = meta,
        res = as_tibble(as.data.frame(res), rownames = "feature"))
 }
 
@@ -68,6 +70,14 @@ runs$genes_by_outcome <- g_out
 g_bv <- deseq_contrast(d$genes, w18 |> filter(!is.na(nugent)), "bv", "bv", "no_bv", 10, 0.25)
 write_csv(label_genes(g_bv$res), file.path(out, "genes_by_bv.csv.gz"))
 runs$genes_by_bv <- g_bv
+
+# Normalised counts for the top three genes of the taught contrast, long form.
+top3 <- label_genes(g_comm$res) |> filter(!is.na(padj)) |> slice_min(padj, n = 3)
+top_counts <- as_tibble(g_comm$norm[top3$feature, ], rownames = "feature") |>
+  pivot_longer(-feature, names_to = "sample_id", values_to = "normalised_count") |>
+  left_join(top3 |> select(feature, symbol, log2FoldChange), by = "feature") |>
+  left_join(w18 |> select(sample_id, community, outcome), by = "sample_id")
+write_csv(top_counts, file.path(out, "top_gene_counts.csv"))
 
 summary_tbl <- imap_dfr(runs, function(r, nm) {
   tibble(contrast = nm,

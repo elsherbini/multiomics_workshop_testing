@@ -1,0 +1,3 @@
+ranking,n_genes,share_positive_all,n_significant,share_positive_significant,share_positive_top500
+preterm vs term,13738,0.4608385500072791,1698,0.49352179034157834,0.496
+anaerobe vs Lactobacillus,13738,0.5501528606784103,1815,0.3052341597796143,0.044

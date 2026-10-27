@@ -24,6 +24,7 @@ go <- read_csv(file.path(res, "genes_by_outcome.csv.gz"), show_col_types = FALSE
 sp <- read_csv(file.path(res, "species_by_outcome.csv"), show_col_types = FALSE)
 cs <- read_csv(file.path(res, "contrast_summary.csv"), show_col_types = FALSE)
 grp <- read_csv(file.path(res, "sample_groups.csv"), show_col_types = FALSE)
+tg <- read_csv(file.path(res, "top_gene_counts.csv"), show_col_types = FALSE)
 n_sig <- function(x) sum(x$padj < 0.05, na.rm = TRUE)
 ```
 
@@ -179,6 +180,41 @@ where Lactobacillus dominates.
 . . .
 
 We did not put that there. It came with the real samples.
+
+## Always plot the top hit {.smaller}
+
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 4.8
+tg |>
+  mutate(lab = paste0(symbol, "  (log2FC ", round(log2FoldChange, 2), ")")) |>
+  ggplot(aes(community, normalised_count, fill = community)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.75, width = 0.6) +
+  geom_jitter(width = 0.15, alpha = 0.35, size = 1) +
+  scale_y_log10() +
+  scale_fill_manual(values = c(anaerobe = pal[["orange"]], lactobacillus = pal[["teal"]])) +
+  facet_wrap(~lab, scales = "free_y") +
+  labs(x = NULL, y = "normalised count (log scale)") +
+  theme(legend.position = "none")
+```
+
+All three fold changes are negative, and all three boxplots are higher on the
+right. The picture and the sign agree.
+
+## Check that every time {.center}
+
+Getting the direction of a contrast backwards is the most common error in this
+analysis.
+
+. . .
+
+It does not produce a warning, it does not look wrong in a table, and it
+survives peer review regularly.
+
+. . .
+
+One boxplot catches it.
 
 ## Significant is not the same as large {.smaller}
 
