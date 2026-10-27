@@ -69,16 +69,24 @@ for the group projects.
 `01_metadata.csv` carries `arm` (`probiotic` or `placebo`) and `time_point`
 (`pre` or `post`) in place of `outcome`.
 
-[Browse the folder](datasets/2-workshop2/group_a_probiotic/) — the six files are
-named exactly as above.
+- [`01_metadata.csv`](datasets/2-workshop2/group_a_probiotic/01_metadata.csv)
+- [`02_microbiome_counts.csv`](datasets/2-workshop2/group_a_probiotic/02_microbiome_counts.csv)
+- [`03_microbiome_taxonomy.csv`](datasets/2-workshop2/group_a_probiotic/03_microbiome_taxonomy.csv)
+- [`04_rnaseq_counts.csv.gz`](datasets/2-workshop2/group_a_probiotic/04_rnaseq_counts.csv.gz)
+- [`05_gene_annotation.csv`](datasets/2-workshop2/group_a_probiotic/05_gene_annotation.csv)
+- [`06_cytokines.csv`](datasets/2-workshop2/group_a_probiotic/06_cytokines.csv)
 
 ### Group Study B: three contraceptive methods
 
 93 participants, one sample each. `01_metadata.csv` carries `arm`
 (`injectable`, `pill` or `ring`), `bv`, `nugent`, `ph` and `any_sti`.
 
-[Browse the folder](datasets/2-workshop2/group_b_contraception/) — the six files
-are named exactly as above.
+- [`01_metadata.csv`](datasets/2-workshop2/group_b_contraception/01_metadata.csv)
+- [`02_microbiome_counts.csv`](datasets/2-workshop2/group_b_contraception/02_microbiome_counts.csv)
+- [`03_microbiome_taxonomy.csv`](datasets/2-workshop2/group_b_contraception/03_microbiome_taxonomy.csv)
+- [`04_rnaseq_counts.csv.gz`](datasets/2-workshop2/group_b_contraception/04_rnaseq_counts.csv.gz)
+- [`05_gene_annotation.csv`](datasets/2-workshop2/group_b_contraception/05_gene_annotation.csv)
+- [`06_cytokines.csv`](datasets/2-workshop2/group_b_contraception/06_cytokines.csv)
 
 ## Workshop 1: download the instructional dataset:
 
