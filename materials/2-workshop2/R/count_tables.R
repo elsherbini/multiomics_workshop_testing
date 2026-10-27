@@ -34,13 +34,17 @@ WORKSHOP_DATASETS <- c(
   group_b       = "group_b_contraception"
 )
 
-# Where the data might be. Codespace puts it in data/, the website in
-# datasets/2-workshop2/. Set WORKSHOP_DATA to override both.
+# Where the data might be. The Codespace puts it in data/2-workshop2/, the
+# website in datasets/2-workshop2/. Set WORKSHOP_DATA to override both.
+#
+# Note the "2-workshop2" in both. Workshop 1 also has a folder called
+# data/instructional_dataset, holding completely different files, so a bare
+# "data" root would find the wrong one.
 dataset_path <- function(dataset = "instructional") {
   folder <- if (dataset %in% names(WORKSHOP_DATASETS)) WORKSHOP_DATASETS[[dataset]] else dataset
-  roots <- c(Sys.getenv("WORKSHOP_DATA", unset = NA), "data", "datasets/2-workshop2")
+  roots <- c(Sys.getenv("WORKSHOP_DATA", unset = NA), "data/2-workshop2", "datasets/2-workshop2")
   if (requireNamespace("here", quietly = TRUE)) {
-    roots <- c(roots, here::here("data"), here::here("datasets/2-workshop2"))
+    roots <- c(roots, here::here("data/2-workshop2"), here::here("datasets/2-workshop2"))
   }
   for (r in roots[!is.na(roots)]) {
     p <- file.path(r, folder)
