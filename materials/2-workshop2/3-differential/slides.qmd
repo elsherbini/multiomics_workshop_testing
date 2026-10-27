@@ -281,7 +281,7 @@ cs |> filter(contrast %in% c("genes_by_community", "genes_by_bv")) |>
 . . .
 
 Two ways of asking "is this community disturbed". One of them is built from the
-data you already have, and finds two hundred times as much.
+data you already have, and finds hundreds of times as many genes.
 
 ## Other people's tools {.smaller}
 
