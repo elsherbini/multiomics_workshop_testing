@@ -46,6 +46,47 @@ Millions of these per sample. A name, a sequence, and a quality score per base.
 Everything that follows is an attempt to answer one question: **what was in the
 tube, and how much of it?**
 
+## Not every base is trustworthy
+
+```{r}
+#| fig-width: 13
+#| fig-height: 4.3
+set.seed(7)
+tibble(cycle = 1:150) |>
+  mutate(q = 38 - 0.00035 * cycle^2 - rnorm(150, 0, 0.4),
+         lo = q - 4.5, hi = pmin(q + 2.5, 41)) |>
+  ggplot(aes(cycle, q)) +
+  geom_ribbon(aes(ymin = lo, ymax = hi), fill = pal[["teal"]], alpha = 0.3) +
+  geom_line(colour = pal[["navy"]], linewidth = 1.2) +
+  geom_hline(yintercept = 20, linetype = 2, colour = pal[["orange"]]) +
+  annotate("text", x = 20, y = 17.5, label = "a common trimming threshold",
+           size = 4.2, colour = pal[["orange"]], hjust = 0) +
+  labs(x = "position in the read", y = "quality score") +
+  ylim(10, 42)
+```
+
+Quality falls along the read. Before anything else, somebody trimmed these.
+
+## The decisions already made for you {.smaller}
+
+By the time you receive a count table, someone has chosen:
+
+::: {.incremental}
+- where to trim each read
+- which samples were too poor to keep
+- which reference to compare against
+- what to do with reads that matched more than one thing
+- what to do with reads that matched nothing
+:::
+
+. . .
+
+None of those choices are in the table. All of them changed its contents.
+
+. . .
+
+Ask who made them.
+
 ## Two experiments, two paths, one destination
 
 ```{r}
@@ -123,6 +164,86 @@ tibble(x = seq(0, 10, length.out = 500)) |>
 :::
 :::
 
+## PCR is not a neutral copier
+
+```{r}
+#| fig-width: 13
+#| fig-height: 4.2
+tibble(
+  species = c("species A", "species B", "species C", "species D"),
+  truth = c(40, 30, 20, 10),
+  observed = c(26, 41, 11, 22)
+) |>
+  pivot_longer(-species, names_to = "what", values_to = "pct") |>
+  mutate(what = recode(what, truth = "cells in the tube", observed = "reads you get back")) |>
+  ggplot(aes(species, pct, fill = what)) +
+  geom_col(position = "dodge", width = 0.7) +
+  scale_fill_manual(values = c(`cells in the tube` = pal[["grey"]],
+                               `reads you get back` = pal[["teal"]])) +
+  labs(x = NULL, y = "percent", fill = NULL) +
+  theme(legend.position = "top")
+```
+
+Primers bind some templates better than others, and 16S copy number varies
+between species. The ordering can change.
+
+## Grouping reads: ASVs and OTUs {.smaller}
+
+::: {.columns}
+::: {.column width="52%"}
+Two sequences differing by one base. Same organism, or two?
+
+::: {.incremental}
+- **OTUs** cluster anything within, say, 3% of each other. Robust, blunt.
+- **ASVs** model the sequencing error process and resolve exact sequences.
+  Sharper, and sensitive to the error model being right.
+:::
+:::
+::: {.column width="48%"}
+```{r}
+#| fig-width: 6.5
+#| fig-height: 4
+set.seed(12)
+tibble(x = c(rnorm(60, 2, 0.35), rnorm(40, 4, 0.35), rnorm(8, 3, 1.2)),
+       y = c(rnorm(60, 2, 0.35), rnorm(40, 3.4, 0.35), rnorm(8, 2.6, 1.2)),
+       kind = c(rep("abundant variant", 60), rep("abundant variant", 40),
+                rep("error reads", 8))) |>
+  ggplot(aes(x, y, colour = kind, size = kind)) +
+  geom_point(alpha = 0.8) +
+  scale_colour_manual(values = c(`abundant variant` = pal[["navy"]],
+                                 `error reads` = pal[["orange"]])) +
+  scale_size_manual(values = c(2.6, 1.4)) +
+  labs(x = NULL, y = NULL, colour = NULL) +
+  guides(size = "none") +
+  theme_void(base_size = 13) +
+  theme(legend.position = "bottom")
+```
+:::
+:::
+
+## Then you look it up, and often cannot tell {.smaller}
+
+The variable region you sequenced is short. Some species are identical across it.
+
+```{r}
+#| echo: false
+tibble(
+  `what the classifier can say` = c("Lactobacillus crispatus",
+                                    "Gardnerella, but which species is ambiguous",
+                                    "family only",
+                                    "bacteria"),
+  `how our table names it` = c("lactobacillus_crispatus",
+                              "gardnerella_swidsinskii_leopoldii",
+                              "prevotella_sp_1",
+                              "dropped")
+) |> knitr::kable()
+```
+
+. . .
+
+Two of our 220 row names are honest admissions of uncertainty. Read your row
+names before you interpret them.
+
 ## What a 16S count means
 
 A cell in the species table is: **the number of amplicon reads in this sample
@@ -188,6 +309,131 @@ Also not a molecule count. Between the transcript and the count sit
 - whether the read could be placed uniquely
 - how deeply the sample was sequenced
 :::
+
+## One swab, two experiments {.smaller}
+
+A cervicovaginal swab contains human cells and bacteria together.
+
+::: {.incremental}
+- The 16S run amplifies a bacterial gene, so human material is mostly ignored.
+- The RNA-seq run captures polyadenylated RNA, which is mostly human.
+- Neither is pure. Both are the same swab.
+:::
+
+. . .
+
+That is why we can pair the two tables sample by sample at all.
+
+## Reads that could have come from anywhere
+
+```{r}
+#| fig-width: 13
+#| fig-height: 4
+tibble(x = 0) |>
+  ggplot() +
+  annotate("rect", xmin = c(0.5, 5.5), xmax = c(3.5, 8.5), ymin = 1, ymax = 1.5,
+           fill = pal[["navy"]]) +
+  annotate("text", x = c(2, 7), y = 1.75, label = c("gene A", "gene B"), size = 4.6) +
+  annotate("rect", xmin = 4.3, xmax = 4.9, ymin = 0.45, ymax = 0.75,
+           fill = pal[["orange"]]) +
+  annotate("text", x = 4.6, y = 0.2, label = "one read, two homes", size = 4.4,
+           colour = pal[["orange"]]) +
+  annotate("segment", x = 4.6, xend = c(2.6, 6.6), y = 0.8, yend = 0.95,
+           colour = pal[["orange"]], linetype = 2) +
+  xlim(0, 9) + ylim(0, 2) +
+  theme_void()
+```
+
+Gene families and repeats produce reads that fit several genes. Counting them
+once, twice or not at all are three different tables.
+
+## Counts, not TPM, for testing {.smaller}
+
+You will see expression reported as TPM, FPKM or RPKM. Those divide by gene
+length so you can compare genes within a sample.
+
+. . .
+
+::: {.incremental}
+- Good for: "is gene A higher than gene B in this sample?"
+- Wrong for: the statistical tests we run on Tuesday
+:::
+
+. . .
+
+Those tests need raw counts, because they model counting noise. Hand them
+normalised values and they will believe the noise is smaller than it is.
+
+## The compositional problem, drawn
+
+```{r}
+#| fig-width: 14
+#| fig-height: 4.6
+d <- tibble(
+  sample = rep(c("sample 1", "sample 2"), each = 3),
+  feature = rep(c("A", "B", "C"), 2),
+  absolute = c(100, 100, 100, 100, 100, 700)
+) |>
+  group_by(sample) |>
+  mutate(relative = absolute / sum(absolute)) |>
+  ungroup()
+
+p_abs <- ggplot(d, aes(sample, absolute, fill = feature)) +
+  geom_col(width = 0.6) +
+  labs(title = "what is really there", x = NULL, y = "cells") +
+  scale_fill_manual(values = unname(pal[c("teal", "navy", "orange")]))
+p_rel <- ggplot(d, aes(sample, relative, fill = feature)) +
+  geom_col(width = 0.6) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "what the count table shows", x = NULL, y = "share of reads") +
+  scale_fill_manual(values = unname(pal[c("teal", "navy", "orange")]))
+p_abs + p_rel
+```
+
+A and B never changed. In the table, both appear to fall by more than half.
+
+## Which bites both tables {.smaller}
+
+::: {.incremental}
+- It is severe in 16S, where one species routinely holds 90% of the reads.
+- It is milder in RNA-seq, where no single gene dominates, but it is still
+  there.
+- It is why "relative abundance went down" is not the same claim as "there was
+  less of it".
+:::
+
+. . .
+
+Without a spike-in or an absolute measurement, you cannot tell the two apart.
+
+## What to demand from your sequencing facility {.smaller}
+
+::: {.incremental}
+- the raw reads, not just the table
+- the exact reference and version used
+- which samples failed and were re-run
+- which plate, run and lane each sample sat on
+- the negative and positive controls, with their counts
+:::
+
+. . .
+
+That last one catches contamination, and almost nobody asks for it.
+
+## What goes wrong, in practice {.smaller}
+
+| problem | how you notice |
+|---|---|
+| contamination from reagents | the same taxa in your negative controls |
+| low-biomass samples | tiny library sizes, odd composition |
+| index hopping between samples | a trace of everything in everything |
+| a batch effect | samples cluster by run, not by biology |
+
+: {tbl-colwidths="[42,58]"}
+
+. . .
+
+Three of those four are invisible unless somebody recorded the metadata.
 
 ## The sentence to remember {.center}
 
