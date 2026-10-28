@@ -392,7 +392,7 @@
     "href": "materials/2-workshop2/1-reads-to-counts/index.html#analog-activities-90-minutes-no-computers",
     "title": "From Reads to Count Tables",
     "section": "Analog activities (90 minutes, no computers)",
-    "text": "Analog activities (90 minutes, no computers)\nRun the activities in this order. Everyone stands and moves around for the first three, and each one sets up a number that Tuesday and Wednesday compute in code.\n\nMaterials\n\n\n\n\n\n\n\n\nitem\nhow many\nused for\n\n\n\n\nOpaque cloth or paper bags\none per participant, 61\nall four\n\n\nColoured beads, buttons or dried beans, 6 colours\nabout 6,000 total\nall four\n\n\nFlip chart sheets\none per table of six, 10\nactivity 3\n\n\nThick markers\ntwo per table\nactivity 3\n\n\nSticky dots\none sheet per table\nactivity 4\n\n\nPre-printed blank count-table grids\n10\nactivity 3\n\n\n\nFill the bags before the session. Give most bags 100 pieces, but deliberately give six bags only 20 pieces and two bags 400 pieces. Nobody is told this, because activity 4 depends on it.\nMix the compositions on purpose, so the room contains:\n\nabout 20 bags that are 90% one colour\nabout 20 bags that are 60% one colour with three others present\nabout 20 bags that are spread evenly across five or six colours\n\n\n\nActivity 1: you are a sample (15 min)\nEach person takes a bag. Without counting precisely, look at your bag and describe your community out loud to the person next to you: which colour dominates, how many colours you can see.\nThen: find the three people in the room whose bags look most like yours. Stand together as a cluster.\nAsk the room:\n\nHow did you decide who was similar to you? What rule were you using?\nDid anyone belong to two clusters?\nDid the people with very few pieces have trouble finding a group?\n\n\nThe rule they used is a distance metric. On Wednesday afternoon it gets a name and a formula.\n\n\n\nActivity 2: draw ten (20 min)\nWithout looking, draw ten pieces from your own bag and lay them out. Record on paper: how many colours did you get, and how many of each.\nNow put them back, shake, and draw ten again. Record again.\nAsk the room:\n\nDid you get the same answer twice? Who got a colour the second time that they missed the first time?\nWhose two draws disagreed the most? Look at their bag. Why?\nIf you drew only three pieces, what would happen?\n\n\nThis is sampling depth. A rare feature can be present in the tube and absent from the count table, and whether you see it depends on how many reads you took. Tuesday morning you will find the sample in our real data with 438 reads and decide what to do about it.\n\n\n\nActivity 3: build the table (30 min)\nIn table groups of six. Pool your six bags. On the flip chart, build a count table by hand:\n\none row per colour, so rows are features\none column per person, so columns are samples\nin each cell, the count of that colour in that person’s bag\n\nYou do not have to count every piece. Estimate, but estimate consistently.\nThen, on the same sheet, write underneath each column:\n\nthe column total, the number of pieces that person had\nthe number of rows with a zero in that column\nthe colour with the largest share of that column, as a percentage\n\nFinally, as a group, answer in writing on the sheet:\n\nWhich two people look most alike? Which two look least alike?\nOne person has far fewer pieces than the others. Does that make their community different, or just less well measured?\nIf you wanted to compare person A to person B fairly, what would you do to these numbers first?\n\nTape the sheets to the wall. They stay up all week.\n\nThose three numbers under each column are library size, sparsity and dominance. They are the first three things you will compute tomorrow morning, on both of our real tables.\n\n\n\nActivity 4: the unfair comparison (15 min)\nAsk the six people whose bags held only 20 pieces to come to the front, and two people whose bags held 400.\nOn a flip chart, write each of their richness values: how many distinct colours they found.\nAsk the room:\n\nThe 400-piece bags found more colours. Are those communities more diverse, or were they just measured harder?\nHow could we make the comparison fair? Take suggestions and write all of them down.\nSomeone will suggest “take the same number from everyone”. Someone may suggest “use proportions instead of counts”. Both are real strategies with real costs.\n\n\nThese two suggestions are rarefaction and relative abundance, and the microbiome field has argued about which to use for fifteen years. On Wednesday we pick one and explain why.\n\n\n\nClosing the session (10 min)\nLeave the flip charts on the wall, point at them, and tell the room:\n\nTomorrow morning you work with the same kind of table, only with 220 rows of bacteria and 14,226 rows of human genes instead of six colours, and 471 columns instead of six people.",
+    "text": "Analog activities (90 minutes, no computers)\nThe session acts out one story: pick a bag, then draw balls. A bag might be a vaginal community or a patch of forest; a ball might be a 16S read or a bird someone spotted. Any study that fits that story produces a count table, and everything this week works on count tables.\nPeople are on their feet for the first forty-five minutes and at tables with pen and paper for the rest. The slides for every step are at the end of this afternoon’s deck.\n\nMaterials\n\n\n\n\n\n\n\n\nitem\nhow many\nused for\n\n\n\n\nOpaque cloth or paper bags\n4\ndemo\n\n\nPom-poms in 8 colours\nabout 50 per bag\ndemo\n\n\nFelt-tip markers in the same 8 colours\n2 sets\ndemo cards\n\n\nBlank cards, D____\n12\ndemo\n\n\nPrinted sample cards, S01 to S80\n1 per participant\nrounds 1 and 2, worksheet\n\n\nWorksheet, printed double-sided\n1 per participant, plus spares\nbuild the table\n\n\nMasking tape\n1 roll\nfloor axes\n\n\nFlip chart and marker\n1\nreport to the room\n\n\nWhiteboard and marker\n1\ndendrogram in round 1\n\n\n\n\n\nBefore the session\nFill the four bags with about 50 pom-poms each, and tag each bag with its inflammation status.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nbag\norange\ngreen\nblue\npink\nvermillion\nsky blue\nyellow\ngrey\ntag\n\n\n\n\n1\n42\n4\n1\n\n1\n\n1\n1\nlow\n\n\n2\n4\n38\n4\n\n1\n\n1\n2\nlow\n\n\n3\n1\n4\n35\n\n4\n2\n2\n2\nhigh\n\n\n4\n\n1\n9\n23\n5\n5\n5\n2\nhigh\n\n\n\nTape the floor axes in an open part of the room: one long line left to right (more blue toward the right), and one line front to back crossing it at the left end (more orange toward the back, more green toward the front).\nSort the printed cards in order, S01 first. The deck is interleaved, so handing out the first 61 cards still gives a balanced room. Keep the rest as spares.\n\n\nRun sheet\n\n\n\ntime\nblock\n\n\n\n\n0:00\nBags and balls, live demo\n\n\n0:12\nHand out cards\n\n\n0:15\nRound 1: closest partner, then pairs of pairs\n\n\n0:27\nRound 2: the floor is a plot\n\n\n0:37\nReveal and debrief\n\n\n0:45\nBuild the table, worksheet\n\n\n1:20\nReport to the room\n\n\n1:25\nClose\n\n\n\n\n\nBags and balls (12 min)\nPut the four bags on a table at the front and ask for eight volunteers, two per bag. Without looking, the first person at each bag draws 5 pom-poms and the second draws 20. Each tallies their colours on the back of a blank card, colours the bar on the front, and copies the bag’s inflammation tag. Hold the pairs of cards up side by side.\nAsk the room:\n\nDid the two people at the same bag make the same card?\nWhich of the two cards do you trust more? Why?\nIf the 5-ball card were all you had, what would you conclude about that bag?\n\n\nWhich bag you pick is biological variation, and which balls you draw is measurement variation. Every sample this week carries both, and sequencing deeper only reduces the second.\n\n\n\nHand out cards (3 min)\nGive everyone one printed card. The eight volunteers keep their hand-made card. Explain the card on the slide: the front shows proportions, so every bar is the same length, and the small n is how many balls were drawn. The back has the counts and the inflammation tag. The printed cards came from the same kind of bags.\n\n\nRound 1: closest partner, then pairs of pairs (12 min)\n\nEveryone finds the one card most like theirs and stands together, judging by the bars and ignoring the card numbers. A group of three is fine.\nEach pair finds its closest pair.\nEach group of four finds its closest group.\n\nWhile they move, draw the merges on the whiteboard as a tree: two names joined, then two pairs joined. That drawing is a dendrogram.\nAsk the room:\n\nHow did you decide two cards were similar? That rule is a distance.\nWhen two groups both wanted the same pair, how did you settle it? That choice is the linkage rule, and software makes it for you.\nWho had trouble finding a partner? Look at the n on their card.\n\n\nThis is hierarchical clustering. On Wednesday the distance gets a name, Bray-Curtis, and the tree gets drawn by a computer.\n\n\n\nRound 2: the floor is a plot (10 min)\nEveryone stands where their card belongs on the taped axes: left to right by how much of the bar is blue, back to front by orange share minus green share. Take a photo from as high as you can, a chair is enough. The slides have a precomputed version of the plot if the photo does not work out.\nAsk the room:\n\nThe blue and pink cards are standing close together. Are their bars alike?\nWe chose these two axes. What would you need to separate everyone properly?\n\n\nA PCoA is the computer choosing the axes for you. It finds the directions along which the cards differ most, and it reports how much of the difference each axis captures.\n\n\n\nReveal and debrief (8 min)\nGo past the spoiler slide. Show which bag each card came from, then the computer versions of both rounds: the floor plot, the PCoA, and the dendrogram.\nPoints to pull out:\n\nCards with 5 to 10 balls end up in the wrong place more often. Too few reads turn into ordination error.\nBlends stand between groups. Real communities shift, and a clustering forces each one into a single group anyway.\nTwo axes squash the blue and pink bags together. A third axis separates them.\n\n\n\nBuild the table (35 min)\nPeople sit with whoever is near them. Groups will be different sizes, and that is fine. Each person gets a worksheet, and the group pools its cards.\nOn side 1, everyone copies the group’s cards into the columns, one card per column, and fills the feature metadata from the slide. Point out the layout: sample information sits above the columns it describes, feature information sits beside the rows it describes. That alignment is what R has to keep in sync.\nSide 2 has the questions. Walk round and push on these:\n\nCollapsing the rows: “makes lactic acid” plus “encodes lysin” does not equal the column total, because green is in both groups. Taxonomy is a hierarchy, so every row has one parent and adding up is safe. Gene sets overlap, so one gene counts in many sets, which matters for enrichment on Thursday.\nKeeping only high inflammation: crossing out columns in the counts means crossing out the same entries in the sample metadata, and the feature metadata stays as it is.\n\n\n\nReport to the room (5 min)\nEach group copies its two-by-two table (mostly lactic acid or not, high or low inflammation) onto the flip chart with its n. Add up the columns for the room total.\nAsk the room:\n\nDid your table show the pattern the room shows?\nWas any group wrong, or just small?\n\n\nTomorrow afternoon you will put a p-value on this question and see how it changes with n.\n\n\n\nClose (5 min)\nLeave the flip chart up. Tomorrow morning the table has 220 rows of bacteria or 14,226 rows of human genes, and 471 columns, and the column totals and proportions from the worksheet are the first things you compute in R.",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
@@ -3763,11 +3763,123 @@
     "text": "On your feet\nPut the laptops away.\n\nFor the next ninety minutes we build count tables by hand."
   },
   {
-    "objectID": "materials/2-workshop2/2-count-table-anatomy/slides.html#yesterday-you-built-a-count-table-out-of-beads",
-    "href": "materials/2-workshop2/2-count-table-anatomy/slides.html#yesterday-you-built-a-count-table-out-of-beads",
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#pick-a-bag-then-draw-balls",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#pick-a-bag-then-draw-balls",
+    "title": "From Reads to Count Tables",
+    "section": "Pick a bag, then draw balls",
+    "text": "Pick a bag, then draw balls\n\nPick a bag. Each bag is one community.\nDraw balls. Each ball is one read, and the number of balls you draw is the depth.\n\n\n\n\n\nstudy\nthe bag\na ball\n\n\n\n\n16S\na vaginal community\na 16S read\n\n\nRNA-seq\nthe cells on a cytobrush\na cDNA fragment\n\n\nbird survey\na patch of forest\na bird you saw"
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#four-bags-eight-volunteers",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#four-bags-eight-volunteers",
+    "title": "From Reads to Count Tables",
+    "section": "Four bags, eight volunteers",
+    "text": "Four bags, eight volunteers\nTwo people per bag, without looking:\n\nthe first person draws 5 balls, the second draws 20\ntally your colours on the back of a blank card, then colour the bar on the front\ncopy the bag’s tag, high or low inflammation, onto your card\n\n\nDid the two people at the same bag make the same card?"
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#your-card",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#your-card",
+    "title": "From Reads to Count Tables",
+    "section": "Your card",
+    "text": "Your card\n\nThe front shows proportions, so every bar is the same length. The small n says how many balls were drawn. The back has the counts and one piece of sample information."
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#round-1-find-your-closest-partner",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#round-1-find-your-closest-partner",
+    "title": "From Reads to Count Tables",
+    "section": "Round 1: find your closest partner",
+    "text": "Round 1: find your closest partner\nFind the one card most like yours and stand together. Judge by the bars and ignore the card numbers.\n\nNow each pair finds its closest pair.\n\n\nNow each group of four finds its closest group. Watch the board."
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#round-2-the-floor-is-a-plot",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#round-2-the-floor-is-a-plot",
+    "title": "From Reads to Count Tables",
+    "section": "Round 2: the floor is a plot",
+    "text": "Round 2: the floor is a plot\n\nStand where your card belongs. Left to right: how much of your bar is blue. Back to front: orange share minus green share."
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#spoilers-ahead",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#spoilers-ahead",
+    "title": "From Reads to Count Tables",
+    "section": "Spoilers ahead",
+    "text": "Spoilers ahead\nThe next slides show which bag every card came from.\nIf you are reading these slides before Monday afternoon, stop here."
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#the-bag-behind-each-card",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#the-bag-behind-each-card",
+    "title": "From Reads to Count Tables",
+    "section": "The bag behind each card",
+    "text": "The bag behind each card\n\n\n\n\n\n\n\n\n\nbag\ncards\n\n\n\n\norange\nS04 S10 S13 S16 S24 S29 S32 S37 S41 S50 S55 S59 S63 S65 S73 S79\n\n\ngreen\nS03 S07 S11 S19 S22 S30 S33 S40 S42 S45 S51 S58 S64 S69 S74 S76\n\n\nblue\nS01 S08 S15 S18 S23 S28 S35 S38 S44 S49 S53 S57 S61 S67 S72 S77\n\n\ndiverse\nS05 S06 S12 S17 S21 S27 S34 S36 S43 S47 S54 S60 S62 S70 S71 S78\n\n\ngreen~blue\nS09 S20 S26 S31 S46 S56 S68 S80\n\n\norange~green\nS02 S25 S52 S66\n\n\nblue~diverse\nS14 S39 S48 S75\n\n\n\n\n\nA ~ is a blend: a community caught partway between two bags."
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#the-floor-computed",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#the-floor-computed",
+    "title": "From Reads to Count Tables",
+    "section": "The floor, computed",
+    "text": "The floor, computed"
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#the-computer-draws-the-same-map",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#the-computer-draws-the-same-map",
+    "title": "From Reads to Count Tables",
+    "section": "The computer draws the same map",
+    "text": "The computer draws the same map\n\nBray-Curtis PCoA of all 80 cards. Big points are the cards with 5 to 10 balls."
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#a-third-axis",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#a-third-axis",
+    "title": "From Reads to Count Tables",
+    "section": "A third axis",
+    "text": "A third axis\n\nOn the floor, blue and pink cards crowded together. A third axis pulls them apart."
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#the-computers-version-of-round-1",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#the-computers-version-of-round-1",
+    "title": "From Reads to Count Tables",
+    "section": "The computer’s version of Round 1",
+    "text": "The computer’s version of Round 1\n\nAverage-linkage clustering: join the two closest, then the two closest groups."
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#debrief",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#debrief",
+    "title": "From Reads to Count Tables",
+    "section": "Debrief",
+    "text": "Debrief\n\nWho struggled to find a partner? Check the n on their card.\nDid any group of four come from more than one bag?\nWhere did the blends end up, in a group or between groups?\nWhen two groups both wanted the same pair, how did you decide?"
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#build-the-table",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#build-the-table",
+    "title": "From Reads to Count Tables",
+    "section": "Build the table",
+    "text": "Build the table\nSit down with the people near you. One worksheet each.\nCopy your table’s cards into the columns, one card per column."
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#feature-metadata-for-your-worksheet",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#feature-metadata-for-your-worksheet",
+    "title": "From Reads to Count Tables",
+    "section": "Feature metadata for your worksheet",
+    "text": "Feature metadata for your worksheet\n\n\n\ncolour\ncode\nmakes lactic acid?\nencodes lysin?\n\n\n\n\norange\nO\nyes\nno\n\n\ngreen\nG\nyes\nyes\n\n\nblue\nB\nno\nyes\n\n\npink\nP\nno\nno\n\n\nvermillion\nV\nno\nno\n\n\nsky blue\nS\nno\nno\n\n\nyellow\nY\nno\nno\n\n\ngrey\nX\nno\nno"
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#report-to-the-room",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#report-to-the-room",
+    "title": "From Reads to Count Tables",
+    "section": "Report to the room",
+    "text": "Report to the room\nCopy your two-by-two table onto the flip chart, with your n.\n\n\n\n\n\n\n\n\n\n\n\ntable\nn\nmostly lactic acid, high\nmostly lactic acid, low\nnot, high\nnot, low\n\n\n\n\n1\n\n\n\n\n\n\n\n2\n\n\n\n\n\n\n\n…\n\n\n\n\n\n\n\nroom\n\n\n\n\n\n\n\n\n\nDoes your table agree with the room? Who is right?"
+  },
+  {
+    "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#tomorrow",
+    "href": "materials/2-workshop2/1-reads-to-counts/slides.html#tomorrow",
+    "title": "From Reads to Count Tables",
+    "section": "Tomorrow",
+    "text": "Tomorrow\nThe same table, with 220 rows of bacteria or 14,226 rows of human genes, and 471 columns.\nThe column totals and proportions from your worksheet are the first things you compute in R."
+  },
+  {
+    "objectID": "materials/2-workshop2/2-count-table-anatomy/slides.html#yesterday-you-built-a-count-table-out-of-pom-poms",
+    "href": "materials/2-workshop2/2-count-table-anatomy/slides.html#yesterday-you-built-a-count-table-out-of-pom-poms",
     "title": "Count Table Anatomy",
-    "section": "Yesterday you built a count table out of beads",
-    "text": "Yesterday you built a count table out of beads\nToday the same table has 220 rows of bacteria, 14,226 rows of human genes, and 471 columns."
+    "section": "Yesterday you built a count table out of pom-poms",
+    "text": "Yesterday you built a count table out of pom-poms\nToday the same table has 220 rows of bacteria, 14,226 rows of human genes, and 471 columns."
   },
   {
     "objectID": "materials/2-workshop2/2-count-table-anatomy/slides.html#the-files",
