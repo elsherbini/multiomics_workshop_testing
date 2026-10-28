@@ -23,6 +23,14 @@ afternoon's deck.
 | Flip chart and marker | 1 | report to the room |
 | Whiteboard and marker | 1 | dendrogram in round 1 |
 
+### Print files
+
+- [Worksheet (PDF)](analog_worksheet.pdf), one per participant, printed
+  double-sided with flip on short edge.
+- [All 80 cards by bag (PDF, spoilers)](analog_cards_overview.pdf): every card's
+  bar grouped by the bag it came from, with the PCoA, the floor plot and the
+  dendrogram. For instructors.
+
 ### Before the session
 
 **Fill the four bags** with about 50 pom-poms each, and tag each bag with its
@@ -137,7 +145,7 @@ People sit with whoever is near them. Groups will be different sizes, and that
 is fine. Each person gets a worksheet, and the group pools its cards.
 
 On side 1, everyone copies the group's cards into the columns, one card per
-column, and fills the feature metadata from the slide. Point out the layout:
+column. The feature metadata is printed on the sheet. Point out the layout:
 sample information sits above the columns it describes, feature information sits
 beside the rows it describes. That alignment is what R has to keep in sync.
 

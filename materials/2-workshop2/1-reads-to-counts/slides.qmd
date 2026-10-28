@@ -777,19 +777,6 @@ Sit down with the people near you. One worksheet each.
 
 Copy your table's cards into the columns, one card per column.
 
-## Feature metadata for your worksheet
-
-| colour | code | makes lactic acid? | encodes lysin? |
-|---|---|---|---|
-| orange | O | yes | no |
-| green | G | yes | yes |
-| blue | B | no | yes |
-| pink | P | no | no |
-| vermillion | V | no | no |
-| sky blue | S | no | no |
-| yellow | Y | no | no |
-| grey | X | no | no |
-
 ## Report to the room
 
 Copy your two-by-two table onto the flip chart, with your **n**.
