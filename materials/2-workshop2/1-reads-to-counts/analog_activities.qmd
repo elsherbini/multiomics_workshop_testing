@@ -1,124 +1,171 @@
 ## Analog activities (90 minutes, no computers)
 
-Run the activities in this order. Everyone stands and moves around for the
-first three, and each one sets up a number that Tuesday and Wednesday compute
-in code.
+The whole session acts out one story: **pick a bag, then draw balls**. A bag is
+a community, a tissue state, or a patch of forest. A ball is a read, a fragment,
+or an animal you spotted. Any study that fits that story produces a count table,
+and everything this week works on count tables.
+
+The first fifty minutes are on your feet. The last thirty-five are pen and paper.
+The slides for every step are at the end of this afternoon's deck.
 
 ### Materials
 
 | item | how many | used for |
 |---|---|---|
-| Opaque cloth or paper bags | one per participant, 61 | all four |
-| Coloured beads, buttons or dried beans, 6 colours | about 6,000 total | all four |
-| Flip chart sheets | one per table of six, 10 | activity 3 |
-| Thick markers | two per table | activity 3 |
-| Sticky dots | one sheet per table | activity 4 |
-| Pre-printed blank count-table grids | 10 | activity 3 |
+| Opaque cloth or paper bags | 4 | demo |
+| Pom-poms in 8 colours | about 50 per bag | demo |
+| Felt-tip markers in the same 8 colours | 2 sets | demo cards |
+| Blank cards, `D____` | 12 | demo |
+| Printed sample cards, `S01` to `S80` | 1 per participant | rounds 1 and 2, worksheet |
+| Worksheet, printed double-sided | 1 per participant, plus spares | build the table |
+| Masking tape | 1 roll | floor axes |
+| Flip chart and marker | 1 | report to the room |
+| Whiteboard and marker | 1 | dendrogram in round 1 |
 
-Fill the bags before the session. Give most bags 100 pieces, but deliberately
-give **six bags only 20 pieces** and **two bags 400 pieces**. Nobody is told
-this, because activity 4 depends on it.
+### Before the session
 
-Mix the compositions on purpose, so the room contains:
+**Fill the four bags** with about 50 pom-poms each, and tag each bag with its
+inflammation status.
 
-- about 20 bags that are 90% one colour
-- about 20 bags that are 60% one colour with three others present
-- about 20 bags that are spread evenly across five or six colours
+| bag | orange | green | blue | pink | vermillion | sky blue | yellow | grey | tag |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 42 | 4 | 1 | | 1 | | 1 | 1 | low |
+| 2 | 4 | 38 | 4 | | 1 | | 1 | 2 | low |
+| 3 | 1 | 4 | 35 | | 4 | 2 | 2 | 2 | high |
+| 4 | | 1 | 9 | 23 | 5 | 5 | 5 | 2 | high |
 
-### Activity 1: you are a sample (15 min)
+**Tape the floor axes** in an open part of the room: one long line left to right
+(more blue toward the right), and one line front to back crossing it at the left
+end (more orange toward the back, more green toward the front).
 
-Each person takes a bag. Without counting precisely, look at your bag and
-describe your community out loud to the person next to you: which colour
-dominates, how many colours you can see.
+**Sort the printed cards** in order, `S01` first. The deck is interleaved, so
+handing out the first 61 cards still gives a balanced room. Keep the rest as
+spares.
 
-Then: **find the three people in the room whose bags look most like yours.**
-Stand together as a cluster.
+### Run sheet
 
-Ask the room:
+| time | block |
+|---|---|
+| 0:00 | Bags and balls, live demo |
+| 0:12 | Hand out cards |
+| 0:15 | Round 1: closest partner, then pairs of pairs |
+| 0:27 | Round 2: the floor is a plot |
+| 0:37 | Reveal and debrief |
+| 0:45 | Build the table, worksheet |
+| 1:20 | Report to the room |
+| 1:25 | Close |
 
-- How did you decide who was similar to you? What rule were you using?
-- Did anyone belong to two clusters?
-- Did the people with very few pieces have trouble finding a group?
+### Bags and balls (12 min)
 
-> The rule they used is a distance metric. On Wednesday afternoon it gets a
-> name and a formula.
-
-### Activity 2: draw ten (20 min)
-
-Without looking, draw ten pieces from your own bag and lay them out. Record on
-paper: how many colours did you get, and how many of each.
-
-Now put them back, shake, and draw ten again. Record again.
-
-Ask the room:
-
-- Did you get the same answer twice? Who got a colour the second time that they
-  missed the first time?
-- Whose two draws disagreed the most? Look at their bag. Why?
-- If you drew only three pieces, what would happen?
-
-> This is sampling depth. A rare feature can be present in the tube and absent
-> from the count table, and whether you see it depends on how many reads you
-> took. Tuesday morning you will find the sample in our real data with 438
-> reads and decide what to do about it.
-
-### Activity 3: build the table (30 min)
-
-In table groups of six. Pool your six bags. On the flip chart, build a count
-table by hand:
-
-- one **row per colour**, so rows are features
-- one **column per person**, so columns are samples
-- in each cell, the count of that colour in that person's bag
-
-You do not have to count every piece. Estimate, but estimate consistently.
-
-Then, on the same sheet, write underneath each column:
-
-1. the **column total**, the number of pieces that person had
-2. the number of **rows with a zero** in that column
-3. the colour with the **largest share** of that column, as a percentage
-
-Finally, as a group, answer in writing on the sheet:
-
-- Which two people look most alike? Which two look least alike?
-- One person has far fewer pieces than the others. Does that make their
-  community different, or just less well measured?
-- If you wanted to compare person A to person B fairly, what would you do to
-  these numbers first?
-
-Tape the sheets to the wall. They stay up all week.
-
-> Those three numbers under each column are library size, sparsity and
-> dominance. They are the first three things you will compute tomorrow morning,
-> on both of our real tables.
-
-### Activity 4: the unfair comparison (15 min)
-
-Ask the six people whose bags held only 20 pieces to come to the front, and two
-people whose bags held 400.
-
-On a flip chart, write each of their richness values: how many distinct colours
-they found.
+Put the four bags on a table at the front and ask for eight volunteers, two per
+bag. Without looking, the first person at each bag draws **5** pom-poms and the
+second draws **20**. Each tallies their colours on the back of a blank card,
+colours the bar on the front, and copies the bag's inflammation tag. Hold the
+pairs of cards up side by side.
 
 Ask the room:
 
-- The 400-piece bags found more colours. Are those communities more diverse, or
-  were they just measured harder?
-- How could we make the comparison fair? Take suggestions and write all of them
-  down.
-- Someone will suggest "take the same number from everyone". Someone may
-  suggest "use proportions instead of counts". Both are real strategies with
-  real costs.
+- Did the two people at the same bag make the same card?
+- Which of the two cards do you trust more? Why?
+- If the 5-ball card were all you had, what would you conclude about that bag?
 
-> These two suggestions are rarefaction and relative abundance, and the
-> microbiome field has argued about which to use for fifteen years. On
-> Wednesday we pick one and explain why.
+> Picking the bag is biology. Drawing the balls is measurement. Every sample
+> you will see this week has both kinds of variation in it, and only the second
+> one shrinks when you sequence deeper.
 
-### Closing the session (10 min)
+### Hand out cards (3 min)
 
-Leave the flip charts on the wall, point at them, and tell the room:
+Give everyone one printed card. The eight volunteers keep their hand-made card.
+Explain the card on the slide: the front shows proportions, so every bar is the
+same length, and the small **n** is how many balls were drawn. The back has the
+counts and the inflammation tag. The printed cards came from the same kind of
+bags.
 
-> Tomorrow morning you work with the same kind of table, only with 220 rows of
-> bacteria and 14,226 rows of human genes instead of six colours, and 471
-> columns instead of six people.
+### Round 1: closest partner, then pairs of pairs (12 min)
+
+1. Everyone finds the one card most like theirs and stands together.
+   Compare bars, not card numbers. A group of three is fine.
+2. Each pair finds its closest pair.
+3. Each group of four finds its closest group.
+
+While they move, draw the merges on the whiteboard as a tree: two names joined,
+then two pairs joined. That drawing is a dendrogram.
+
+Ask the room:
+
+- How did you decide two cards were similar? That rule is a distance.
+- When two groups both wanted the same pair, how did you settle it? That choice
+  is the linkage rule, and software makes it for you.
+- Who had trouble finding a partner? Look at the **n** on their card.
+
+> This is hierarchical clustering. On Wednesday the distance gets a name,
+> Bray-Curtis, and the tree gets drawn by a computer.
+
+### Round 2: the floor is a plot (10 min)
+
+Everyone stands where their card belongs on the taped axes: left to right by
+how much of the bar is blue, back to front by orange share minus green share.
+Take a photo from as high as you can, a chair is enough. The slides have a
+precomputed version of the plot if the photo does not work out.
+
+Ask the room:
+
+- The blue and pink cards are standing close together. Are their bars alike?
+- We chose these two axes. What would you need to separate everyone properly?
+
+> A PCoA is the computer choosing the axes for you. It finds the directions
+> along which the cards differ most, and it reports how much of the difference
+> each axis captures.
+
+### Reveal and debrief (8 min)
+
+Go past the spoiler slide. Show which bag each card came from, then the computer
+versions of both rounds: the floor plot, the PCoA, and the dendrogram.
+
+Points to pull out:
+
+- Cards with 5 to 10 balls end up in the wrong place more often. Too few reads
+  turn into ordination error.
+- Blends stand between groups. Real communities shift, and a clustering forces
+  each one into a single group anyway.
+- Two axes squash the blue and pink bags together. A third axis separates them.
+
+### Build the table (35 min)
+
+People sit with whoever is near them. Groups will be different sizes, and that
+is fine. Each person gets a worksheet, and the group pools its cards.
+
+On side 1, everyone copies the group's cards into the columns, one card per
+column, and fills the feature metadata from the slide. Point out the layout:
+sample information sits above the columns it describes, feature information sits
+beside the rows it describes. That alignment is what R has to keep in sync.
+
+Side 2 has the questions. Walk round and push on these two:
+
+- **Collapse the rows.** "Makes lactic acid" plus "encodes lysin" does not equal
+  the column total, because green is in both groups. Taxonomy is a hierarchy, so
+  every row has one parent and adding up is safe. Gene sets overlap, so one gene
+  counts in many sets. That overlap comes back on Thursday.
+- **Keep only high inflammation.** Crossing out columns in the counts means
+  crossing out the same entries in the sample metadata. Nothing else on the
+  sheet changes.
+
+### Report to the room (5 min)
+
+Each group copies its 2 × 2 (mostly lactic acid or not, high or low
+inflammation) onto the flip chart with its **n**. Add up the columns for the
+room total.
+
+Ask the room:
+
+- Did your table show the pattern the room shows?
+- Was any group wrong, or just small?
+
+> Tomorrow afternoon this question gets a number: a p-value, and how it depends
+> on n.
+
+### Close (5 min)
+
+Leave the flip chart up. Tomorrow the same table has 220 rows of bacteria or
+14,226 rows of human genes, and 471 columns. Everything done by hand today is
+one line of R.

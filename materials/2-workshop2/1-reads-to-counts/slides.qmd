@@ -557,3 +557,259 @@ Put the laptops away.
 . . .
 
 For the next ninety minutes we build count tables by hand.
+
+```{r analog-setup, include=FALSE}
+# Card data and precomputed reveal figures, see _build_results.R.
+res <- "results"
+cards <- read_csv(file.path(res, "analog_cards.csv"), show_col_types = FALSE)
+ball <- tribble(
+  ~colour,      ~code, ~hex,
+  "orange",     "O",   "#E69F00",
+  "green",      "G",   "#009E73",
+  "blue",       "B",   "#0072B2",
+  "pink",       "P",   "#CC79A7",
+  "vermillion", "V",   "#D55E00",
+  "sky_blue",   "S",   "#56B4E9",
+  "yellow",     "Y",   "#F0E442",
+  "grey",       "X",   "#999999"
+)
+ball_hex <- setNames(ball$hex, ball$colour)
+sources <- c("orange", "green", "blue", "diverse", "green~blue", "orange~green", "blue~diverse")
+mix <- function(a, b) { m <- (col2rgb(a) + col2rgb(b)) / 2; rgb(m[1], m[2], m[3], maxColorValue = 255) }
+bag_hex <- c(orange = "#E69F00", green = "#009E73", blue = "#0072B2", diverse = "#CC79A7")
+source_hex <- c(bag_hex, `green~blue` = mix(bag_hex[["green"]], bag_hex[["blue"]]),
+                `orange~green` = mix(bag_hex[["orange"]], bag_hex[["green"]]),
+                `blue~diverse` = mix(bag_hex[["blue"]], bag_hex[["diverse"]]))
+pcoa <- read_csv(file.path(res, "analog_pcoa.csv"), show_col_types = FALSE) |>
+  mutate(source = factor(source, sources), blend = str_detect(source, "~"), shallow = depth <= 10)
+axes <- read_csv(file.path(res, "analog_pcoa_axes.csv"), show_col_types = FALSE)
+seg <- read_csv(file.path(res, "analog_dendro_segments.csv"), show_col_types = FALSE)
+leaf <- read_csv(file.path(res, "analog_dendro_labels.csv"), show_col_types = FALSE) |>
+  left_join(select(cards, card_id, source), by = "card_id") |>
+  mutate(source = factor(source, sources))
+source_scale <- scale_colour_manual(values = source_hex, breaks = sources, name = NULL)
+```
+
+## Pick a bag, then draw balls
+
+Every count table in this workshop comes from two steps.
+
+1. **Pick a bag.** A bag is one community, one tissue state, one patch of forest.
+2. **Draw balls.** Each ball is one read, one fragment, one animal you spotted.
+   How many you draw is the **depth**.
+
+. . .
+
+| study | the bag | a ball |
+|---|---|---|
+| 16S | a vaginal community | a 16S read |
+| RNA-seq | the cells on a cytobrush | a cDNA fragment |
+| bird survey | a patch of forest | a bird you saw |
+
+## Four bags, eight volunteers
+
+Two people per bag, without looking:
+
+- the first person draws **5** balls, the second draws **20**
+- tally your colours on the back of a blank card, then colour the bar on the front
+- copy the bag's tag, **high** or **low** inflammation, onto your card
+
+. . .
+
+Did the two people at the same bag make the same card?
+
+## Your card
+
+```{r card-example}
+#| fig-width: 10
+#| fig-height: 2.2
+ex <- cards |> filter(card_id == "S01")
+ex |>
+  pivot_longer(all_of(ball$colour), names_to = "colour", values_to = "n") |>
+  mutate(colour = factor(colour, rev(ball$colour)), code = ball$code[match(colour, ball$colour)]) |>
+  ggplot(aes(x = n, y = card_id, fill = colour)) +
+  geom_col(position = "fill", colour = "white", width = .7) +
+  geom_text(aes(label = if_else(n / sum(n) > .06, code, "")), position = position_fill(vjust = .5),
+            colour = "white", fontface = "bold", size = 6) +
+  scale_fill_manual(values = ball_hex, guide = "none") +
+  scale_x_continuous(labels = scales::percent) +
+  labs(x = NULL, y = NULL, title = sprintf("%s, n = %d balls", ex$card_id, ex$depth)) +
+  theme(panel.grid = element_blank(), axis.text.y = element_blank())
+```
+
+The **front** shows proportions, so every bar is the same length. The small
+**n** says how many balls were drawn. The **back** has the counts and one piece
+of sample information.
+
+## Round 1: find your closest partner
+
+Compare bars, not card numbers. Find the one card most like yours and stand
+together.
+
+. . .
+
+Now each **pair** finds its closest pair.
+
+. . .
+
+Now each **group of four** finds its closest group. Watch the board.
+
+## Round 2: the floor is a plot
+
+```{r floor-schematic}
+#| fig-width: 8
+#| fig-height: 4.6
+ggplot() +
+  annotate("segment", x = 0, xend = 1, y = 0, yend = 0, colour = pal["grey"], linewidth = 1.2) +
+  annotate("segment", x = 0, xend = 0, y = -1, yend = 1, colour = pal["grey"], linewidth = 1.2) +
+  annotate("segment", x = 0, xend = 1, y = -1.15, yend = -1.15, colour = pal["navy"], linewidth = 1,
+           arrow = arrow(length = unit(.3, "cm"))) +
+  annotate("text", x = .5, y = -1.35, label = "more blue", colour = pal["navy"], size = 6) +
+  annotate("text", x = -.05, y = .8, label = "more orange\nthan green", hjust = 1, colour = ball_hex[["orange"]], size = 5.5) +
+  annotate("text", x = -.05, y = -.8, label = "more green\nthan orange", hjust = 1, colour = ball_hex[["green"]], size = 5.5) +
+  coord_cartesian(xlim = c(-.45, 1.05), ylim = c(-1.4, 1.05), clip = "off") +
+  theme_void()
+```
+
+Stand where your card belongs. Left to right: how much of your bar is blue.
+Back to front: orange share minus green share.
+
+## Spoilers ahead {.center}
+
+The next slides show which bag every card came from.
+
+If you are reading these slides before Monday afternoon, stop here.
+
+## Which bag did your card come from? {.smaller}
+
+```{r key-table}
+cards |>
+  mutate(source = factor(source, sources)) |>
+  group_by(source) |>
+  summarise(cards = paste(card_id, collapse = " "), .groups = "drop") |>
+  knitr::kable(col.names = c("bag", "cards"))
+```
+
+A `~` is a blend: a community caught partway between two bags.
+
+## What the floor should have looked like
+
+```{r reveal-floor}
+#| fig-width: 7
+#| fig-height: 5.2
+cards |>
+  mutate(source = factor(source, sources), x = blue / depth, y = (orange - green) / depth) |>
+  ggplot(aes(x, y, colour = source, shape = str_detect(source, "~"))) +
+  geom_hline(yintercept = 0, colour = pal["grey"]) +
+  geom_point(aes(size = depth <= 10), alpha = .85) +
+  source_scale +
+  scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 17), guide = "none") +
+  scale_size_manual(values = c(`FALSE` = 2.5, `TRUE` = 4.5), guide = "none") +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "blue share", y = "orange minus green") +
+  coord_equal()
+```
+
+## The computer draws the same map
+
+```{r reveal-pcoa}
+#| fig-width: 8
+#| fig-height: 5.2
+ggplot(pcoa, aes(PCo1, PCo2, colour = source, shape = blend)) +
+  geom_point(aes(size = shallow), alpha = .85) +
+  source_scale +
+  scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 17), guide = "none") +
+  scale_size_manual(values = c(`FALSE` = 2.5, `TRUE` = 4.5), guide = "none") +
+  labs(x = sprintf("PCo1 (%.0f%%)", axes$pct[1]), y = sprintf("PCo2 (%.0f%%)", axes$pct[2])) +
+  coord_equal()
+```
+
+Bray-Curtis PCoA of all 80 cards. Big points are the cards with 5 to 10 balls.
+
+## Two axes cannot show everything
+
+```{r reveal-pcoa3}
+#| fig-width: 8
+#| fig-height: 5.2
+ggplot(pcoa, aes(PCo1, PCo3, colour = source, shape = blend)) +
+  geom_point(aes(size = shallow), alpha = .85) +
+  source_scale +
+  scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 17), guide = "none") +
+  scale_size_manual(values = c(`FALSE` = 2.5, `TRUE` = 4.5), guide = "none") +
+  labs(x = sprintf("PCo1 (%.0f%%)", axes$pct[1]), y = sprintf("PCo3 (%.0f%%)", axes$pct[3])) +
+  coord_equal()
+```
+
+On the floor, blue and pink cards crowded together. A third axis pulls them apart.
+
+## The computer's version of Round 1
+
+```{r reveal-dendro}
+#| fig-width: 12
+#| fig-height: 5
+ggplot() +
+  geom_segment(data = seg, aes(x, y, xend = xend, yend = yend), colour = "grey40", linewidth = .35) +
+  geom_text(data = leaf, aes(x, y - .01, label = card_id, colour = source),
+            angle = 90, hjust = 1, size = 2.6, show.legend = FALSE) +
+  geom_point(data = leaf, aes(x, -1, colour = source), alpha = 0) +
+  source_scale +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 4))) +
+  scale_y_continuous(breaks = seq(0, .8, .2), expand = expansion(add = c(.12, .02))) +
+  coord_cartesian(ylim = c(-.1, NA)) +
+  labs(x = NULL, y = "Bray-Curtis height") +
+  theme(axis.text.x = element_blank(), panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(), legend.position = "bottom")
+```
+
+Average-linkage clustering: join the two closest, then the two closest groups.
+
+## What went wrong, and why
+
+::: {.incremental}
+- Who struggled to find a partner? Check the **n** on their card.
+- Did any group of four come from more than one bag?
+- Where did the blends end up, in a group or between groups?
+- When two groups both wanted the same pair, how did you decide?
+:::
+
+## Build the table {.center}
+
+Sit down with the people near you. One worksheet each.
+
+Copy your table's cards into the columns, one card per column.
+
+## Feature metadata for your worksheet
+
+| colour | code | makes lactic acid? | encodes lysin? |
+|---|---|---|---|
+| orange | O | yes | no |
+| green | G | yes | yes |
+| blue | B | no | yes |
+| pink | P | no | no |
+| vermillion | V | no | no |
+| sky blue | S | no | no |
+| yellow | Y | no | no |
+| grey | X | no | no |
+
+## Report to the room
+
+Copy your table's 2 × 2 onto the flip chart, with your **n**.
+
+| table | n | mostly lactic acid, high | mostly lactic acid, low | not, high | not, low |
+|---|---|---|---|---|---|
+| 1 | | | | | |
+| 2 | | | | | |
+| ... | | | | | |
+| **room** | | | | | |
+
+. . .
+
+Does your table agree with the room? Who is right?
+
+## Tomorrow {.center}
+
+The same table, with 220 rows of bacteria or 14,226 rows of human genes, and
+471 columns.
+
+Everything you did by hand today is one line of R.

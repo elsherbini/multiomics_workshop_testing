@@ -29,7 +29,7 @@ fs <- read_csv(file.path(res, "feature_summary.csv.gz"), show_col_types = FALSE)
          mean_cpm = mean_share * 1e6)   # mean of the per-sample proportions, x 1e6
 ```
 
-## Yesterday you built a count table out of beads {.center}
+## Yesterday you built a count table out of pom-poms {.center}
 
 Today the same table has 220 rows of bacteria, 14,226 rows of human genes, and
 471 columns.
