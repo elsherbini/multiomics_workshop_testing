@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Intro to R, Quarto, and VSCode – Data Science for Biology Workshop Series</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../materials/1-workshop1/3-wrangling-and-viz/index.html" rel="next">
+<link href="../../../materials/1-workshop1/1-agentic-coding/index.html" rel="prev">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-b9a2a04ac063691698bdf3a33495dc8b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Data Science for Biology Workshop Series</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../getting-started.html"> 
+<span class="menu-text">Get Started</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../datasets.html"> 
+<span class="menu-text">Datasets</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../resources.html"> 
+<span class="menu-text">Resources</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../past-workshops.html"> 
+<span class="menu-text">Past Workshops</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/elsherbini/data-science-for-biology"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../materials/1-workshop1/0-welcome/index.html"><b>1. Data Science with R and Agentic Coding</b></a></li><li class="breadcrumb-item"><a href="../../../materials/1-workshop1/2-intro-to-r/index.html"><b>Module 2</b>: Intro to R, Quarto, and VSCode</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text"><b>2. Multiomics: Microbiome and Host Gene Expression</b></span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/2-workshop2/0-welcome/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 0</b>: Welcome to the Workshop</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/2-workshop2/1-reads-to-counts/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 1</b>: From Reads to Count Tables</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/2-workshop2/2-count-table-anatomy/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 2</b>: Count Table Anatomy</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/2-workshop2/3-differential/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 3</b>: Differential Testing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/2-workshop2/4-ordination/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 4</b>: Distances and Ordination</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/2-workshop2/5-enrichment/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 5</b>: Sets and Enrichment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/2-workshop2/6-integration/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 6</b>: Putting the Two Tables Together</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/2-workshop2/7-group-project/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Group Project</b></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text"><b>1. Data Science with R and Agentic Coding</b></span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/1-workshop1/0-welcome/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 0</b>: Welcome to the Workshop</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/1-workshop1/1-agentic-coding/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 1</b>: Introduction to Agentic Coding</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/1-workshop1/2-intro-to-r/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><b>Module 2</b>: Intro to R, Quarto, and VSCode</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/1-workshop1/3-wrangling-and-viz/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 3</b>: Intro to data wrangling and visualization with the tidyverse</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/1-workshop1/4-more-wrangling-and-viz/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 4</b>: More data wrangling and visualization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/1-workshop1/5-modeling/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 5</b>: Modelling and Uncertainty</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/1-workshop1/6-gtsummary-and-ggpubr/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 6</b>: gtsummary and ggpubr for hypothesis testing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/1-workshop1/7-group-project/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Group Project</b></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/1-workshop1/8-mini-modules/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Mini Modules</b></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../materials/1-workshop1/package_cheatsheet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Package Cheatsheet</b></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../after-the-workshop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>After the Workshop</b></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSfSZLQYrnIvVjDNNeKpa1sDjvF8ZMiuSgB2m2XO39AP-VgE1Q/viewform" class="sidebar-item-text sidebar-link" target="_blank"><i class="bi bi-box-arrow-up-right" role="img">
+</i> 
+ <span class="menu-text">Take the Survey</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#slides" id="toc-slides" class="nav-link active" data-scroll-target="#slides">Slides</a></li>
+  <li><a href="#worksheet-build-your-first-r-notebook" id="toc-worksheet-build-your-first-r-notebook" class="nav-link" data-scroll-target="#worksheet-build-your-first-r-notebook">Worksheet: build your first R notebook</a>
+  <ul class="collapse">
+  <li><a href="#how-to-read-this-worksheet" id="toc-how-to-read-this-worksheet" class="nav-link" data-scroll-target="#how-to-read-this-worksheet">How to read this worksheet</a></li>
+  </ul></li>
+  <li><a href="#part-1-run-a-chunk-write-a-sentence-render" id="toc-part-1-run-a-chunk-write-a-sentence-render" class="nav-link" data-scroll-target="#part-1-run-a-chunk-write-a-sentence-render">Part 1 — Run a chunk, write a sentence, render</a></li>
+  <li><a href="#part-2-read-the-data-and-look-at-it" id="toc-part-2-read-the-data-and-look-at-it" class="nav-link" data-scroll-target="#part-2-read-the-data-and-look-at-it">Part 2 — Read the data and look at it</a></li>
+  <li><a href="#part-3-pull-out-columns-and-summarise-them" id="toc-part-3-pull-out-columns-and-summarise-them" class="nav-link" data-scroll-target="#part-3-pull-out-columns-and-summarise-them">Part 3 — Pull out columns and summarise them</a></li>
+  <li><a href="#part-4-build-something-with-pi" id="toc-part-4-build-something-with-pi" class="nav-link" data-scroll-target="#part-4-build-something-with-pi">Part 4 — Build something with Pi</a></li>
+  <li><a href="#capstone-make-it-your-own" id="toc-capstone-make-it-your-own" class="nav-link" data-scroll-target="#capstone-make-it-your-own">Capstone — make it your own</a></li>
+  <li><a href="#before-you-go" id="toc-before-you-go" class="nav-link" data-scroll-target="#before-you-go">Before you go</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../materials/1-workshop1/0-welcome/index.html"><b>1. Data Science with R and Agentic Coding</b></a></li><li class="breadcrumb-item"><a href="../../../materials/1-workshop1/2-intro-to-r/index.html"><b>Module 2</b>: Intro to R, Quarto, and VSCode</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Intro to R, Quarto, and VSCode</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<blockquote class="blockquote">
+<p>Get comfortable in VS Code, run R code, and render documents with Quarto.</p>
+</blockquote>
+<section id="slides" class="level2">
+<h2 class="anchored" data-anchor-id="slides">Slides</h2>
+<p><a href="../../../materials/1-workshop1/2-intro-to-r/slides.html">Make slides full screen</a></p>
+<iframe class="slide-deck" src="slides.html" height="420" width="747" style="border: 1px solid #2e3846;"></iframe>
+<!-- Included partial: rendering is controlled by the parent index.qmd. -->
+</section>
+<section id="worksheet-build-your-first-r-notebook" class="level2">
+<h2 class="anchored" data-anchor-id="worksheet-build-your-first-r-notebook">Worksheet: build your first R notebook</h2>
+<p>This is the hands-on half of the session. Over the next hour you will build up <strong>one</strong> Quarto notebook from an empty file, running code and writing a little prose as you go. By the end you will have a small report you wrote yourself.</p>
+<p>Open <code>notebooks/02-intro-to-r.qmd</code> in your Codespace and keep this page open next to it. The notebook already has a heading and an empty code chunk for each step below – you fill them in here.</p>
+<p>The whole point of this worksheet is one habit, repeated until it feels normal:</p>
+<blockquote class="blockquote">
+<p><strong>write a chunk → run it → write a sentence about what you saw → render.</strong></p>
+</blockquote>
+<section id="how-to-read-this-worksheet" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-read-this-worksheet">How to read this worksheet</h3>
+<p>Every instruction below is one of four kinds. Each has its own coloured box, so you always know what you are being asked to do. Here is one of each:</p>
+<div class="callout callout-style-default callout-note callout-titled" title="▶️ Run this">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>▶️ Run this
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Copy the chunk into your notebook and click <strong>Run Cell</strong> above it. The output appears right under the chunk.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Write the code or the prose yourself. There is an empty chunk waiting for it in your notebook.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="🤖 Ask Pi">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>🤖 Ask Pi
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Open a terminal, type <code>pi</code>, and ask Pi for help. Read what it gives you before you use it.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled" title="🔄 Render and look">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>🔄 Render and look
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Click <strong>Preview</strong> at the top right of the notebook. Read your work as a webpage, the way someone else would.</p>
+</div>
+</div>
+<p>When you see one of these four boxes, do that one thing. That is all there is to it.</p>
+</section>
+</section>
+<section id="part-1-run-a-chunk-write-a-sentence-render" class="level2">
+<h2 class="anchored" data-anchor-id="part-1-run-a-chunk-write-a-sentence-render">Part 1 — Run a chunk, write a sentence, render</h2>
+<p><em>About 10 minutes.</em> The goal here is just the loop. The code is simple on purpose.</p>
+<p>Every notebook starts by loading the packages it needs. You already have a setup chunk at the top of <code>02-intro-to-r.qmd</code>:</p>
+<div class="callout callout-style-default callout-note callout-titled" title="▶️ Run this">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>▶️ Run this
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is the setup chunk at the top of your notebook. Run it first, every time you open the notebook.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p>Now some arithmetic. R is a calculator before it is anything else.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="▶️ Run this">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>▶️ Run this
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Put this in the <strong>Part 1</strong> chunk and run it. The answers appear inline.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span> <span class="sc">+</span> <span class="dv">5</span> <span class="sc">+</span> <span class="dv">10</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span> <span class="sc">*</span> (<span class="dv">5</span> <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> <span class="sc">**</span> <span class="dv">10</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Above the chunk, write one plain sentence in your own words, for example: <em>“R treats <code>**</code> as ‘to the power of’, so <code>2 ** 10</code> is 2 multiplied by itself ten times.”</em> This is the prose half of a notebook – code surrounded by your own explanation.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="▶️ Run this">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>▶️ Run this
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Add these two lines below the others and run again. They look almost the same.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dv">64</span> <span class="sc">/</span> <span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dv">64</span> <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Write a sentence explaining why the two lines give different answers. (Hint: what do the brackets change?)</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled" title="🔄 Render and look">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>🔄 Render and look
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Click <strong>Preview</strong>. You should see your sentences and your code and its output, laid out as a clean page. That is the loop. You will do it again four more times.</p>
+</div>
+</div>
+</section>
+<section id="part-2-read-the-data-and-look-at-it" class="level2">
+<h2 class="anchored" data-anchor-id="part-2-read-the-data-and-look-at-it">Part 2 — Read the data and look at it</h2>
+<p><em>About 13 minutes.</em> From here on you work with the real workshop dataset: the clinical measurements table (<code>02_visit_clinical_measurements</code>) you saw in the slides. One row is one participant at one visit.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the <strong>Part 2</strong> chunk, read the file into a tibble called <code>table_02</code>, then print it. Type it yourself:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>table_02 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/instructional_dataset/02_visit_clinical_measurements_UKZN_workshop_2023.csv"</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>table_02</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>&lt;-</code> saves the data under the name <code>table_02</code>. After this line, <code>table_02</code> <em>is</em> the data.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Read the printout. Write a sentence recording how many rows and how many columns it has, and name two columns that look interesting to you.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="▶️ Run this">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>▶️ Run this
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>glimpse()</code> is a friendlier way to see every column at once. Add it and run.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(table_02)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled" title="🔄 Render and look">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>🔄 Render and look
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Render again. Notice that a printed tibble and a <code>glimpse()</code> look different in the report – both are useful for getting your bearings in a new dataset.</p>
+</div>
+</div>
+</section>
+<section id="part-3-pull-out-columns-and-summarise-them" class="level2">
+<h2 class="anchored" data-anchor-id="part-3-pull-out-columns-and-summarise-them">Part 3 — Pull out columns and summarise them</h2>
+<p><em>About 13 minutes.</em> A tibble is a stack of columns. Each column is a <strong>vector</strong>: a sequence of values, all the same type. You can pull one out and do maths on it.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the <strong>Part 3</strong> chunk, pull out the <code>nugent_score</code> column with <code>$</code> and run it.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>table_02<span class="sc">$</span>nugent_score</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>That row of numbers is the vector. The Nugent score runs 0–10; 7 or above suggests bacterial vaginosis.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Now summarise a column with a function. <code>mean()</code> takes a vector and gives back one number. Add this and run:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(table_02<span class="sc">$</span>crp_blood, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>na.rm = TRUE</code> tells <code>mean()</code> to skip missing values. Try removing it and running again – what happens, and why?</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Save the result under a name so you can reuse it, then print the name:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>crp_mean <span class="ot">&lt;-</span> <span class="fu">mean</span>(table_02<span class="sc">$</span>crp_blood, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>crp_mean</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Write a sentence reporting the mean blood CRP and what <code>na.rm = TRUE</code> did.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled" title="🔄 Render and look">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>🔄 Render and look
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Render. You now have prose, a vector, a summary, and a saved value in one report.</p>
+</div>
+</div>
+</section>
+<section id="part-4-build-something-with-pi" class="level2">
+<h2 class="anchored" data-anchor-id="part-4-build-something-with-pi">Part 4 — Build something with Pi</h2>
+<p><em>About 14 minutes.</em> Pi is the coding agent from Module 1. It runs in the terminal and can read the files in your project. Here you use it the way you should all week: as a fast helper whose work you always check.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="🤖 Ask Pi">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>🤖 Ask Pi
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Open a terminal (<strong>Terminal → New Terminal</strong>), type <code>pi</code>, and ask it something specific, naming the file and the columns:</p>
+<blockquote class="blockquote">
+<p>Read <code>data/instructional_dataset/02_visit_clinical_measurements_UKZN_workshop_2023.csv</code> and write an R chunk that shows the mean <code>nugent_score</code> for each <code>arm</code>.</p>
+</blockquote>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="▶️ Run this">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>▶️ Run this
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Paste Pi’s chunk into the <strong>Part 4</strong> chunk and run it. Did it work first try? If it errored, read the error, paste it back to Pi, and try its fix.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="🤖 Ask Pi">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>🤖 Ask Pi
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Push back on the code, even if it ran. Ask:</p>
+<blockquote class="blockquote">
+<p>Explain that chunk to me line by line. Why did you use those functions?</p>
+</blockquote>
+<p>Notice when Pi gives a clear, correct explanation and when it sounds confident but vague.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Write a sentence on two things: did Pi’s output actually answer what you asked, and did the column names it used really exist in the data? (Pi sometimes invents column names – always check.)</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled" title="🔄 Render and look">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>🔄 Render and look
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Render. Part of the skill is making Pi’s contribution fit cleanly into a report that reads as yours.</p>
+</div>
+</div>
+</section>
+<section id="capstone-make-it-your-own" class="level2">
+<h2 class="anchored" data-anchor-id="capstone-make-it-your-own">Capstone — make it your own</h2>
+<p><em>About 14 minutes.</em> No step-by-step this time. Build a short piece of analysis about something in this dataset you are actually curious about. The columns <code>nugent_score</code>, <code>crp_blood</code>, <code>ph</code>, <code>arm</code>, and <code>time_point</code> are all fair game.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the <strong>Capstone</strong> chunk, pick one numeric column and compute a few summaries of it – some of <code>min()</code>, <code>max()</code>, <code>median()</code>, <code>mean()</code>, <code>sd()</code>. Run as you go.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="🤖 Ask Pi">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>🤖 Ask Pi
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Use Pi <strong>once</strong> to push your analysis a step further. For example: <em>“How many visits have a <code>nugent_score</code> of 7 or higher?”</em> or <em>“Show the mean <code>ph</code> at each <code>time_point</code>.”</em> Run its answer and check it.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="✍️ Your turn">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✍️ Your turn
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Write a short paragraph – three or four sentences – saying what you looked at and what you found. Connect it to the biology where you can (for instance, a Nugent score of 7+ is the bacterial-vaginosis range).</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled" title="🔄 Render and look">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>🔄 Render and look
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Render one last time. This is your notebook. Read it top to bottom as a report and fix anything that does not flow.</p>
+</div>
+</div>
+</section>
+<section id="before-you-go" class="level2">
+<h2 class="anchored" data-anchor-id="before-you-go">Before you go</h2>
+<div class="callout callout-style-default callout-important callout-titled" title="🤖 Ask Pi">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>🤖 Ask Pi
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Pick one step today that confused you. Ask Pi to explain it, then push back: <em>“why did you use X instead of Y?”</em> Notice when Pi sounds confident versus when it is guessing. Using Pi as a study partner rather than an answer machine is the habit that will keep you learning all week.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="📖 Cheat-sheet: R you might want while you work">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-29-contents" aria-controls="callout-29" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📖 Cheat-sheet: R you might want while you work
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-29" class="callout-29-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>You do not need to read this to finish the worksheet. It is here for reference when you want a reminder.</p>
+<p><strong>Arithmetic</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>  <span class="sc">-</span>  <span class="er">*</span>  <span class="er">/</span>        add, subtract, multiply, divide</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="sc">^</span>  or  <span class="sc">**</span>         power<span class="sc">:</span> <span class="dv">2</span> <span class="sc">**</span> <span class="dv">3</span> is <span class="dv">8</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>x <span class="sc">%%</span> y            remainder<span class="sc">:</span> <span class="dv">5</span> <span class="sc">%%</span> <span class="dv">2</span> is <span class="dv">1</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>x <span class="sc">%/%</span> y           whole<span class="sc">-</span>number division<span class="sc">:</span> <span class="dv">5</span> <span class="sc">%/%</span> <span class="dv">2</span> is <span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Comparisons</strong> (give <code>TRUE</code> or <code>FALSE</code>)</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&lt;</span>   <span class="er">&lt;=</span>   <span class="er">&gt;</span>   <span class="er">&gt;=</span>   less <span class="sc">/</span> greater <span class="fu">than</span> (or equal)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="sc">==</span>               equal to</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="sc">!=</span>               not equal to</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>x <span class="sc">&amp;</span> y            x AND y</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>x <span class="sc">|</span> y            x OR y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Summarising a column</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)   average, skipping missing values</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(x)               middle value</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(x)                   standard deviation</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(x)   <span class="fu">max</span>(x)         smallest <span class="sc">/</span> largest</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(x)                min and max together</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(x)                  total</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(x)               how many values</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Looking at a tibble</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>table_02              print it</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(table_02)     every column, one per line</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(table_02)        first few rows</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(table_02)        number of rows</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ncol</span>(table_02)        number of columns</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(table_02)       the column names</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>table_02<span class="sc">$</span>column_name  pull out one column as a vector</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Getting help</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>?mean        open the help page <span class="cf">for</span> a <span class="cf">function</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>?read_csv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You can also ask Pi to explain a function – then check what it says against the help page.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Going further (optional)">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-30-contents" aria-controls="callout-30" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Going further (optional)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-30" class="callout-30-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>If you finish early and want more, try any of these in your notebook:</p>
+<ol type="1">
+<li>Make your own small tibble from scratch with <code>tibble()</code> – a few columns of your own data – and summarise one of them.</li>
+<li>Compare a measure between the two arms: is the mean <code>crp_blood</code> different for <code>placebo</code> versus <code>treatment</code>? (Ask Pi how to do this with <code>group_by()</code> and <code>summarise()</code>, then check the result.)</li>
+<li>Pull out just the baseline visits and summarise <code>ph</code> for them. How would you describe, in one sentence, what “baseline” means here?</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../materials/1-workshop1/1-agentic-coding/index.html" class="pagination-link" aria-label="<b>Module 1</b>: Introduction to Agentic Coding">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><b>Module 1</b>: Introduction to Agentic Coding</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../../materials/1-workshop1/3-wrangling-and-viz/index.html" class="pagination-link" aria-label="<b>Module 3</b>: Intro to data wrangling and visualization with the tidyverse">
+        <span class="nav-page-text"><b>Module 3</b>: Intro to data wrangling and visualization with the tidyverse</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

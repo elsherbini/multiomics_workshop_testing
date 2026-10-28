@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.37">
+
+  <title>Data Science for Biology Workshop Series – More data wrangling and visualization</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+      }
+    pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+    div.sourceCode
+      { color: #24292e;  }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #24292e; } /* Normal */
+    code span.al { color: #ff5555; font-weight: bold; } /* Alert */
+    code span.an { color: #6a737d; } /* Annotation */
+    code span.at { color: #d73a49; } /* Attribute */
+    code span.bn { color: #005cc5; } /* BaseN */
+    code span.bu { color: #d73a49; } /* BuiltIn */
+    code span.cf { color: #d73a49; } /* ControlFlow */
+    code span.ch { color: #032f62; } /* Char */
+    code span.cn { color: #005cc5; } /* Constant */
+    code span.co { color: #6a737d; } /* Comment */
+    code span.cv { color: #6a737d; } /* CommentVar */
+    code span.do { color: #6a737d; } /* Documentation */
+    code span.dt { color: #d73a49; } /* DataType */
+    code span.dv { color: #005cc5; } /* DecVal */
+    code span.er { color: #ff5555; text-decoration: underline; } /* Error */
+    code span.ex { color: #d73a49; font-weight: bold; } /* Extension */
+    code span.fl { color: #005cc5; } /* Float */
+    code span.fu { color: #6f42c1; } /* Function */
+    code span.im { color: #032f62; } /* Import */
+    code span.in { color: #6a737d; } /* Information */
+    code span.kw { color: #d73a49; } /* Keyword */
+    code span.op { color: #24292e; } /* Operator */
+    code span.ot { color: #6f42c1; } /* Other */
+    code span.pp { color: #d73a49; } /* Preprocessor */
+    code span.re { color: #6a737d; } /* RegionMarker */
+    code span.sc { color: #005cc5; } /* SpecialChar */
+    code span.ss { color: #032f62; } /* SpecialString */
+    code span.st { color: #032f62; } /* String */
+    code span.va { color: #e36209; } /* Variable */
+    code span.vs { color: #032f62; } /* VerbatimString */
+    code span.wa { color: #ff5555; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/theme/quarto-4798c887995defeda8bed5d5d150a62a.css">
+  <link href="../../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <link href="../../../site_libs/countdown-0.6.0/countdown.css" rel="stylesheet">
+  <script src="../../../site_libs/countdown-0.6.0/countdown.js"></script>
+</head>
+<body class="quarto-light">
+<div style="display:none;"></div>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-color="#f8f5f0" data-background-image="../../../site_libs/quarto-contrib/quarto-project/qmdr/qmdrslides/durban-watercolor-gradient.png" data-background-size="contain" class="quarto-title-block center">
+  <h1 class="title">More data wrangling and visualization</h1>
+  <p class="subtitle">Workshop 1, Module 4</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section id="goals-for-this-module" class="slide level2">
+<h2>Goals for this module</h2>
+<p>By the end of this module you can:</p>
+<ul>
+<li>name what a row represents <em>before and after</em> every verb in a pipeline</li>
+<li>collapse a table to one row per group with <code>group_by</code> + <code>summarise</code></li>
+<li>attach data from another table with <code>left_join</code></li>
+<li>filter by membership in another table with <code>semi_join</code></li>
+<li>reshape between long and wide with <code>pivot_longer</code> and <code>pivot_wider</code></li>
+<li>pick the right plot for a distribution (histogram, boxplot, quasirandom, violin)</li>
+<li>layer raw observations under a computed summary in one figure</li>
+</ul>
+</section>
+<section id="module-3-preserved-row-meaning.-module-4-changes-it." class="slide level2">
+<h2>Module 3 preserved row meaning. Module 4 changes it.</h2>
+<p>Module 3’s verbs all kept “what a row represents” the same: <code>filter</code> drops rows but each remaining row still means the same thing; <code>mutate</code> adds columns; <code>arrange</code> reorders.</p>
+<p>Module 4’s verbs change it. Or sometimes don’t. You have to know which.</p>
+<p>The whole module asks one question on every slide: <strong>what does a row represent now?</strong></p>
+</section>
+<section id="the-through-line-table_02" class="slide level2">
+<h2>The through-line: <code>table_02</code></h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a>table_02</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 132 × 6
+   pid    time_point arm     nugent_score crp_blood    ph
+   &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;
+ 1 pid_01 baseline   placebo            8      0.44   5.7
+ 2 pid_01 week_1     placebo            7      1.66   5.2
+ 3 pid_01 week_7     placebo            7      1.44   5.4
+ 4 pid_02 baseline   placebo            7      1.55   5.2
+ 5 pid_02 week_1     placebo            7      0.75   4.8
+ 6 pid_02 week_7     placebo            4      1.17   4.2
+ 7 pid_03 baseline   placebo            6      1.78   4.8
+ 8 pid_03 week_1     placebo           10      0.57   5.3
+ 9 pid_03 week_7     placebo            7      1.79   5.2
+10 pid_04 baseline   placebo            5      1.76   4.8
+# ℹ 122 more rows</code></pre>
+</div>
+</div>
+<p>132 rows. <em>Row = participant-visit</em> (44 participants × 3 visits).</p>
+<p>We will transform this same table through the next 18 slides. Watch what each verb does to the row count, and to what a row represents.</p>
+</section>
+<section id="group_by-is-a-state-change-not-a-shape-change" class="slide level2">
+<h2><code>group_by</code> is a state change, not a shape change</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>table_02 <span class="sc">|&gt;</span> <span class="fu">group_by</span>(pid)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 132 × 6
+# Groups:   pid [44]
+   pid    time_point arm     nugent_score crp_blood    ph
+   &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;
+ 1 pid_01 baseline   placebo            8      0.44   5.7
+ 2 pid_01 week_1     placebo            7      1.66   5.2
+ 3 pid_01 week_7     placebo            7      1.44   5.4
+ 4 pid_02 baseline   placebo            7      1.55   5.2
+ 5 pid_02 week_1     placebo            7      0.75   4.8
+ 6 pid_02 week_7     placebo            4      1.17   4.2
+ 7 pid_03 baseline   placebo            6      1.78   4.8
+ 8 pid_03 week_1     placebo           10      0.57   5.3
+ 9 pid_03 week_7     placebo            7      1.79   5.2
+10 pid_04 baseline   placebo            5      1.76   4.8
+# ℹ 122 more rows</code></pre>
+</div>
+</div>
+<p>Same 132 rows. <em>Row meaning unchanged.</em> What changed is that subsequent verbs now act <em>per group</em>.</p>
+</section>
+<section id="summarise-collapses-each-group-to-one-row" class="slide level2">
+<h2><code>summarise</code> collapses each group to one row</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>table_02 <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a></a>  <span class="fu">group_by</span>(pid) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a></a>  <span class="fu">summarise</span>(</span>
+<span id="cb5-4"><a></a>    <span class="at">mean_ph =</span> <span class="fu">mean</span>(ph),</span>
+<span id="cb5-5"><a></a>    <span class="at">mean_nugent =</span> <span class="fu">mean</span>(nugent_score)</span>
+<span id="cb5-6"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 44 × 3
+   pid    mean_ph mean_nugent
+   &lt;chr&gt;    &lt;dbl&gt;       &lt;dbl&gt;
+ 1 pid_01    5.43        7.33
+ 2 pid_02    4.73        6   
+ 3 pid_03    5.1         7.67
+ 4 pid_04    5.1         7   
+ 5 pid_05    3.87        4.33
+ 6 pid_06    5.3         8.67
+ 7 pid_07    5.07        6.33
+ 8 pid_08    5.07        7   
+ 9 pid_09    4.23        4   
+10 pid_10    3.77        3   
+# ℹ 34 more rows</code></pre>
+</div>
+</div>
+<p>132 → 44 rows. <em>Row = participant.</em> Visits collapsed.</p>
+</section>
+<section id="different-grouping-different-row-meaning" class="slide level2">
+<h2>Different grouping, different row meaning</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>table_02 <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a></a>  <span class="fu">group_by</span>(arm, time_point) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a></a>  <span class="fu">summarise</span>(<span class="at">mean_ph =</span> <span class="fu">mean</span>(ph))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+# Groups:   arm [2]
+  arm       time_point mean_ph
+  &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;
+1 placebo   baseline      5.09
+2 placebo   week_1        4.82
+3 placebo   week_7        4.73
+4 treatment baseline      4.54
+5 treatment week_1        3.51
+6 treatment week_7        3.90</code></pre>
+</div>
+</div>
+<p>132 → 6 rows. <em>Row = arm-timepoint.</em> Same starting data, different grouping, different row meaning.</p>
+</section>
+<section id="you-picked-what-a-row-means" class="slide level2">
+<h2>You picked what a row means</h2>
+<p>The verb didn’t decide.</p>
+<p>When you wrote <code>group_by(pid)</code>, the row collapsed to a participant.</p>
+<p>When you wrote <code>group_by(arm, time_point)</code>, it collapsed to an arm-timepoint cell.</p>
+<p>The grouping is the design choice that decides what a row will mean after <code>summarise</code>.</p>
+</section>
+<section id="quick-check" class="slide level2 your-turn">
+<h2>Quick check</h2>
+<p>What does each row represent, and how many rows, after:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>table_01 <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a></a>  <span class="fu">group_by</span>(smoker) <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean_age =</span> <span class="fu">mean</span>(age))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Predict before the reveal.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a>countdown<span class="sc">::</span><span class="fu">countdown</span>(<span class="dv">1</span>, <span class="at">top =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<countdown-timer class="countdown" id="timer_a064958e" minutes="1" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+</div>
+</div>
+</section>
+<section id="group_by-mutate-same-rows-derived-by-group" class="slide level2">
+<h2><code>group_by</code> + <code>mutate</code> — same rows, derived by group</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>table_02 <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a></a>  <span class="fu">group_by</span>(arm) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a></a>  <span class="fu">mutate</span>(<span class="at">rank_ph_within_arm =</span> <span class="fu">rank</span>(ph)) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a></a>  <span class="fu">select</span>(pid, arm, ph, rank_ph_within_arm) <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a></a>  <span class="fu">head</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+# Groups:   arm [1]
+  pid    arm        ph rank_ph_within_arm
+  &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt;              &lt;dbl&gt;
+1 pid_01 placebo   5.7               68  
+2 pid_01 placebo   5.2               48  
+3 pid_01 placebo   5.4               61  
+4 pid_02 placebo   5.2               48  
+5 pid_02 placebo   4.8               27.5
+6 pid_02 placebo   4.2                7.5</code></pre>
+</div>
+</div>
+<p>Still 132 rows, <em>row = participant-visit.</em> The new column is computed within each arm. <code>group_by</code> doesn’t always collapse; the verb after it decides.</p>
+</section>
+<section id="left_join-the-mutating-join" class="slide level2">
+<h2><code>left_join</code> — the mutating join</h2>
+<p><code>left_join</code> adds columns from a second table by matching on a key. <em>Same row meaning, same row count</em> (when the join is well-formed).</p>
+
+<img data-src="images/join.svg" class="r-stretch"></section>
+<section id="left_join-demo" class="slide level2">
+<h2><code>left_join</code> — demo</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>per_person <span class="ot">&lt;-</span> table_02 <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a></a>  <span class="fu">group_by</span>(pid) <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a></a>  <span class="fu">summarise</span>(<span class="at">mean_ph =</span> <span class="fu">mean</span>(ph), <span class="at">mean_nugent =</span> <span class="fu">mean</span>(nugent_score))</span>
+<span id="cb13-4"><a></a></span>
+<span id="cb13-5"><a></a>per_person <span class="sc">|&gt;</span> <span class="fu">left_join</span>(table_01, <span class="at">by =</span> <span class="st">"pid"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 44 × 8
+   pid    mean_ph mean_nugent arm       smoker       age education         sex  
+   &lt;chr&gt;    &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;             &lt;lgl&gt;
+ 1 pid_01    5.43        7.33 placebo   non-smoker    26 grade 10-12, mat… FALSE
+ 2 pid_02    4.73        6    placebo   smoker        33 grade 10-12, mat… FALSE
+ 3 pid_03    5.1         7.67 placebo   smoker        30 post-secondary    FALSE
+ 4 pid_04    5.1         7    placebo   non-smoker    34 grade 10-12, not… FALSE
+ 5 pid_05    3.87        4.33 treatment non-smoker    29 grade 10-12, mat… FALSE
+ 6 pid_06    5.3         8.67 placebo   smoker        34 post-secondary    FALSE
+ 7 pid_07    5.07        6.33 placebo   non-smoker    31 grade 10-12, not… FALSE
+ 8 pid_08    5.07        7    placebo   smoker        30 grade 10-12, not… FALSE
+ 9 pid_09    4.23        4    treatment non-smoker    35 grade 10-12, not… FALSE
+10 pid_10    3.77        3    treatment non-smoker    32 less than grade 9 FALSE
+# ℹ 34 more rows</code></pre>
+</div>
+</div>
+<p>44 rows in, 44 rows out. <em>Row = participant</em> (unchanged). New columns: <code>arm</code>, <code>smoker</code>, <code>age</code>, <code>education</code>, <code>sex</code>.</p>
+</section>
+<section id="semi_join-the-filtering-join" class="slide level2">
+<h2><code>semi_join</code> — the filtering join</h2>
+<p><code>semi_join</code> keeps rows in the left table that have a match in the right table. <em>No new columns.</em> Same row meaning, fewer rows.</p>
+
+<img data-src="images/joins-venn.svg" class="r-stretch"></section>
+<section id="semi_join-demo" class="slide level2">
+<h2><code>semi_join</code> — demo</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>smokers <span class="ot">&lt;-</span> table_01 <span class="sc">|&gt;</span> <span class="fu">filter</span>(smoker <span class="sc">==</span> <span class="st">"smoker"</span>)</span>
+<span id="cb15-2"><a></a></span>
+<span id="cb15-3"><a></a>per_person <span class="sc">|&gt;</span> <span class="fu">semi_join</span>(smokers, <span class="at">by =</span> <span class="st">"pid"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 17 × 3
+   pid    mean_ph mean_nugent
+   &lt;chr&gt;    &lt;dbl&gt;       &lt;dbl&gt;
+ 1 pid_02    4.73        6   
+ 2 pid_03    5.1         7.67
+ 3 pid_06    5.3         8.67
+ 4 pid_08    5.07        7   
+ 5 pid_11    4.47        4   
+ 6 pid_14    4.87        6.33
+ 7 pid_18    3.93        4.33
+ 8 pid_20    4.8         5.67
+ 9 pid_25    4.1         3   
+10 pid_26    4.47        3.67
+11 pid_27    4.97        6.67
+12 pid_29    4.6         4.67
+13 pid_33    3.83        3   
+14 pid_38    4.8         5.67
+15 pid_41    4.03        3.33
+16 pid_42    4.77        6   
+17 pid_43    4.3         6   </code></pre>
+</div>
+</div>
+<p><em>Row = participant</em> (unchanged). Rows that aren’t smokers are dropped.</p>
+</section>
+<section id="watch-out-many-to-many-joins-multiply-rows" class="slide level2">
+<h2>Watch out — many-to-many joins multiply rows</h2>
+<p>If both sides have duplicate keys, the join multiplies rows:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a>left <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>), <span class="at">x =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>))</span>
+<span id="cb17-2"><a></a>right <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="st">"p"</span>, <span class="st">"q"</span>, <span class="st">"r"</span>))</span>
+<span id="cb17-3"><a></a>left <span class="sc">|&gt;</span> <span class="fu">left_join</span>(right, <span class="at">by =</span> <span class="st">"id"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+     id x     y    
+  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
+1     1 a     p    
+2     1 a     q    
+3     1 b     p    
+4     1 b     q    
+5     2 c     r    </code></pre>
+</div>
+</div>
+<p>3 + 3 = … 5 rows. A well-formed join from a tidy left table should <em>not</em> change your row count. If it does, your key isn’t unique somewhere.</p>
+</section>
+<section id="quick-check-1" class="slide level2 your-turn">
+<h2>Quick check</h2>
+<p>What does each row represent, and how many rows, after:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>table_02 <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a></a>  <span class="fu">left_join</span>(table_01, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"pid"</span>, <span class="st">"arm"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>(Hint: <code>arm</code> appears in both tables. Does that change anything?)</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>countdown<span class="sc">::</span><span class="fu">countdown</span>(<span class="dv">1</span>, <span class="at">top =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<countdown-timer class="countdown" id="timer_815267e2" minutes="1" seconds="0" update-every="1" tabindex="0" style="top:0;right:0;"></countdown-timer>
+</div>
+</div>
+</section>
+<section id="pivot_longer-from-wide-to-long" class="slide level2">
+<h2><code>pivot_longer</code> — from wide to long</h2>
+<p>Each measurement column becomes a row.</p>
+
+<img data-src="images/pivot.svg" class="r-stretch"></section>
+<section id="pivot_longer-demo" class="slide level2">
+<h2><code>pivot_longer</code> — demo</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>table_02 <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb21-3"><a></a>    <span class="at">cols =</span> <span class="fu">c</span>(ph, nugent_score, crp_blood),</span>
+<span id="cb21-4"><a></a>    <span class="at">names_to =</span> <span class="st">"measurement"</span>,</span>
+<span id="cb21-5"><a></a>    <span class="at">values_to =</span> <span class="st">"value"</span></span>
+<span id="cb21-6"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 396 × 5
+   pid    time_point arm     measurement  value
+   &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;        &lt;dbl&gt;
+ 1 pid_01 baseline   placebo ph            5.7 
+ 2 pid_01 baseline   placebo nugent_score  8   
+ 3 pid_01 baseline   placebo crp_blood     0.44
+ 4 pid_01 week_1     placebo ph            5.2 
+ 5 pid_01 week_1     placebo nugent_score  7   
+ 6 pid_01 week_1     placebo crp_blood     1.66
+ 7 pid_01 week_7     placebo ph            5.4 
+ 8 pid_01 week_7     placebo nugent_score  7   
+ 9 pid_01 week_7     placebo crp_blood     1.44
+10 pid_02 baseline   placebo ph            5.2 
+# ℹ 386 more rows</code></pre>
+</div>
+</div>
+<p>132 → 396 rows. <em>Row = participant-visit-measurement.</em></p>
+<p><strong>This is the move that unlocks faceting.</strong> <code>facet_wrap()</code> draws one panel per value of a column — so when you want a panel per measurement, reshape to long with <code>pivot_longer</code> first. We use exactly this in Exercise 2.</p>
+</section>
+<section id="pivot_wider-from-long-to-wide" class="slide level2">
+<h2><code>pivot_wider</code> — from long to wide</h2>
+<p>The inverse: one row per entity with the previously-long values spread out as columns.</p>
+
+<img data-src="images/pivot.svg" class="r-stretch"></section>
+<section id="pivot_wider-demo" class="slide level2">
+<h2><code>pivot_wider</code> — demo</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a>arm_timepoint <span class="ot">&lt;-</span> table_02 <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a></a>  <span class="fu">group_by</span>(arm, time_point) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a></a>  <span class="fu">summarise</span>(<span class="at">mean_ph =</span> <span class="fu">mean</span>(ph))</span>
+<span id="cb23-4"><a></a></span>
+<span id="cb23-5"><a></a>arm_timepoint <span class="sc">|&gt;</span></span>
+<span id="cb23-6"><a></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb23-7"><a></a>    <span class="at">names_from =</span> time_point,</span>
+<span id="cb23-8"><a></a>    <span class="at">values_from =</span> mean_ph</span>
+<span id="cb23-9"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 4
+# Groups:   arm [2]
+  arm       baseline week_1 week_7
+  &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+1 placebo       5.09   4.82   4.73
+2 treatment     4.54   3.51   3.90</code></pre>
+</div>
+</div>
+<p>6 → 2 rows. <em>Row = arm.</em> Three new columns, one per visit. Useful for table-style display.</p>
+</section>
+<section id="lets-take-a-poll" class="slide level2 your-turn">
+<h2>Let’s take a poll</h2>
+<p>Go to <a href="https://app.wooclap.com/DURBAN?from=event-page">the event on wooclap</a></p>
+
+<img data-src="../../../images/wooclap_info.png" class="r-stretch"></section>
+<section id="exercise-1" class="slide level2 your-turn">
+<h2>Exercise 1</h2>
+<p>Open <code>notebooks/04-wrangling.qmd</code> in your Codespace.</p>
+<p><br></p>
+<p>Group A: agentic. Group B: manual.</p>
+<p><br></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>countdown<span class="sc">::</span><span class="fu">countdown</span>(<span class="dv">30</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<countdown-timer class="countdown" id="timer_ffbd1027" minutes="30" seconds="0" update-every="1" tabindex="0" style="right:0;bottom:0;"></countdown-timer>
+</div>
+</div>
+</section>
+<section>
+<section id="visualization" class="title-slide slide level1 center">
+<h1>Visualization</h1>
+
+</section>
+<section id="marks-that-summarise-or-marks-arranged-by-density" class="slide level2">
+<h2>Marks that summarise, or marks arranged by density</h2>
+<p>Module 3 said <em>every row of the data becomes a mark.</em></p>
+<p>Module 4 extends it. Some plots count rows into bins. Some summarise many rows into one mark. Some keep every row visible but use the layout to reveal density.</p>
+<p>Several ways to show a distribution.</p>
+</section>
+<section id="geom_histogram-bin-and-count" class="slide level2">
+<h2><code>geom_histogram</code> — bin and count</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a><span class="fu">ggplot</span>(table_02, <span class="fu">aes</span>(ph)) <span class="sc">+</span></span>
+<span id="cb26-2"><a></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.2</span>, <span class="at">fill =</span> <span class="st">"navyblue"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"><p>One bar = count of rows in a bin. <em>Many rows per mark.</em> Bin width matters — try <code>binwidth = 0.05</code> and <code>binwidth = 1</code> to see how the picture changes.</p>
+</section>
+<section id="geom_bar-for-counting" class="slide level2">
+<h2><code>geom_bar</code> for counting</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">ggplot</span>(table_01, <span class="fu">aes</span>(education)) <span class="sc">+</span></span>
+<span id="cb27-2"><a></a>  <span class="fu">geom_bar</span>(<span class="at">fill =</span> <span class="st">"navyblue"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"><p>Same idea as <code>count(education) |&gt; geom_col()</code>. <code>geom_bar</code> does the count internally; <code>geom_col</code> is for pre-counted data.</p>
+</section>
+<section id="geom_boxplot-revisited" class="slide level2">
+<h2><code>geom_boxplot</code> revisited</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a><span class="fu">ggplot</span>(table_02, <span class="fu">aes</span>(arm, ph)) <span class="sc">+</span></span>
+<span id="cb28-2"><a></a>  <span class="fu">geom_boxplot</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch"><p>A five-number summary of many rows. Default choice for comparing distributions across many groups.</p>
+</section>
+<section id="geom_quasirandom-every-row-visible" class="slide level2">
+<h2><code>geom_quasirandom</code> — every row visible</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="fu">ggplot</span>(table_02, <span class="fu">aes</span>(arm, ph)) <span class="sc">+</span></span>
+<span id="cb29-2"><a></a>  <span class="fu">geom_quasirandom</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch"><p>From <code>ggbeeswarm</code>. Each row is still one mark (1:1), but horizontal jitter is set by local density at that y-value. The cluster shape reveals the distribution without abstracting rows away.</p>
+</section>
+<section id="density-briefly" class="slide level2">
+<h2>Density, briefly</h2>
+<p>The fat parts of a quasirandom plot are where density is high.</p>
+<p>That is what <em>density</em> means. We will see an explicit smoothed version in a moment.</p>
+</section>
+<section id="plotting-your-own-summary" class="slide level2">
+<h2>Plotting your own summary</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>ph_summary <span class="ot">&lt;-</span> table_02 <span class="sc">|&gt;</span></span>
+<span id="cb30-2"><a></a>  <span class="fu">group_by</span>(arm) <span class="sc">|&gt;</span></span>
+<span id="cb30-3"><a></a>  <span class="fu">summarise</span>(<span class="at">mean_ph =</span> <span class="fu">mean</span>(ph), <span class="at">sd_ph =</span> <span class="fu">sd</span>(ph))</span>
+<span id="cb30-4"><a></a></span>
+<span id="cb30-5"><a></a><span class="fu">ggplot</span>(ph_summary, <span class="fu">aes</span>(arm, mean_ph)) <span class="sc">+</span></span>
+<span id="cb30-6"><a></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"navyblue"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"><p>After you summarise, each row is one summary → one bar. Row-to-mark ratio is 1:1 again.</p>
+</section>
+<section id="adding-uncertainty" class="slide level2">
+<h2>Adding uncertainty</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="fu">ggplot</span>(ph_summary, <span class="fu">aes</span>(arm, mean_ph)) <span class="sc">+</span></span>
+<span id="cb31-2"><a></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> mean_ph <span class="sc">-</span> sd_ph, <span class="at">ymax =</span> mean_ph <span class="sc">+</span> sd_ph))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"><p><code>geom_pointrange()</code> shows the mean as a point and ±SD as a line. The standard “mean ± SD” mark.</p>
+</section>
+<section id="layered-raw-rows-under-a-summary-mark" class="slide level2">
+<h2>Layered: raw rows under a summary mark</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb32-2"><a></a>  <span class="fu">geom_quasirandom</span>(<span class="at">data =</span> table_02, <span class="fu">aes</span>(arm, ph), <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb32-3"><a></a>  <span class="fu">geom_pointrange</span>(</span>
+<span id="cb32-4"><a></a>    <span class="at">data =</span> ph_summary,</span>
+<span id="cb32-5"><a></a>    <span class="fu">aes</span>(arm, mean_ph, <span class="at">ymin =</span> mean_ph <span class="sc">-</span> sd_ph, <span class="at">ymax =</span> mean_ph <span class="sc">+</span> sd_ph),</span>
+<span id="cb32-6"><a></a>    <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">size =</span> <span class="fl">0.8</span></span>
+<span id="cb32-7"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch"><p>Two layers. Two data tables. One figure. Layers can have different data.</p>
+</section>
+<section id="geom_violin" class="slide level2">
+<h2><code>geom_violin</code></h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="fu">ggplot</span>(table_02, <span class="fu">aes</span>(arm, ph)) <span class="sc">+</span></span>
+<span id="cb33-2"><a></a>  <span class="fu">geom_violin</span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch"><p>Shape + summary in one mark. The smoothed sibling of <code>geom_boxplot</code> for comparing distributions across groups.</p>
+</section>
+<section id="geom_density" class="slide level2">
+<h2><code>geom_density</code></h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a><span class="fu">ggplot</span>(table_02, <span class="fu">aes</span>(ph)) <span class="sc">+</span></span>
+<span id="cb34-2"><a></a>  <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch"><p>A smoothed density curve for one continuous variable. The explicit version of the “fat parts” idea from earlier.</p>
+</section>
+<section id="layered-violin-quasirandom" class="slide level2">
+<h2>Layered: violin + quasirandom</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="fu">ggplot</span>(table_02, <span class="fu">aes</span>(arm, ph)) <span class="sc">+</span></span>
+<span id="cb35-2"><a></a>  <span class="fu">geom_violin</span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>) <span class="sc">+</span></span>
+<span id="cb35-3"><a></a>  <span class="fu">geom_quasirandom</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch"><p>Group shape from the violin, individual rows from quasirandom on top.</p>
+</section>
+<section id="faceted-plots-from-long-format-data" class="slide level2">
+<h2>Faceted plots from long-format data</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a>table_02 <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb36-3"><a></a>    <span class="at">cols =</span> <span class="fu">c</span>(ph, nugent_score, crp_blood),</span>
+<span id="cb36-4"><a></a>    <span class="at">names_to =</span> <span class="st">"measurement"</span>,</span>
+<span id="cb36-5"><a></a>    <span class="at">values_to =</span> <span class="st">"value"</span></span>
+<span id="cb36-6"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb36-7"><a></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(arm, value)) <span class="sc">+</span></span>
+<span id="cb36-8"><a></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb36-9"><a></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> measurement, <span class="at">scales =</span> <span class="st">"free_y"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+</div>
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch"><p>The <code>pivot_longer</code> from the wrangling half is what <em>enables</em> this kind of small-multiples plot — each facet sees one slice of the long table. Want facets? Reshape to long first.</p>
+</section>
+<section id="choosing-a-distribution-geom" class="slide level2">
+<h2>Choosing a distribution geom</h2>
+<ul>
+<li>One variable’s distribution → <code>geom_histogram</code> or <code>geom_density</code></li>
+<li>Compare many groups concisely → <code>geom_boxplot</code></li>
+<li>Show every observation → <code>geom_quasirandom</code></li>
+<li>Shape + observations together → <code>geom_violin</code> + <code>geom_quasirandom</code></li>
+</ul>
+<p>The choice depends on what you want the reader to see.</p>
+</section>
+<section id="lets-take-another-poll" class="slide level2 your-turn">
+<h2>Let’s take another poll</h2>
+<p>Go to <a href="https://app.wooclap.com/DURBAN?from=event-page">the event on wooclap</a></p>
+
+<img data-src="../../../images/wooclap_info.png" class="r-stretch"></section>
+<section id="exercise-2" class="slide level2 your-turn">
+<h2>Exercise 2</h2>
+<p>Open <code>notebooks/04-visualization.qmd</code> in your Codespace.</p>
+<p><br></p>
+<p>The modes flip: whoever was agentic in Exercise 1 is manual now, and vice versa.</p>
+<p><br></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a>countdown<span class="sc">::</span><span class="fu">countdown</span>(<span class="dv">30</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<countdown-timer class="countdown" id="timer_8becfe49" minutes="30" seconds="0" update-every="1" tabindex="0" style="right:0;bottom:0;"></countdown-timer>
+</div>
+</div>
+
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p><a href="index.html">back to module</a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":false},
+'chalkboard': {"buttons":false},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: false,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1600,
+
+        height: 900,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    <script type="text/javascript">
+      window.addEventListener('load', function() {
+        var logo = document.querySelector('.slide-logo');
+        var url = 'https://stat20.org';
+        logo.addEventListener('click', function() {
+          window.open(url, '_blank');
+        });
+      });
+      Reveal.on('ready', event => {
+        if (event.indexh === 0) {
+          document.querySelector("div.has-logo > img.slide-logo").style.display = "none";
+        }
+      });
+      Reveal.addEventListener('slidechanged', (event) => {
+        if (event.indexh === 0) {
+          Reveal.configure({ slideNumber: null });
+          document.querySelector("div.has-logo > img.slide-logo").style.display = "none";
+        }
+        if (event.indexh === 1) { 
+          Reveal.configure({ slideNumber: 'c' });
+          document.querySelector("div.has-logo > img.slide-logo").style.display = null;
+        }
+      });
+    </script>
+    
+
+</body></html>
