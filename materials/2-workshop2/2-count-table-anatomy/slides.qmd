@@ -24,6 +24,9 @@ qc <- read_csv(file.path(res, "sample_qc.csv"), show_col_types = FALSE) |>
   mutate(table = factor(table, c("species", "genes")))
 fc <- read_csv(file.path(res, "filter_curve.csv"), show_col_types = FALSE) |>
   mutate(table = factor(table, c("species", "genes")))
+fs <- read_csv(file.path(res, "feature_summary.csv.gz"), show_col_types = FALSE) |>
+  mutate(table = factor(table, c("species", "genes")),
+         mean_cpm = mean_share * 1e6)   # mean of the per-sample proportions, x 1e6
 ```
 
 ## Yesterday you built a count table out of beads {.center}
@@ -60,41 +63,50 @@ tibble(
 
 ## A corner of the species table
 
+::: {style="font-size: 80%;"}
 ```{r}
 #| echo: false
 read_csv(file.path(res, "corner_species.csv"), show_col_types = FALSE) |>
+  select(1:4) |>
   kable()
 ```
+:::
+
+6 of 220 rows and 3 of 471 columns: participant P001 at three visits.
 
 ## A corner of the gene table
 
+::: {style="font-size: 80%;"}
 ```{r}
 #| echo: false
 read_csv(file.path(res, "corner_genes.csv"), show_col_types = FALSE) |>
+  select(1:4) |>
   kable()
 ```
+:::
 
-Same shape. Features in rows, samples in columns, counts in the cells.
+The same three samples. Both tables have features in rows, samples in columns
+and counts in the cells.
 
-## Four questions, asked of both tables
+## The questions we ask of both tables
 
 ::: {.incremental}
 1. How deeply was each sample sequenced?
-2. How many features did we actually see?
+2. How many features did we see in each sample?
 3. How evenly is each sample spread across its features?
 4. Which features can we afford to keep?
 :::
 
 . . .
 
-Answer those and you have done quality control. Nothing else today.
+Answering them is the quality control step, and it is all we do today.
 
-## 1. How deeply was each sample sequenced?
+## 1. Sequencing depth
 
 ```{r}
 #| echo: false
 #| fig-width: 14
-#| fig-height: 5
+#| fig-height: 3.5
 ggplot(qc, aes(library_size, fill = table)) +
   geom_histogram(bins = 45, colour = "white") +
   scale_x_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
@@ -104,25 +116,28 @@ ggplot(qc, aes(library_size, fill = table)) +
   theme(legend.position = "none")
 ```
 
-Both spread over more than an order of magnitude. Note the axis labels.
-
-## The numbers behind that figure
-
+:::: {.columns style="font-size: 80%;"}
+::: {.column width="58%"}
 ```{r}
 #| echo: false
 qc |>
   group_by(table) |>
-  summarise(`median library size` = scales::comma(median(library_size)),
+  summarise(median = scales::comma(median(library_size)),
             smallest = scales::comma(min(library_size)),
             largest = scales::comma(max(library_size))) |>
   kable(align = "lrrr")
 ```
+:::
+::: {.column width="42%"}
+Both spread over more than an order of magnitude. Note the axis labels.
 
-. . .
-
+::: {.fragment}
 One sample has 438 bacterial reads. What would you do with it?
+:::
+:::
+::::
 
-## 2. How many features did we see?
+## 2. Features detected
 
 ```{r}
 #| echo: false
@@ -142,7 +157,7 @@ qc |>
 In the species table, how many you see depends on how hard you looked. In the
 gene table it does not.
 
-## The same picture as a fraction {.smaller}
+## The same picture as a fraction
 
 ```{r}
 #| echo: false
@@ -157,13 +172,10 @@ qc |>
 
 . . .
 
-The species table is mostly zeros. The gene table is almost solid.
+The species table is mostly zeros and the gene table is almost solid, so the
+two tables need different filters.
 
-. . .
-
-This single difference drives every filtering decision you will make.
-
-## 3. How evenly is a sample spread?
+## 3. Dominance by one feature
 
 ```{r}
 #| echo: false
@@ -181,7 +193,7 @@ ggplot(qc, aes(top_feature_share, fill = table)) +
 Half of our bacterial samples are more than 60% one species. The most extreme
 is 99.9%.
 
-## Richness and evenness, in one number {.smaller}
+## Richness and evenness, in one number
 
 ```{r}
 #| eval: false
@@ -205,21 +217,22 @@ ggplot(qc, aes(shannon, fill = table)) +
 Species: median `r round(median(qc$shannon[qc$table == "species"]), 2)`. Genes:
 median `r round(median(qc$shannon[qc$table == "genes"]), 2)`.
 
-## Be honest about that second number {.center}
+## Shannon diversity of a transcriptome {.center}
 
-Nobody reports Shannon diversity of a transcriptome.
+Nobody reports the Shannon diversity of a transcriptome.
 
 . . .
 
-But "how many features did I detect" and "how evenly are they spread" are
-exactly the questions you use to decide **which samples to throw away**, in
+Still, the number of features you detected and how evenly the counts are
+spread are what you look at to decide **which samples to throw away**, in
 both experiments.
 
 . . .
 
-Same question. One field gives it a name and a journal; the other calls it QC.
+Microbiome papers report these numbers as alpha diversity. RNA-seq papers
+bury them in the QC section.
 
-## 4. Which features can we keep? {.smaller}
+## 4. Filtering features
 
 ```{r}
 #| eval: false
@@ -240,12 +253,14 @@ fc |>
   geom_line(linewidth = 1.3) +
   scale_colour_manual(values = tab_col) +
   scale_x_continuous(labels = scales::percent) +
-  facet_grid(name ~ table, scales = "free") +
+  facet_wrap(vars(name, table), nrow = 2, scales = "free_y",
+             labeller = labeller(.multi_line = FALSE)) +
+  expand_limits(y = 0) +
   labs(x = "minimum prevalence required to keep a feature", y = NULL, colour = NULL) +
   theme(legend.position = "none")
 ```
 
-## Read the bottom left panel again {.smaller}
+## The filter curve at four cutoffs
 
 ```{r}
 #| echo: false
@@ -253,18 +268,21 @@ fc |>
   filter(min_prevalence %in% c(0, 0.10, 0.25, 0.50)) |>
   transmute(table, `prevalence cutoff` = scales::percent(min_prevalence),
             `features kept` = scales::comma(features_kept),
-            `share of counts kept` = scales::percent(share_of_counts_kept, 0.01)) |>
-  pivot_wider(names_from = table, values_from = c(`features kept`, `share of counts kept`)) |>
-  kable()
+            `counts kept` = scales::percent(share_of_counts_kept, 0.01)) |>
+  pivot_wider(names_from = table, values_from = c(`features kept`, `counts kept`),
+              names_glue = "{table}: {.value}") |>
+  select(1, 2, 4, 3, 5) |>
+  kable(align = "lrrrr")
 ```
 
 ::: {.incremental}
 - Species: a 10% prevalence filter drops **161 of 220** features and loses
   **0.8%** of the data.
-- Genes: the same filter drops **nothing**. Prevalence is the wrong knob here.
+- Genes: the same filter drops **nothing**, so prevalence is the wrong thing to
+  filter on.
 :::
 
-## The right filter is not the same filter {.smaller}
+## A different filter for each table {.smaller}
 
 | | sparse table (species) | dense table (genes) |
 |---|---|---|
@@ -275,11 +293,30 @@ fc |>
 
 : {tbl-colwidths="[22,39,39]"}
 
-. . .
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 3.3
+p_prev <- fs |>
+  filter(table == "species") |>
+  ggplot(aes(prevalence)) +
+  geom_histogram(binwidth = 0.025, boundary = 0, fill = tab_col[["species"]], colour = "white") +
+  geom_vline(xintercept = 0.10, linetype = "dashed", colour = pal[["navy"]]) +
+  scale_x_continuous(labels = scales::percent) +
+  labs(title = "species: prevalence, cutoff at 10%",
+       x = "share of samples where the species is seen", y = "species")
+p_cpm <- fs |>
+  filter(table == "genes") |>
+  ggplot(aes(mean_cpm)) +
+  geom_histogram(bins = 50, fill = tab_col[["genes"]], colour = "white") +
+  geom_vline(xintercept = 5, linetype = "dashed", colour = pal[["navy"]]) +
+  scale_x_log10(labels = scales::label_comma(drop0trailing = TRUE)) +
+  labs(title = "genes: mean CPM, cutoff at 5",
+       x = "mean counts per million (log scale)", y = "genes")
+p_prev + p_cpm
+```
 
-Different rule, identical motive.
-
-## You cannot compare raw counts {.smaller}
+## You cannot compare raw counts
 
 A sample with twice the library size has roughly twice the count for everything.
 
@@ -292,12 +329,37 @@ proportions <- sweep(counts, 2, colSums(counts), "/")
 cpm <- proportions * 1e6
 ```
 
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 3
+toy <- tibble(
+  sample = rep(c("sample 1, 1,000 reads", "sample 2, 2,000 reads"), each = 3),
+  feature = rep(c("feature A", "feature B", "feature C"), 2),
+  count = c(600, 300, 100, 1200, 600, 200)
+) |>
+  group_by(sample) |>
+  mutate(proportion = count / sum(count)) |>
+  ungroup()
+p_raw <- ggplot(toy, aes(feature, count, fill = sample)) +
+  geom_col(position = "dodge", width = 0.7) +
+  scale_fill_manual(values = unname(pal[c("navy", "gold")])) +
+  labs(title = "raw counts (toy data)", x = NULL, y = NULL, fill = NULL)
+p_prop <- ggplot(toy, aes(feature, proportion, fill = sample)) +
+  geom_col(position = "dodge", width = 0.7) +
+  scale_fill_manual(values = unname(pal[c("navy", "gold")])) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "after dividing by the column total", x = NULL, y = NULL, fill = NULL)
+p_raw + p_prop + plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+```
+
 . . .
 
 Microbiome papers say "relative abundance". RNA-seq papers say "CPM". It is the
 same division.
 
-## And then you take a log {.smaller}
+## And then you take a log
 
 ```{r}
 #| echo: false
@@ -317,9 +379,10 @@ p1 + p2
 The `+ 1` is there because `log2(0)` is negative infinity. That choice changes
 your answer, and you should be able to say why you made it.
 
-## Now the pipeline we will use all week {.smaller}
+## One helper for both tables {.smaller}
 
-One helper builds the same object from either table.
+`as_counts()` builds the same kind of object from either table, and we use it
+all week.
 
 ```{r}
 #| eval: false
@@ -332,15 +395,19 @@ genes_ps   <- as_counts(table = "rnaseq")
 
 . . .
 
-microViz was written for microbiome data. It wants a feature table, a sample
-table, and a table saying what each feature *is*.
+microViz was written for microbiome data. It wants a count table, a sample
+table, and a table saying what each feature *is*. A gene annotation fills that
+third slot, so the same verbs work on genes.
 
-. . .
+| microViz wants | species | genes |
+|---|---|---|
+| counts | `02_microbiome_counts.csv` | `04_rnaseq_counts.csv.gz` |
+| samples | `01_metadata.csv` | `01_metadata.csv` |
+| what each feature is | `03_microbiome_taxonomy.csv`: Domain down to species | `05_gene_annotation.csv`: `locus_group`, then `symbol` |
 
-A gene annotation is that third table wearing different words, so the same verbs
-work on genes.
+: {tbl-colwidths="[24,38,38]"}
 
-## The same call, twice {.smaller}
+## The same call, twice
 
 ```{r}
 #| eval: false
@@ -353,14 +420,15 @@ genes_ps |>
 
 . . .
 
-The first is a figure in every microbiome paper you have read.
+The first is the stacked bar chart from almost every microbiome paper you have
+read.
 
 . . .
 
-The second is a figure nobody makes, and looking at why not tells you something
-real about the two experiments.
+Nobody makes the second. Working out why tells you how the two experiments
+differ.
 
-## What you will do in the next ninety minutes
+## Plan for the next ninety minutes
 
 ::: {.incremental}
 1. Load both tables and check their shape against the metadata
@@ -371,7 +439,7 @@ real about the two experiments.
 
 . . .
 
-That last one matters. Do not skip it.
+Do not skip the last one. Tuesday afternoon starts from that column.
 
 ## Your turn {.your-turn}
 

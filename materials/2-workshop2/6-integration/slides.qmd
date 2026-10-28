@@ -14,6 +14,7 @@ execute:
 library(tidyverse)
 library(patchwork)
 library(knitr)
+library(ggbeeswarm)
 pal <- c(navy = "#2b3a67", teal = "#2a9d8f", orange = "#e76f51",
          gold = "#e9c46a", grey = "#bbbbbb")
 theme_set(theme_minimal(base_size = 15))
@@ -26,30 +27,38 @@ rocs <- read_csv(file.path(res, "roc_curves.csv"), show_col_types = FALSE) |>
   mutate(model = factor(model, c("microbiome only", "host only", "both")))
 auc_of <- function(m) sprintf("%.2f", models$auc[models$model == m])
 mcol <- c(`microbiome only` = pal[["teal"]], `host only` = pal[["orange"]], both = pal[["navy"]])
+ocol <- c(preterm = pal[["orange"]], term = pal[["navy"]])
 ```
 
-## Four days, two tables, separately {.center}
+## So far, one table at a time {.center}
 
 ```{r}
 #| echo: false
 #| fig-width: 13
-#| fig-height: 3.6
-tribble(
-  ~day, ~what, ~tbl,
-  "Tue AM", "shape, depth, filtering", "both",
-  "Tue PM", "differential testing", "both",
-  "Wed PM", "distances and ordination", "both",
-  "Thu PM", "sets and enrichment", "both"
+#| fig-height: 4
+week <- tribble(
+  ~day, ~what,
+  "Tue AM", "shape, depth, filtering",
+  "Tue PM", "differential testing",
+  "Wed PM", "distances and ordination",
+  "Thu PM", "sets and enrichment"
 ) |>
-  mutate(x = row_number()) |>
-  ggplot(aes(x, 1)) +
-  geom_tile(fill = pal[["navy"]], width = 0.9, height = 0.7, colour = "white", linewidth = 2) +
-  geom_text(aes(label = paste0(day, "\n", what)), colour = "white", size = 4.3,
-            lineheight = 1) +
+  mutate(x = row_number())
+week |>
+  cross_join(tibble(tbl = c("species table", "gene table"), y = c(2, 1))) |>
+  ggplot(aes(x, y)) +
+  geom_tile(aes(fill = tbl), width = 0.92, height = 0.85, colour = "white", linewidth = 2) +
+  geom_text(aes(label = tbl), colour = "white", size = 8) +
+  geom_text(data = week, aes(x, 2.95, label = paste0(day, "\n", what)),
+            size = 6.5, lineheight = 0.95, colour = "grey20") +
+  scale_fill_manual(values = c(`species table` = pal[["teal"]], `gene table` = pal[["orange"]]),
+                    guide = "none") +
+  scale_y_continuous(limits = c(0.5, 3.5)) +
   theme_void()
 ```
 
-Every method we ran, we ran twice. Never once on both at the same time.
+We ran every method this week twice, once on each table, and never on both
+together.
 
 ## Today's question {.center}
 
@@ -58,13 +67,13 @@ alone?
 
 . . .
 
-The honest answer is: **sometimes**. And you can find out which.
+Sometimes, and you can measure when.
 
-## When combining helps, and when it cannot {.smaller}
+## When combining helps
 
 ::: {.incremental}
-- If both tables carry the **same** information, combining them adds nothing.
-  You get a slightly better estimate of one thing.
+- If both tables carry the **same** information, combining them adds nothing
+  beyond a slightly better estimate of that one thing.
 - If they carry **different** information, combining them can add a lot.
 - If one carries **nothing**, combining them makes your model worse, because you
   spent degrees of freedom on noise.
@@ -72,10 +81,9 @@ The honest answer is: **sometimes**. And you can find out which.
 
 . . .
 
-So the first thing to measure is not a fancy model. It is how much the two
-tables already agree.
+So before fitting any model, measure how much the two tables already agree.
 
-## One number per person, from each table {.smaller}
+## One number per person, from each table
 
 ```{r}
 #| eval: false
@@ -90,9 +98,19 @@ host_score <- per_sample |>
   summarise(host = mean(inflammatory_score))
 ```
 
-Two tables with 14,446 rows between them, reduced to two columns.
+The two tables have 14,446 rows between them. After this step they are two
+columns, one row per person:
 
-## How much do they agree?
+```{r}
+#| echo: false
+person |>
+  select(participant_id, outcome, micro_score, host_score) |>
+  head(3) |>
+  mutate(across(c(micro_score, host_score), ~ sprintf("%.2f", .x))) |>
+  kable(align = "llrr")
+```
+
+## The two scores barely agree
 
 ```{r}
 #| echo: false
@@ -101,7 +119,7 @@ Two tables with 14,446 rows between them, reduced to two columns.
 ggplot(person, aes(micro_score, host_score)) +
   geom_point(aes(colour = outcome), size = 2.6, alpha = 0.8) +
   geom_smooth(method = "lm", se = FALSE, colour = "grey40", linetype = 2, linewidth = 0.8) +
-  scale_colour_manual(values = c(preterm = pal[["orange"]], term = pal[["navy"]])) +
+  scale_colour_manual(values = ocol) +
   labs(x = "mean anaerobe fraction, from the species table",
        y = "mean inflammatory score,\nfrom the gene table", colour = NULL) +
   theme(legend.position = "top")
@@ -109,20 +127,20 @@ ggplot(person, aes(micro_score, host_score)) +
 
 Correlation: **`r sprintf("%.2f", cor(person$micro_score, person$host_score))`**.
 
-## Which is the best possible news {.center}
+## Low agreement is good news here {.center}
 
 The two tables are telling us about **different** things.
 
 . . .
 
-A disturbed bacterial community and an inflamed epithelium are not the same
-measurement here, and knowing one tells you almost nothing about the other.
+In this cohort a disturbed bacterial community and an inflamed epithelium are
+separate measurements, and knowing one tells you almost nothing about the other.
 
 . . .
 
 So each has something to add.
 
-## Three models {.smaller}
+## One model per table, and one with both
 
 ```{r}
 #| eval: false
@@ -141,58 +159,78 @@ models |>
   kable(align = "lrrr")
 ```
 
-## The picture
+## ROC curves for each model
 
+:::: {.columns}
+::: {.column width="52%"}
 ```{r}
 #| echo: false
-#| fig-width: 11
-#| fig-height: 5.2
+#| fig-width: 6.5
+#| fig-height: 6.2
 ggplot(rocs, aes(fpr, tpr, colour = model)) +
   geom_abline(slope = 1, intercept = 0, colour = "grey75", linetype = 2) +
   geom_line(linewidth = 1.3) +
-  scale_colour_manual(values = mcol) +
+  scale_colour_manual(values = mcol, guide = "none") +
   coord_equal() +
-  labs(x = "false positive rate", y = "true positive rate", colour = NULL) +
-  theme(legend.position = "right")
+  labs(x = "false positive rate", y = "true positive rate") +
+  theme_minimal(base_size = 22)
 ```
-
-## What integration bought {.smaller}
-
-::: {.incremental}
-- Species table alone: AUC `r auc_of("microbiome only")`
-- Gene table alone: AUC `r auc_of("host only")`
-- Both: AUC `r auc_of("both")`
 :::
 
-. . .
+::: {.column width="48%"}
+::: {.incremental}
+- [Species table alone: AUC `r auc_of("microbiome only")`]{style="color: #2a9d8f; font-weight: 600;"}
+- [Gene table alone: AUC `r auc_of("host only")`]{style="color: #e76f51; font-weight: 600;"}
+- [Both: AUC `r auc_of("both")`]{style="color: #2b3a67; font-weight: 600;"}
+:::
 
+::: {.fragment}
 Adding the host score to the microbiome model:
 p = `r format(models$lrt_p_vs_micro[models$model == "both"], digits = 2)`.
-
-. . .
-
-That is the whole argument for multiomics, in one table, with two columns.
-
-## And now the thing you must not forget {.smaller}
-
-On Tuesday, preterm versus term gave **1,698 significant genes**.
-
-. . .
-
-Today, those same genes predict the outcome with an AUC of
-`r auc_of("host only")`.
-
-. . .
-
-::: {.incremental}
-- Significance answers "is there a difference in this group".
-- AUC answers "can you tell which person is which".
-- A great many small differences give you the first and not the second.
 :::
 
-## So: what is your goal? {.smaller}
+::: {.fragment}
+Two summary scores in one logistic regression are the simplest version of the
+case for multiomics.
+:::
+:::
+::::
 
-The method follows from the goal, not the other way round.
+## Significance and prediction are different questions
+
+:::: {.columns}
+::: {.column width="55%"}
+On Tuesday, preterm versus term gave **1,698 significant genes**.
+
+::: {.fragment}
+Today, those same genes predict the outcome with an AUC of
+`r auc_of("host only")`.
+:::
+
+::: {.incremental}
+- Significance asks whether the groups differ on average.
+- AUC asks whether you can tell which person is in which group.
+- Many small differences can give you the first without the second.
+:::
+:::
+
+::: {.column width="45%"}
+```{r}
+#| echo: false
+#| fig-width: 5.5
+#| fig-height: 6
+ggplot(person, aes(outcome, host_z, colour = outcome)) +
+  geom_quasirandom(size = 2.2, alpha = 0.8, width = 0.3) +
+  stat_summary(fun = mean, geom = "crossbar", width = 0.5, colour = "grey20",
+               linewidth = 0.6) +
+  scale_colour_manual(values = ocol, guide = "none") +
+  labs(x = NULL, y = "host score (z), per person") +
+  theme_minimal(base_size = 22)
+```
+:::
+::::
+
+## Choose the method from the goal
 
 | if you want to | you need |
 |---|---|
@@ -203,25 +241,21 @@ The method follows from the goal, not the other way round.
 
 : {tbl-colwidths="[45,55]"}
 
-## The ladder of methods {.smaller}
+## Integration methods, simplest first
 
-::: {.incremental}
-**Simple.** Reduce each table to a few numbers and put them in one model. What
-we just did. Interpretable, cheap, and the baseline everything else must beat.
+::: {style="font-size: 0.75em;"}
+| | examples | what it does |
+|---|---|---|
+| simple | scores in one model | Reduce each table to a few numbers and fit one model, as we did today. Every other method has to beat this. |
+| intermediate | canonical correlation, PLS, sparse PLS | Find the combination of features in table A that best tracks a combination in table B. |
+| multi-block | DIABLO, MOFA | Decompose several tables at once into shared and table-specific factors. |
+| similarity-based | Procrustes, co-inertia, DiSTATIS | Compare the sample configurations rather than the features. |
+| networks | | Build a graph across data types and look at its structure. |
 
-**Intermediate.** Canonical correlation, partial least squares, sparse PLS. Find
-the combination of features in table A that best tracks a combination in table B.
-
-**Multi-block.** DIABLO, MOFA. Decompose several tables at once into shared and
-table-specific factors.
-
-**Similarity-based.** Procrustes, co-inertia, DiSTATIS. Compare the sample
-configurations rather than the features.
-
-**Networks.** Build a graph across data types and look at its structure.
+: {tbl-colwidths="[18,26,56]"}
 :::
 
-## What each one costs you {.smaller}
+## The cost of each method
 
 | | gives you | costs you |
 |---|---|---|
@@ -231,9 +265,9 @@ configurations rather than the features.
 | Procrustes | one agreement statistic | no features, no prediction |
 | networks | a picture | almost unlimited freedom to fool yourself |
 
-: {tbl-colwidths="[24,38,38]"}
+: {tbl-colwidths="[24,32,44]"}
 
-## The failure mode of all of them {.center}
+## All of them can overfit {.center}
 
 With 157 people and 14,446 features, you can find a combination that separates
 your groups perfectly.
@@ -247,8 +281,10 @@ It will not replicate.
 Every method on that list needs cross-validation or a held-out set, and the
 fancier the method the more it needs it.
 
-## Our own result, honestly stated {.smaller}
+## Our own result, honestly stated
 
+:::: {.columns}
+::: {.column width="55%"}
 ::: {.incremental}
 - We chose both scores **after** looking at the data all week.
 - We never held out a test set.
@@ -256,11 +292,28 @@ fancier the method the more it needs it.
   `r sprintf("%.2f to %.2f", models$auc_lo[models$model == "both"], models$auc_hi[models$model == "both"])`.
 - The two intervals for the single-table models overlap each other.
 :::
+:::
 
-. . .
+::: {.column width="45%"}
+```{r}
+#| echo: false
+#| fig-width: 6.5
+#| fig-height: 5
+ggplot(models, aes(auc, fct_rev(model), colour = model)) +
+  geom_errorbarh(aes(xmin = auc_lo, xmax = auc_hi), height = 0.25, linewidth = 1.1) +
+  geom_point(size = 4) +
+  scale_colour_manual(values = mcol, guide = "none") +
+  scale_x_continuous(limits = c(0.5, 1)) +
+  labs(x = "AUC with 95% interval", y = NULL) +
+  theme_minimal(base_size = 22)
+```
+:::
+::::
 
-The improvement is real and the confidence we should have in its size is modest.
-Say both.
+::: {.fragment}
+The improvement is real, but we should be modest about how big it is, and say
+both when we report it.
+:::
 
 ## Talk to your neighbour {.your-turn}
 
@@ -287,10 +340,10 @@ actually help them.
 countdown::countdown(10, left = 0, right = NULL, play_sound = TRUE)
 ```
 
-## Where to read more {.smaller}
+## Further reading
 
 ::: {.incremental}
-- The methods deck linked from this module's page, for the full landscape
+- The methods deck linked from this module's page covers many more methods
 - `mixOmics` for CCA, PLS and DIABLO, with good vignettes
 - MOFA, if you have several tables and enough samples
 - *Modern Statistics for Modern Biology*, Holmes and Huber, free online
@@ -298,9 +351,11 @@ countdown::countdown(10, left = 0, right = NULL, play_sound = TRUE)
 
 ## Then: your presentations {.center}
 
-Ten groups. Ninety minutes.
+Thirty minutes to finish preparing. Then each Study A group pairs with the
+Study B group of the same number: A1 presents to B1 for 30 minutes, then B1
+presents to A1.
 
 . . .
 
-Tell us what you asked, what you found, and what you do not believe about your
-own result.
+Tell the other group what you asked, what you found, and what you do not believe
+about your own result.

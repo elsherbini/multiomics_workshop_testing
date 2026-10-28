@@ -3,7 +3,7 @@
 Same notebook. You will now use the identical `fgsea()` call on a table with 53
 features instead of 13,738, with sets built from taxonomy instead of curation.
 
-### Part 1 — Predict
+### Part 1: Predict
 
 1. A gene set holds about 200 genes. A genus in our table holds between 2 and 12
    species. What does that do to your ability to detect enrichment?
@@ -11,7 +11,7 @@ features instead of 13,738, with sets built from taxonomy instead of curation.
 3. Will testing ten genus sets need as aggressive a multiple-testing correction
    as testing fifty gene sets?
 
-### Part 2 — Build
+### Part 2: Build
 
 1. Take your species-by-outcome DESeq2 results from Tuesday. Build the ranking
    vector from `stat` as before.
@@ -31,9 +31,8 @@ features instead of 13,738, with sets built from taxonomy instead of curation.
 4. Run `fgsea(genus_sets, species_stat, minSize = 2, maxSize = 50)`. Which
    genera are significant?
 
-5. Repeat with `Family` instead of `Genus`. Does the answer agree? It should, in
-   a specific way: check whether the significant family contains the significant
-   genus.
+5. Repeat with `Family` instead of `Genus`. Does the answer agree? Check whether the
+   significant family contains the significant genus.
 
 6. Now do it the simple way. Just sort your 53 species by `stat` and print the
    table with genus labels. Would you have reached the same conclusion without
@@ -43,7 +42,7 @@ features instead of 13,738, with sets built from taxonomy instead of curation.
    tables was set-based analysis worth doing, and what feature of the table
    decides that?
 
-### Part 3 — Check the agent
+### Part 3: Check the agent
 
 - Ask Pi to build the genus sets. Then check that no species appears in two
   sets, and that the set sizes sum to no more than the number of species you
@@ -54,7 +53,7 @@ features instead of 13,738, with sets built from taxonomy instead of curation.
   it to defend the opposite position. Compare the two answers and decide which
   argument is stronger.
 
-### Part 4 — Reach (optional)
+### Part 4: Reach (optional)
 
 Invent a better set definition for the species table. Rather than taxonomy, group
 species by something functional: whether they are *Lactobacillus* or not, whether
@@ -62,7 +61,7 @@ they are strict anaerobes, whether they are on a published list of
 BV-associated organisms.
 
 Run `fgsea` with your hand-built sets. A set definition that encodes real biology
-can beat a taxonomic one, and building one is a legitimate piece of research.
+can beat a taxonomic one, and designing such sets is research in its own right.
 
 ### Discussion
 
@@ -70,6 +69,6 @@ can beat a taxonomic one, and building one is a legitimate piece of research.
   reassuring or is it a sign the analysis added nothing?
 - Taxonomy is a hierarchy and gene sets are a flat list. Does that difference
   matter for how you correct for multiple testing?
-- Thursday finishes the single-table week. Tomorrow we put the two tables
+- This is the last single-table module. Tomorrow we put the two tables
   together. Before you leave, write down what you think combining them could
   tell you that neither told you alone.

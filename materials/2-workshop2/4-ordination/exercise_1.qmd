@@ -2,7 +2,7 @@
 
 Open `notebooks/04-ordination.qmd`.
 
-### Part 1 — Predict
+### Part 1: Predict
 
 1. Bray-Curtis uses abundances. Jaccard uses only presence and absence. Our
    species table is about 89% zeros. Which of the two do you expect to separate
@@ -12,7 +12,7 @@ Open `notebooks/04-ordination.qmd`.
 3. One sample has 438 reads. Where do you expect it to sit in a Bray-Curtis
    ordination?
 
-### Part 2 — Build
+### Part 2: Build
 
 1. Build the phyloseq object for the species table:
 
@@ -46,17 +46,17 @@ Open `notebooks/04-ordination.qmd`.
 
 6. Make a stacked bar plot of community composition with
    `comp_barplot(tax_level = "Genus", n_taxa = 10)`, faceted or ordered by
-   `community`. This is the figure your 16S papers open with.
+   `community`. Most 16S papers open with this figure.
 
-### Part 3 — Check the agent
+### Part 3: Check the agent
 
 - Ask Pi for the `R2` of `outcome`. Then ask it what the `R2` of a random label
   would be. If it does not say "close to zero but not zero", push back.
 - PERMANOVA with `by = "margin"` and `by = "terms"` give different answers when
   variables are correlated. Ask Pi which it used and why it matters.
 - Ask it to interpret your ordination. It will produce a paragraph of confident
-  biological narrative about axis 1. Ask it what axis 1 actually is. It cannot
-  know, and neither can you, which is the point.
+  biological narrative about axis 1. Then ask it what axis 1 actually is.
+  Neither it nor you can tell from the plot alone.
 - Ask it whether your three distance choices "agree". Then look at the three
   plots yourself and decide if its answer matches what you see.
 

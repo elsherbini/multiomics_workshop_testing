@@ -5,8 +5,8 @@ format:
     toc: true
 ---
 
-> A list of two thousand genes is not a result. Grouping features into sets turns
-> a list into a sentence, when the table is the right shape for it.
+> Grouping genes into named sets lets you describe a long list of hits in one
+> sentence. The same method helps much less on a table of 53 species.
 
 ## Slides
 [Make slides full screen](slides.qmd)

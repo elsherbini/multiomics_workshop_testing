@@ -1,10 +1,10 @@
 ## Analog activities (90 minutes, no computers)
 
-Four activities, run in this order. Everyone is standing and moving for the
-first three. Each one plants a number that Tuesday and Wednesday then compute
+Run the activities in this order. Everyone stands and moves around for the
+first three, and each one sets up a number that Tuesday and Wednesday compute
 in code.
 
-### What to bring
+### Materials
 
 | item | how many | used for |
 |---|---|---|
@@ -17,7 +17,7 @@ in code.
 
 Fill the bags before the session. Give most bags 100 pieces, but deliberately
 give **six bags only 20 pieces** and **two bags 400 pieces**. Nobody is told
-this. It is the point of activity 4.
+this, because activity 4 depends on it.
 
 Mix the compositions on purpose, so the room contains:
 
@@ -25,14 +25,14 @@ Mix the compositions on purpose, so the room contains:
 - about 20 bags that are 60% one colour with three others present
 - about 20 bags that are spread evenly across five or six colours
 
-### Activity 1 — You are a sample (15 min)
+### Activity 1: you are a sample (15 min)
 
 Each person takes a bag. Without counting precisely, look at your bag and
 describe your community out loud to the person next to you: which colour
 dominates, how many colours you can see.
 
 Then: **find the three people in the room whose bags look most like yours.**
-Stand together. You now have clusters.
+Stand together as a cluster.
 
 Ask the room:
 
@@ -40,10 +40,10 @@ Ask the room:
 - Did anyone belong to two clusters?
 - Did the people with very few pieces have trouble finding a group?
 
-> The rule they invented is a distance metric. Wednesday afternoon gives it a
+> The rule they used is a distance metric. On Wednesday afternoon it gets a
 > name and a formula.
 
-### Activity 2 — Draw ten (20 min)
+### Activity 2: draw ten (20 min)
 
 Without looking, draw ten pieces from your own bag and lay them out. Record on
 paper: how many colours did you get, and how many of each.
@@ -62,7 +62,7 @@ Ask the room:
 > took. Tuesday morning you will find the sample in our real data with 438
 > reads and decide what to do about it.
 
-### Activity 3 — Build the table (30 min)
+### Activity 3: build the table (30 min)
 
 In table groups of six. Pool your six bags. On the flip chart, build a count
 table by hand:
@@ -93,7 +93,7 @@ Tape the sheets to the wall. They stay up all week.
 > dominance. They are the first three things you will compute tomorrow morning,
 > on both of our real tables.
 
-### Activity 4 — The unfair comparison (15 min)
+### Activity 4: the unfair comparison (15 min)
 
 Ask the six people whose bags held only 20 pieces to come to the front, and two
 people whose bags held 400.
@@ -111,15 +111,14 @@ Ask the room:
   suggest "use proportions instead of counts". Both are real strategies with
   real costs.
 
-> You have just invented rarefaction and relative abundance, and found the
-> argument the microbiome field has been having for fifteen years. Wednesday we
-> pick one and say why.
+> These two suggestions are rarefaction and relative abundance, and the
+> microbiome field has argued about which to use for fifteen years. On
+> Wednesday we pick one and explain why.
 
 ### Closing the session (10 min)
 
-Leave the wall of flip charts up. Point at them and make the week's promise
-explicit:
+Leave the flip charts on the wall, point at them, and tell the room:
 
-> Tomorrow morning the same table has 220 rows of bacteria and 14,226 rows of
-> human genes instead of six colours, and 471 columns instead of six people.
-> Nothing else changes.
+> Tomorrow morning you work with the same kind of table, only with 220 rows of
+> bacteria and 14,226 rows of human genes instead of six colours, and 471
+> columns instead of six people.

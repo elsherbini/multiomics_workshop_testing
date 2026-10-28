@@ -1,19 +1,20 @@
 ## Exercise 2: The same test, on the species table
 
-Same notebook, second half. Same three lines of code, a 220-row table instead of
-a 14,226-row one, and a grouping that comes from neither count table.
+This is the second half of the same notebook. You run the same three lines of
+code on the 220-row species table instead of the 14,226-row gene table, with a
+grouping that comes from the clinic rather than from either count table.
 
-### Part 1 — Predict
+### Part 1: Predict
 
 1. Why can you not test the species table using the `community` column you built
-   yesterday? Write the one-sentence answer.
+   yesterday? Answer in one sentence.
 2. You will test species against birth outcome. The species table has 220 rows,
    but most are nearly always absent. How many do you expect to survive a
    filter of "present in at least 10% of samples"?
 3. Do you expect the significant species to be higher in the preterm group or
    the term group?
 
-### Part 2 — Build
+### Part 2: Build
 
 1. Subset to `time_point == "week_18"` again. Filter the species table to
    features present in at least 10% of samples.
@@ -39,12 +40,12 @@ a 14,226-row one, and a grouping that comes from neither count table.
    Write down what that comparison tells you about where the outcome signal
    lives.
 
-### Part 3 — Check the agent
+### Part 3: Check the agent
 
 - A filter on a sparse table is easy to get wrong. Ask Pi how many species it
   kept and recompute that number yourself from `rowMeans(counts > 0)`.
 - Ask it whether DESeq2 is an appropriate method for microbiome counts. Read its
-  answer critically; this is a genuine controversy and a confident one-sided
+  answer critically. Researchers disagree about this, so a confident one-sided
   answer is a warning sign.
 - Ask it to name the significant species. Then check two of them against
   `03_microbiome_taxonomy.csv` by hand. Agents invent plausible species names.
@@ -52,7 +53,7 @@ a 14,226-row one, and a grouping that comes from neither count table.
   outcome. Fewer samples have a Nugent score, so the sample count drops. Make
   sure it tells you that it dropped samples.
 
-### Part 4 — Reach (optional)
+### Part 4: Reach (optional)
 
 Run your species-by-outcome analysis on all 471 samples, with each participant
 appearing three times. Compare the number of significant species to your

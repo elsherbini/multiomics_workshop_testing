@@ -26,10 +26,9 @@ Golden Tulip Westlands
 ::: {.incremental}
 - 61 of us, from 12 countries
 - Ten groups of six
-- Five days
 :::
 
-## The week {.smaller}
+## The week
 
 ```{r}
 #| fig-width: 15
@@ -66,117 +65,146 @@ ggplot(blocks, aes(x, y, fill = kind)) +
         legend.position = "none")
 ```
 
-Four coding modules. Two group project sessions. Everything else is talking.
+The navy blocks are the four coding modules and the orange blocks are group
+project time. Teal blocks are lectures.
 
-## One idea holds the week together {.center}
-
-. . .
-
-Human gene expression and bacterial communities arrive as **the same kind of
-object**: a table of counts.
-
-. . .
-
-Learn the table once, and you can analyse both.
-
-## Two tables, one shape
+## Both kinds of data arrive as a table of counts
 
 ```{r}
 #| fig-width: 14
 #| fig-height: 5
-grid_plot <- function(n_row, n_col, title, subtitle, fill) {
+grid_plot <- function(n_row, n_col, title, subtitle, fill, row_name) {
   expand_grid(r = seq_len(n_row), c = seq_len(n_col)) |>
     mutate(v = runif(n())) |>
     ggplot(aes(c, -r, fill = v)) +
     geom_tile(colour = "white", linewidth = 0.4) +
     scale_fill_gradient(low = "white", high = fill) +
-    labs(title = title, subtitle = subtitle) +
+    labs(title = title, subtitle = subtitle, x = "samples", y = row_name) +
     theme_void(base_size = 15) +
     theme(legend.position = "none",
           plot.title = element_text(face = "bold", size = 17),
-          plot.subtitle = element_text(colour = "grey35"))
+          plot.subtitle = element_text(colour = "grey35"),
+          axis.title.x = element_text(colour = "grey35", margin = margin(t = 6)),
+          axis.title.y = element_text(colour = "grey35", angle = 90,
+                                      margin = margin(r = 6)))
 }
-grid_plot(10, 14, "Bacterial species", "220 rows x 471 columns", pal[["teal"]]) +
-  grid_plot(10, 14, "Human genes", "14,226 rows x 471 columns", pal[["orange"]])
+grid_plot(10, 14, "Bacterial species", "220 rows x 471 columns", pal[["teal"]],
+          "species") +
+  grid_plot(10, 14, "Human genes", "14,226 rows x 471 columns", pal[["orange"]],
+            "genes")
 ```
 
-Rows are features. Columns are samples. Cells are counts of sequencing reads.
+Each row is a feature, each column is a sample, and each cell counts the
+sequencing reads for that feature in that sample. Every method this week is
+taught on one table and practised on the other, with the same code.
 
-## The same five questions, twice {.smaller}
+## The questions you will ask of both tables
 
-| | you will ask it of species | and of genes |
-|---|---|---|
-| How much did we sequence? | library size | library size |
-| What is here at all? | prevalence | expression level |
-| Which features differ between groups? | differential abundance | differential expression |
-| How similar are two samples? | beta diversity | sample distance |
-| What do the hits have in common? | taxonomy | gene sets |
+| | of species | of genes | when |
+|---|---|---|---|
+| How much did we sequence? | library size | library size | Tue AM |
+| What is here at all? | prevalence | expression level | Tue AM |
+| Which features differ between groups? | differential abundance | differential expression | Tue PM |
+| How similar are two samples? | beta diversity | sample distance | Wed PM |
+| What do the hits have in common? | taxonomy | gene sets | Thu PM |
 
-: {tbl-colwidths="[28,36,36]"}
+: {tbl-colwidths="[38,24,24,14]"}
 
-## The study we will work on {.smaller}
+## The study we will work on
 
-A pregnancy cohort. 157 participants, sampled three times.
+A pregnancy cohort of 157 participants, each sampled at weeks 18, 24 and 34.
 
-::: {.columns}
-::: {.column width="55%"}
-- **weeks 18, 24 and 34** of pregnancy
-- **cervicovaginal samples** at each visit
-- **two measurements** per sample: bacterial 16S and human gene expression
-- **one outcome** per person: term or preterm birth
-:::
-::: {.column width="45%"}
+- Every cervicovaginal sample was measured twice: bacterial 16S and human gene
+  expression.
+- Each participant has one outcome, term or preterm birth.
+
 ```{r}
-#| fig-width: 6
-#| fig-height: 4
-tibble(visit = c("week 18", "week 24", "week 34")) |>
-  mutate(x = row_number()) |>
-  ggplot(aes(x, 1)) +
-  geom_segment(aes(x = 1, xend = 3, y = 1, yend = 1), colour = pal[["grey"]], linewidth = 1.5) +
-  geom_point(size = 16, colour = pal[["navy"]]) +
-  geom_text(aes(label = visit), vjust = 3.2, size = 5) +
-  annotate("text", x = 3.6, y = 1, label = "birth", size = 5, fontface = "bold",
-           colour = pal[["orange"]]) +
-  annotate("segment", x = 3.15, xend = 3.4, y = 1, yend = 1,
-           arrow = arrow(length = unit(0.25, "cm")), colour = pal[["orange"]], linewidth = 1.2) +
-  xlim(0.7, 3.9) +
+#| fig-width: 14
+#| fig-height: 3.2
+visits <- tibble(week = c(18, 24, 34))
+assays <- expand_grid(week = c(18, 24, 34),
+                      assay = c("16S", "RNA-seq")) |>
+  mutate(x = week + if_else(assay == "16S", -1.15, 1.15),
+         fill = if_else(assay == "16S", pal[["teal"]], pal[["orange"]]))
+
+ggplot() +
+  annotate("segment", x = 15, xend = 38.2, y = 1, yend = 1,
+           colour = pal[["grey"]], linewidth = 1.5,
+           arrow = arrow(length = unit(0.3, "cm"))) +
+  geom_point(data = visits, aes(week, 1), size = 9, colour = pal[["navy"]]) +
+  geom_text(data = visits, aes(week, 1.45, label = paste("week", week)),
+            size = 6, fontface = "bold", colour = "grey25") +
+  geom_tile(data = assays, aes(x, 0.5, fill = I(fill)), width = 2.1, height = 0.42) +
+  geom_text(data = assays, aes(x, 0.5, label = assay), colour = "white",
+            size = 4.4, fontface = "bold") +
+  annotate("text", x = 39, y = 1, label = "birth:\nterm or preterm", hjust = 0,
+           size = 5.5, fontface = "bold", colour = pal[["orange"]], lineheight = 0.9) +
+  scale_x_continuous(limits = c(15, 44)) +
+  scale_y_continuous(limits = c(0.2, 1.65)) +
   theme_void()
 ```
-:::
-:::
 
-## Say this out loud once {.center}
+## These data are constructed {.center}
 
-These data are **constructed**.
+Every count in both tables came from sequencing a real sample.
 
 . . .
 
-The sequencing is real. Every count in both tables came off a real machine from
-a real sample.
+The study around those counts is ours. We made up the visit labels and the
+birth outcomes so the week has something worth finding.
 
 . . .
 
-The study around it, the visit labels and the birth outcomes, is ours. We built
-it so the week has something worth finding.
+Analyse the data as carefully as you would your own, and do not cite the result.
 
-. . .
-
-So: do the analysis properly, and do not cite the result.
-
-## How the days are built
-
-::: {.incremental}
-- **One hour** of us talking, with code on the screen
-- **Ninety minutes** of you writing code
-- Two exercises per module, discussion in between
+::: {.notes}
+Say this out loud once.
 :::
+
+## Library prep {.center}
+
+Lindsay Droit, Washington University School of Medicine
+
+How a swab becomes a sequencing library, for 16S and for RNA-seq.
+
+::: {.callout-note}
+Placeholder. Lindsay's slides go here.
+:::
+
+## Each module runs for two and a half hours
+
+```{r}
+#| fig-width: 14
+#| fig-height: 2.2
+session <- tribble(
+  ~start, ~end, ~label, ~fill,
+  0, 60, "We talk, with code on the screen", pal[["teal"]],
+  60, 100, "Exercise 1", pal[["navy"]],
+  100, 110, "", pal[["gold"]],
+  110, 150, "Exercise 2", pal[["navy"]]
+)
+ggplot(session) +
+  geom_rect(aes(xmin = start, xmax = end, ymin = 0, ymax = 1, fill = I(fill)),
+            colour = "white", linewidth = 2) +
+  geom_text(aes((start + end) / 2, 0.5, label = label), colour = "white",
+            size = 5.5, fontface = "bold") +
+  annotate("text", x = 105, y = 1.2, label = "discussion", size = 4.6,
+           colour = "grey35") +
+  scale_x_continuous(breaks = c(0, 60, 150),
+                     labels = c("0 min", "60 min", "150 min")) +
+  theme_void(base_size = 16) +
+  theme(axis.text.x = element_text(colour = "grey25", margin = margin(t = 4)))
+```
+
+The first hour is ours. The next ninety minutes are yours, writing code: two
+exercises with a discussion in between.
 
 . . .
 
 You will have an AI coding agent the whole time. Every exercise ends by asking
 you to check what it did.
 
-## What you need by Tuesday morning {.smaller}
+## Before Tuesday morning
 
 ::: {.incremental}
 1. A GitHub account
@@ -186,7 +214,8 @@ you to check what it did.
 
 . . .
 
-Teaching assistants are in the room all of Monday. Use them Monday, not Tuesday.
+Teaching assistants are in the room all day Monday. Bring setup problems to them
+then, not on Tuesday morning.
 
 ## Questions {.your-turn}
 

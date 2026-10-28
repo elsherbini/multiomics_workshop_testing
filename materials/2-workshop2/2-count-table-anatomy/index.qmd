@@ -5,8 +5,8 @@ format:
     toc: true
 ---
 
-> Both of our measurements arrive as a table of counts. Learn to look at one and
-> you can look at either.
+> Both of our measurements arrive as a table of counts, and the checks you learn
+> on one work on the other.
 
 ## Slides
 [Make slides full screen](slides.qmd)

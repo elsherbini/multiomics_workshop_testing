@@ -8,9 +8,9 @@ format:
 > How sequencing reads become a table of counts, for bacteria and for human
 > genes, and what that table does and does not tell you.
 
-No laptops this afternoon. The first ninety minutes are a lecture. The second
-ninety minutes you spend on your feet, building count tables out of paper and
-objects.
+There are no laptops this afternoon. The first ninety minutes are a lecture,
+and for the second ninety minutes you are on your feet, building count tables
+out of paper and objects.
 
 ## Slides
 [Make slides full screen](slides.qmd)

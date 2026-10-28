@@ -26,8 +26,18 @@ tax <- read_csv(file.path(res, "tax_set_enrichment.csv"), show_col_types = FALSE
 sprank <- read_csv(file.path(res, "species_ranking_outcome.csv"), show_col_types = FALSE)
 bal <- read_csv(file.path(res, "ranking_balance.csv"), show_col_types = FALSE)
 balsum <- read_csv(file.path(res, "ranking_balance_summary.csv"), show_col_types = FALSE)
+generank <- read_csv(file.path(res, "gene_ranking_outcome.csv.gz"), show_col_types = FALSE)
 out <- gsea |> filter(ranking == "preterm vs term")
 comm <- gsea |> filter(ranking == "anaerobe vs Lactobacillus")
+
+# members of the top set, in ranked order, for the "gene set" slide
+tnfa_members <- generank |> filter(in_top_set) |> arrange(rank) |> pull(symbol)
+
+# set sizes on the two tables, for the scale slide
+set_sizes <- bind_rows(
+  out |> transmute(table = "Hallmark gene sets", size),
+  tax |> filter(ranking == "genus") |> transmute(table = "genus sets", size)
+) |> mutate(table = factor(table, c("Hallmark gene sets", "genus sets")))
 ```
 
 ## Tuesday you produced this {.center}
@@ -38,11 +48,11 @@ comm <- gsea |> filter(ranking == "anaerobe vs Lactobacillus")
 
 What is the finding?
 
-## A list of 1,698 names is not a finding {.center}
+## A gene list is hard to report {.center}
 
 ::: {.incremental}
-- You cannot read it
-- You cannot put it in an abstract
+- You cannot read 1,698 names
+- You cannot put them in an abstract
 - Two groups with the same data will hand you two different lists
 :::
 
@@ -50,38 +60,83 @@ What is the finding?
 
 You need to say what the genes have **in common**.
 
-## Two ways to do that {.smaller}
+## Cut-off tests and ranked tests
 
+:::: {.columns}
+::: {.column style="width: 48%; font-size: 0.8em;"}
 ::: {.incremental}
-**Cut, then count.** Take your significant list, take a predefined set of genes,
-and ask whether the overlap is bigger than chance. A hypergeometric test. Simple,
-and it throws away everything below your cutoff.
-
-**Rank, then look.** Order every gene you tested from most up to most down, and
-ask whether a set's members pile up at one end. No cutoff at all. This is gene
-set enrichment analysis.
+- **Cut, then count.** Take your significant genes and a predefined set, and ask
+  whether the overlap is bigger than chance (a hypergeometric test). It is simple,
+  and it ignores every gene below your cutoff.
+- **Rank, then look.** Order every gene you tested from most up to most down, and
+  ask whether a set's members pile up at one end. This needs no cutoff. It is
+  called gene set enrichment analysis (GSEA).
 :::
 
-. . .
+::: {.fragment}
+We use GSEA, because with the first approach the answer depends on a threshold you
+picked arbitrarily.
+:::
+:::
 
-We will do the second one, because the first one makes your answer depend on a
-threshold you chose arbitrarily.
+::: {.column width="52%"}
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+cut <- sort(abs(generank$stat), decreasing = TRUE)[1698]
+gr <- generank |> mutate(kept = abs(stat) >= cut)
+p_rank <- ggplot(gr, aes(rank, stat)) +
+  geom_hline(yintercept = 0, colour = "grey70") +
+  geom_hline(yintercept = c(-cut, cut), linetype = 2, colour = "grey45") +
+  geom_point(aes(colour = kept), size = 0.4, show.legend = FALSE) +
+  scale_colour_manual(values = c(`TRUE` = pal[["orange"]], `FALSE` = pal[["grey"]])) +
+  annotate("text", x = nrow(gr) * 0.5, y = cut + 0.5, label = "cutoff",
+           colour = "grey35", size = 4.5) +
+  labs(x = NULL, y = "test statistic",
+       title = "All 13,738 genes, ranked",
+       subtitle = "Orange: kept by a cutoff. Grey: ignored by it.") +
+  theme(axis.text.x = element_blank())
+p_rug <- ggplot(filter(gr, in_top_set), aes(rank)) +
+  geom_segment(aes(xend = rank, y = 0, yend = 1), colour = pal[["navy"]], alpha = 0.5) +
+  xlim(1, nrow(gr)) +
+  labs(x = "rank of the gene", y = NULL,
+       subtitle = "Where the members of one gene set fall") +
+  theme(axis.text.y = element_blank(), panel.grid = element_blank())
+p_rank / p_rug + plot_layout(heights = c(3, 1))
+```
+:::
+::::
 
-## What a gene set is
+## A gene set is a named list
 
-A named list of genes someone curated.
+:::: {.columns}
+::: {.column width="55%"}
+Someone curated it, from papers or experiments.
 
-. . .
+::: {.fragment}
+We use the **Hallmark** collection: 50 sets of about 200 genes, one for each broad
+biological program.
+:::
 
-We use the **Hallmark** collection: 50 sets, each a broad biological program,
-each about 200 genes.
+::: {.fragment}
+`HALLMARK_INFLAMMATORY_RESPONSE`<br>
+`HALLMARK_TNFA_SIGNALING_VIA_NFKB`<br>
+`HALLMARK_INTERFERON_GAMMA_RESPONSE`
+:::
+:::
 
-. . .
+::: {.column width="45%"}
+::: {style="font-size: 0.7em; line-height: 1.5;"}
+The first 40 of the `r length(tnfa_members)` `HALLMARK_TNFA_SIGNALING_VIA_NFKB`
+genes in our table:
 
-`HALLMARK_INFLAMMATORY_RESPONSE`. `HALLMARK_TNFA_SIGNALING_VIA_NFKB`.
-`HALLMARK_INTERFERON_GAMMA_RESPONSE`.
+`r paste(head(tnfa_members, 40), collapse = " ")`
+:::
+:::
+::::
 
-## Rank by the test statistic {.smaller}
+## Rank by the test statistic
 
 ```{r}
 #| eval: false
@@ -91,11 +146,26 @@ names(stat) <- rownames(res)
 stat <- stat[!is.na(stat)]
 ```
 
+:::: {.columns}
+::: {.column style="width: 55%; font-size: 0.8em;"}
 ::: {.incremental}
-- Not the p-value, which throws away direction.
-- Not the fold change alone, which lets a noisy low-count gene lead the list.
-- The statistic, which carries both size and confidence.
+- The p-value has no sign, so A and B look identical.
+- The fold change alone puts noisy gene C at the top.
+- The statistic is the fold change divided by its standard error, so it carries
+  both size and confidence.
 :::
+:::
+
+::: {.column style="width: 45%; font-size: 0.7em;"}
+| gene | log2 FC | std. error | p-value | statistic |
+|:-----|-----:|-----:|-----:|-----:|
+| A | +3.0 | 0.5 | 2e-9 | +6.0 |
+| B | -3.0 | 0.5 | 2e-9 | -6.0 |
+| C | +6.0 | 4.0 | 0.13 | +1.5 |
+
+: Toy numbers
+:::
+::::
 
 ## Walk down the list and keep score
 
@@ -123,9 +193,10 @@ p_bot <- ggplot(hits, aes(rank, y = 1)) +
 p_top / p_bot + plot_layout(heights = c(3, 1))
 ```
 
-Each tick is a set member. The score climbs on a hit and drifts down otherwise.
+Each tick is a set member. The score climbs at each hit and drifts down between
+them.
 
-## The number you report {.smaller}
+## The number you report
 
 The highest point the score reaches is the enrichment score. Shuffle the gene
 labels many times to find out how surprising that peak is.
@@ -143,8 +214,8 @@ fgsea(sets, stat, minSize = 15, maxSize = 500)
 
 . . .
 
-`NES` is the peak, normalised so sets of different sizes are comparable. Sign
-tells you which end.
+`NES` is the peak, normalised so sets of different sizes are comparable. Its sign
+tells you which end of the ranking the set sits at.
 
 ## Preterm versus term
 
@@ -162,14 +233,16 @@ out |> slice_min(padj, n = 12) |>
   theme(legend.position = "top")
 ```
 
-## In words {.smaller}
+## Reading the top sets
 
+::: {style="font-size: 0.8em;"}
 ```{r}
 #| echo: false
 out |> slice_min(padj, n = 6) |>
   transmute(set = short, size, NES = round(NES, 2), padj = format(padj, digits = 2)) |>
   kable(align = "lrrr")
 ```
+:::
 
 . . .
 
@@ -178,20 +251,22 @@ all shifted up in the people who delivered early.
 
 . . .
 
-**That** is a sentence you can put in an abstract. It came from the same 13,738
-numbers that gave you an unreadable list.
+You could put that sentence in an abstract, and it comes from the same 13,738
+statistics that gave you the list of 1,698 genes.
 
-## Now be suspicious {.smaller}
+## Now try the community contrast
 
 Run the same analysis on Tuesday's other contrast, anaerobe versus
 Lactobacillus.
 
+::: {style="font-size: 0.8em;"}
 ```{r}
 #| echo: false
 comm |> slice_min(padj, n = 6) |>
   transmute(set = short, size, NES = round(NES, 2), padj = format(padj, digits = 2)) |>
   kable(align = "lrrr")
 ```
+:::
 
 . . .
 
@@ -199,7 +274,7 @@ comm |> slice_min(padj, n = 6) |>
 `r sum(comm$padj < 0.05 & comm$NES < 0, na.rm = TRUE)` of those point the same
 way. Does that look like biology to you?
 
-## The obvious check, which fails {.smaller}
+## Checking that the statistics are centred
 
 Is the distribution of test statistics centred?
 
@@ -213,14 +288,14 @@ balsum |>
 
 . . .
 
-Both are near half. By that test, both rankings look fine.
+Both are near half, so by this check both rankings look fine.
 
 . . .
 
-That test is wrong, because GSEA does not weight genes equally. It weights them
-by how large their statistic is.
+The check is wrong, because GSEA does not weight genes equally. It weights each
+gene by the size of its statistic.
 
-## So look at the strong effects only
+## Look at the strong effects only
 
 ```{r}
 #| echo: false
@@ -237,7 +312,7 @@ ggplot(bal, aes(min_abs_stat, share_positive, colour = ranking)) +
   theme(legend.position = "top")
 ```
 
-## The numbers {.smaller}
+## Share positive at three levels
 
 ```{r}
 #| echo: false
@@ -250,18 +325,17 @@ balsum |>
 ```
 
 ::: {.incremental}
-- Outcome: balanced at every level. Nothing is driving the sets one way.
-- Community: looks balanced overall, but of the 500 strongest effects, only
+- Outcome: balanced at every level, so nothing pushes the sets one way.
+- Community: balanced overall, but only
   `r scales::percent(balsum$share_positive_top500[balsum$ranking == "anaerobe vs Lactobacillus"], 0.1)`
-  are positive.
+  of the 500 strongest effects are positive.
 :::
 
 . . .
 
-Every large gene set will be dragged toward the Lactobacillus end, and the
-method will hand you a very small p-value for it.
+Every large gene set will be dragged toward the Lactobacillus end.
 
-## And the sets follow the tail {.smaller}
+## The sets follow the tail
 
 ```{r}
 #| echo: false
@@ -276,12 +350,12 @@ tibble(
 
 ::: {.incremental}
 - Outcome: the strong effects are balanced, and the sets still agree with each
-  other. That agreement is biology.
+  other. Here the agreement comes from the biology.
 - Community: the strong effects nearly all point one way, and so do the sets.
-  That agreement is arithmetic.
+  The lopsided ranking alone would produce that.
 :::
 
-## This does not undo Tuesday {.smaller}
+## The individual genes still stand
 
 The individual genes from the community contrast are still real. Mucins and
 filaggrin were up in Lactobacillus-dominant samples by a factor of eight, with
@@ -289,15 +363,11 @@ adjusted p-values near ten to the minus eighteen.
 
 . . .
 
-What the imbalance undermines is the **set-level** claim, that a named program
-is coordinately shifted. Large generic sets drift with a lopsided list.
+The imbalance undermines the **set-level** claim, that a named program is
+coordinately shifted. Large generic sets drift along with a lopsided list, so the
+gene-level and set-level claims need separate checks.
 
-. . .
-
-Strong individual hits and a trustworthy enrichment are two different claims,
-and they need two different checks.
-
-## The check to run every time {.center}
+## Check the tail every time {.center}
 
 Before you believe an enrichment, sort your genes by the size of their effect
 and look at the top few hundred.
@@ -309,30 +379,29 @@ way, and the method will give you a very small p-value for it.
 
 . . .
 
-Checking that the whole distribution is centred is not enough. Ours was.
+Our community ranking was centred overall and still failed this check.
 
-## Three more things that are true of all gene sets {.smaller}
+## Limits of any gene set collection
 
 ::: {.incremental}
-- **They overlap.** TNFA signalling and inflammatory response share many genes,
-  so their p-values are not independent and you cannot count them as separate
+- Sets overlap. TNFA signalling and inflammatory response share many genes, so
+  their p-values are not independent and you cannot count them as separate
   findings.
-- **They are curated by people**, mostly from experiments in cell lines and
-  mostly not from cervical tissue.
-- **There is no set for what you study.** If your biology does not have a
-  curated set, enrichment cannot find it.
+- People curated them, mostly from experiments in cell lines and mostly not from
+  cervical tissue.
+- If nobody has curated a set for the biology you study, enrichment cannot find
+  it.
 :::
 
 ## The same idea, on bacteria {.center}
 
-A gene set is just a label that groups features.
+A gene set is a label that groups features.
 
 . . .
 
-Species have labels that group them too. They are called **genus** and
-**family**.
+Species already carry labels that group them: **genus** and **family**.
 
-## Rank species, test taxonomy {.smaller}
+## Rank species, test taxonomy
 
 ```{r}
 #| eval: false
@@ -341,17 +410,47 @@ genus_sets <- split(species_results$feature, species_results$Genus)
 fgsea(genus_sets, species_stat, minSize = 2, maxSize = 50)
 ```
 
+:::: {.columns}
+::: {.column style="width: 48%; font-size: 0.85em;"}
 ```{r}
 #| echo: false
 tax |> filter(ranking == "genus") |> slice_min(padj, n = 5) |>
   transmute(genus = pathway, size, NES = round(NES, 2), padj = format(padj, digits = 2)) |>
   kable(align = "lrrr")
 ```
+:::
 
-*Gardnerella* comes out, with three species pulling together toward preterm.
+::: {.column width="52%"}
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 4.8
+sp <- sprank |>
+  mutate(group = case_when(Genus == "Gardnerella" ~ "Gardnerella",
+                           Genus == "Prevotella" ~ "Prevotella",
+                           TRUE ~ "other genera"),
+         group = factor(group, c("Gardnerella", "Prevotella", "other genera")))
+ggplot(sp, aes(rank, stat, colour = group)) +
+  geom_hline(yintercept = 0, colour = "grey70") +
+  geom_point(data = filter(sp, group == "other genera"), size = 2.5) +
+  geom_point(data = filter(sp, group != "other genera"), size = 3.5) +
+  scale_colour_manual(values = c(Gardnerella = pal[["orange"]],
+                                 Prevotella = pal[["navy"]],
+                                 `other genera` = pal[["grey"]]),
+                     breaks = c("Gardnerella", "Prevotella", "other genera")) +
+  labs(x = "rank of the species (preterm-high on the left)",
+       y = "test statistic", colour = NULL) +
+  theme(legend.position = "top", legend.text = element_text(face = "italic"))
+```
+:::
+::::
 
-## But look at the scale of it {.smaller}
+*Gardnerella* comes out: two of its three species rank 1st and 4th toward preterm, which is enough for a three-member set.
 
+## Set sizes on the two tables
+
+:::: {.columns}
+::: {.column style="width: 45%; font-size: 0.8em;"}
 ```{r}
 #| echo: false
 tibble(
@@ -361,22 +460,40 @@ tibble(
               "2 to 12", as.character(sum(tax$padj < 0.05 & tax$ranking == "genus", na.rm = TRUE)))
 ) |> kable(align = "lrr")
 ```
+:::
+
+::: {.column width="55%"}
+```{r}
+#| echo: false
+#| fig-width: 5.5
+#| fig-height: 4.2
+ggplot(set_sizes, aes(size, table, colour = table)) +
+  geom_jitter(height = 0.15, width = 0, size = 3, alpha = 0.8, show.legend = FALSE) +
+  scale_x_log10(breaks = c(2, 5, 10, 20, 50, 100, 200)) +
+  scale_colour_manual(values = c(`Hallmark gene sets` = pal[["orange"]],
+                                 `genus sets` = pal[["teal"]])) +
+  labs(x = "features in the set (log scale)", y = NULL)
+```
+:::
+::::
 
 . . .
 
-Set-level thinking earns its keep when you have thousands of features and
-hundreds of curated groups. With 53 species in ten genera, you are better off
-reading the species list.
+Set-level analysis pays off when you have thousands of features and hundreds of
+curated groups. With 53 species in ten genera, you are better off reading the
+species list.
 
-## Which is the real lesson {.center}
+## Choosing a method for your table {.center}
 
-The machinery is identical. The payoff is not.
+The code was identical on genes and on species, but it only told us something new
+about the genes.
 
 . . .
 
-Match the method to the shape of your table, not to the field it came from.
+Pick the method for how many features your table has and how they group, rather
+than for whether it came from RNA-seq or 16S.
 
-## What you will do {.smaller}
+## In the exercise
 
 ::: {.incremental}
 1. Rank your genes and run fgsea against Hallmark

@@ -6,11 +6,12 @@ format:
 ---
 
 > Does combining two measurements tell you anything that neither told you alone?
-> How to find out, what the methods are, and why the simplest one is the baseline
-> the others have to beat.
+> This module shows how to check, surveys the integration methods, and argues
+> that the simplest one is the baseline the others have to beat.
 
 This module is a lecture and a discussion. There is no coding exercise. The
-second half of the morning is your group presentations.
+second half of the morning is your group presentations, given to one paired
+group rather than the whole room.
 
 ## Slides
 [Make slides full screen](slides.qmd)
@@ -19,16 +20,16 @@ second half of the morning is your group presentations.
 <iframe class="slide-deck" src="slides.html" height="420" width="747" style="border: 1px solid #2e3846;"></iframe>
 ```
 
-## The methods landscape
+## More integration methods
 
-A fuller tour of multiomics integration methods, from correlation through to
+A longer deck on multiomics integration, covering methods from correlation to
 multi-block factor models.
 
 ```{=html}
 <iframe src="https://docs.google.com/presentation/d/1uI314ieJSjv02LED31RTuKIYK1iJsedxUDTxhCjD3ik/embed?start=false&loop=false&delayms=5000" frameborder="0" height="420" width="747" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 ```
 
-## If you want to run it yourself
+## Running the analysis yourself
 
 Nothing in this module is assessed, but the code behind every number on the
 slides is short enough to read. The whole analysis is three logistic regressions
@@ -51,9 +52,9 @@ map_dbl(fits, ~ as.numeric(auc(roc(per_person$preterm, predict(.x), quiet = TRUE
 anova(fits$micro, fits$both, test = "Chisq")
 ```
 
-The two scores themselves come straight out of Tuesday and Thursday: the mean
-anaerobe fraction per person from the species table, and the mean inflammatory
-gene set score per person from the gene table.
+The two scores come from Tuesday and Thursday. One is the mean anaerobe fraction
+per person from the species table, the other the mean inflammatory gene set score
+per person from the gene table.
 
 ## Further reading
 

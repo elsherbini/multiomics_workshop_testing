@@ -26,6 +26,24 @@ cs <- read_csv(file.path(res, "contrast_summary.csv"), show_col_types = FALSE)
 grp <- read_csv(file.path(res, "sample_groups.csv"), show_col_types = FALSE)
 tg <- read_csv(file.path(res, "top_gene_counts.csv"), show_col_types = FALSE)
 n_sig <- function(x) sum(x$padj < 0.05, na.rm = TRUE)
+n_big <- function(x) sum(x$padj < 0.05 & abs(x$log2FoldChange) > 1, na.rm = TRUE)
+
+# toy example for size factors: sample C was sequenced twice as deeply
+toy_depth <- c(A = 1, B = 1, C = 2)
+toy_sf <- toy_depth / exp(mean(log(toy_depth)))   # geometric mean of 1, as DESeq2 scales them
+toy_raw <- c(A = 50, B = 48, C = 100)
+
+# both gene contrasts in one table, for the side-by-side volcano
+vol <- bind_rows(community = gc, outcome = go, .id = "contrast") |>
+  filter(!is.na(padj)) |>
+  mutate(call = case_when(padj >= 0.05 ~ "not significant",
+                          abs(log2FoldChange) > 1 ~ "significant, more than 2-fold",
+                          TRUE ~ "significant, less than 2-fold"),
+         contrast = fct_inorder(recode(contrast,
+           community = paste0("genes ~ community: ", scales::comma(n_sig(gc)),
+                              " significant, ", n_big(gc), " more than 2-fold"),
+           outcome = paste0("genes ~ birth outcome: ", scales::comma(n_sig(go)),
+                            " significant, ", n_big(go), " more than 2-fold"))))
 ```
 
 ## This morning you built a column {.center}
@@ -35,11 +53,12 @@ n_sig <- function(x) sum(x$padj < 0.05, na.rm = TRUE)
 grp |> filter(time_point == "week_18") |> count(community) |> kable()
 ```
 
-37 anaerobe-dominant samples and 120 Lactobacillus-dominant samples, at week 18.
+These are the week 18 samples only, one per person.
 
 . . .
 
-Built from the **species** table. We are about to test the **gene** table with it.
+You built `community` from the **species** table. Now we test the **gene**
+table with it.
 
 ## The question {.center}
 
@@ -48,18 +67,35 @@ samples?
 
 . . .
 
-Fourteen thousand features. One question, asked fourteen thousand times.
+In the gene table we ask it about 14,000 times, once per gene.
 
-## Why not just run a t-test {.smaller}
+## Counts break the assumptions of a t-test
 
+:::: {.columns}
+::: {.column width="55%"}
 ::: {.incremental}
-- Counts are not normally distributed. They are bounded below by zero and skewed.
-- The variance depends on the mean. A gene at 10 counts and a gene at 10,000
-  counts behave differently.
-- Library sizes differ, so raw counts are not comparable between columns.
-- With 14,000 tests, estimating each feature's variance from 157 samples
-  independently is wasteful.
+- Counts can't go below zero, and they are skewed.
+- The variance depends on the mean: a gene at 10 counts behaves differently
+  from one at 10,000.
+- Library sizes differ, so raw counts aren't comparable between samples.
+- Estimating each gene's variance on its own, from 157 samples, ignores what
+  the other 14,000 genes can tell you.
 :::
+:::
+::: {.column width="45%"}
+```{r}
+#| echo: false
+#| fig-width: 6.5
+#| fig-height: 6.5
+tg |>
+  filter(symbol == "SERPINB12") |>
+  ggplot(aes(normalised_count)) +
+  geom_histogram(bins = 40, fill = pal[["navy"]], colour = "white", linewidth = 0.2) +
+  labs(title = "SERPINB12 in 157 week 18 samples",
+       x = "normalised count", y = "number of samples")
+```
+:::
+::::
 
 ## The variance really does track the mean
 
@@ -78,10 +114,10 @@ gc |>
        y = "uncertainty in the fold change (log scale)")
 ```
 
-Low-count features carry more uncertainty. A good method knows this and borrows
-information across features.
+Fold changes for low-count genes are much less certain. A method built for
+counts uses this trend to borrow information across genes.
 
-## Three lines {.smaller}
+## Running DESeq2
 
 ```{r}
 #| eval: false
@@ -99,56 +135,96 @@ res <- results(dds, contrast = c("community", "anaerobe", "lactobacillus"))
 
 . . .
 
-Raw counts go in. Never CPM, never logged. The method does its own
+Give it raw counts, never CPM and never logged values. DESeq2 does its own
 normalisation, and feeding it normalised data breaks it.
 
-## What those three lines did {.smaller}
+## Inside `DESeq()`
 
+:::: {.columns}
+::: {.column width="55%"}
 ::: {.incremental}
-1. **Size factors.** Worked out how deeply each sample was sequenced, so columns
+1. **Size factors.** Works out how deeply each sample was sequenced, so samples
    become comparable.
-2. **Dispersion.** Estimated each feature's variance, then pulled extreme
+2. **Dispersion.** Estimates each feature's variance, then pulls extreme
    estimates toward the trend you just saw.
-3. **Test.** Fitted a model per feature and tested whether the group term is
-   zero.
+3. **Test.** Fits a model per feature and tests whether the group term is zero.
 :::
+:::
+::: {.column width="45%"}
+::: {style="font-size: 0.75em;"}
+A toy gene in three samples. Sample C was sequenced twice as deeply.
 
-## What comes back {.smaller}
+```{r}
+#| echo: false
+tibble(sample = names(toy_raw), raw = toy_raw,
+       `size factor` = round(toy_sf, 2),
+       normalised = round(toy_raw / toy_sf)) |>
+  kable(align = "lrrr")
+```
+
+Dividing by the size factor puts the three samples back on one scale.
+:::
+:::
+::::
+
+## The results table
 
 ```{r}
 #| echo: false
 gc |> filter(!is.na(padj)) |> arrange(padj) |>
   transmute(gene = symbol, baseMean = round(baseMean), log2FoldChange = round(log2FoldChange, 2),
             stat = round(stat, 1), pvalue = format(pvalue, digits = 2), padj = format(padj, digits = 2)) |>
-  head(6) |> kable(align = "lrrrrr")
+  head(5) |> kable(align = "lrrrrr")
 ```
 
 ::: {.incremental}
-- `log2FoldChange` of 1 means twice as much. Of -1, half as much.
+- `log2FoldChange` of 1 means twice as much, and -1 means half as much.
 - `pvalue` is per feature, before any correction.
 - `padj` is what you report.
 :::
 
-## Fourteen thousand tests {.center}
+## Testing 13,738 genes at once
 
-If nothing at all were different, how many features would have `pvalue` below
-0.05?
+If no gene differed at all, how many would have `pvalue` below 0.05?
 
-. . .
+:::: {.columns}
+::: {.column width="58%"}
+::: {.fragment fragment-index=1}
+```{r}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 5.8
+n_null <- sum(!is.na(gc$pvalue)) * 0.05
+gc |>
+  filter(!is.na(pvalue)) |>
+  ggplot(aes(pvalue)) +
+  geom_histogram(breaks = seq(0, 1, 0.05), fill = pal[["navy"]], colour = "white") +
+  geom_hline(yintercept = n_null, linetype = 2, colour = pal[["orange"]], linewidth = 1) +
+  annotate("text", x = 0.98, y = n_null, vjust = -0.6, hjust = 1, colour = pal[["orange"]],
+           label = "expected per bar if no gene differed", size = 4.5) +
+  labs(x = "pvalue (bars 0.05 wide)", y = "number of genes")
+```
+:::
+:::
+::: {.column width="42%"}
+::: {.fragment fragment-index=1}
+About **687**, one in every twenty genes. The spike in the first bar is the real
+signal sitting on top of that.
+:::
 
-About **687**.
-
-. . .
-
-That is why `padj` exists. Benjamini-Hochberg asks for a different promise: of
+::: {.fragment fragment-index=2}
+That is why `padj` exists. Benjamini-Hochberg controls a different error: of
 the features you call significant, roughly 5% are wrong.
+:::
+:::
+::::
 
-## The result
+## Volcano plot: anaerobe against Lactobacillus
 
 ```{r}
 #| echo: false
 #| fig-width: 13
-#| fig-height: 5
+#| fig-height: 5.6
 gc |>
   filter(!is.na(padj)) |>
   mutate(call = case_when(padj >= 0.05 ~ "not significant",
@@ -164,24 +240,21 @@ gc |>
   theme(legend.position = "top")
 ```
 
-## `r scales::comma(n_sig(gc))` genes, and they are not random {.smaller}
+## `r scales::comma(n_sig(gc))` significant genes, led by the epithelial barrier {.smaller}
 
 ```{r}
 #| echo: false
 gc |> filter(!is.na(padj)) |> arrange(padj) |>
   transmute(gene = symbol, name = str_trunc(gene_name, 46),
             log2FoldChange = round(log2FoldChange, 2)) |>
-  head(7) |> kable(align = "llr")
+  head(10) |> kable(align = "llr")
 ```
 
-Mucins, filaggrin, cornified envelope proteins. Epithelial barrier genes, higher
-where Lactobacillus dominates.
+Mucins, filaggrin and cornified envelope proteins are epithelial barrier genes,
+and all of these are higher where Lactobacillus dominates. We did not put that
+pattern there; it came with the real samples.
 
-. . .
-
-We did not put that there. It came with the real samples.
-
-## Always plot the top hit {.smaller}
+## Always plot the top hit
 
 ```{r}
 #| echo: false
@@ -199,28 +272,28 @@ tg |>
   theme(legend.position = "none")
 ```
 
-All three fold changes are negative, and all three boxplots are higher on the
-right. The picture and the sign agree.
+Every fold change here is negative, and every boxplot is higher on the
+Lactobacillus side, so the picture and the sign agree.
 
-## Check that every time {.center}
+## Check the direction every time {.center}
 
 Getting the direction of a contrast backwards is the most common error in this
-analysis.
+analysis. Nothing warns you and the table looks normal, so it regularly
+survives peer review.
 
 . . .
 
-It does not produce a warning, it does not look wrong in a table, and it
-survives peer review regularly.
+A boxplot of the top gene, like the one on the last slide, shows the direction
+at a glance.
 
-. . .
-
-One boxplot catches it.
-
-## Significant is not the same as large {.smaller}
+## Significant is not the same as large
 
 ```{r}
 #| echo: false
 cs |>
+  mutate(contrast = factor(contrast, levels = c("genes_by_community", "genes_by_outcome",
+                                                "genes_by_bv", "species_by_outcome"))) |>
+  arrange(contrast) |>
   mutate(contrast = recode(contrast,
     genes_by_community = "genes ~ community (from the 16S table)",
     genes_by_outcome   = "genes ~ birth outcome",
@@ -234,39 +307,36 @@ cs |>
 
 . . .
 
-Read the last two columns of the first two rows against each other.
+Compare the first two rows: a similar number of significant genes, and a very
+different number of large changes.
 
-## The same number of hits, a different kind of hit {.smaller}
+## Similar numbers of hits, different kinds of hit
 
-::: {.columns}
-::: {.column width="50%"}
-**genes ~ community**
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 5
+ggplot(vol, aes(log2FoldChange, -log10(padj), colour = call)) +
+  geom_point(alpha = 0.45, size = 0.9) +
+  geom_vline(xintercept = c(-1, 1), linetype = 2, colour = "grey40") +
+  facet_wrap(~contrast) +
+  scale_colour_manual(values = c("not significant" = pal[["grey"]],
+                                 "significant, less than 2-fold" = pal[["navy"]],
+                                 "significant, more than 2-fold" = pal[["orange"]])) +
+  guides(colour = guide_legend(override.aes = list(size = 3, alpha = 1))) +
+  labs(x = "log2 fold change", y = "-log10 adjusted p", colour = NULL) +
+  theme(legend.position = "top", strip.text = element_text(size = 14))
+```
 
-`r scales::comma(n_sig(gc))` significant
-
-`r scales::comma(sum(gc$padj < 0.05 & abs(gc$log2FoldChange) > 1, na.rm = TRUE))` of them more than
-doubled
-
-A strong, local contrast.
-:::
-::: {.column width="50%"}
-**genes ~ birth outcome**
-
-`r scales::comma(n_sig(go))` significant
-
-`r scales::comma(sum(go$padj < 0.05 & abs(go$log2FoldChange) > 1, na.rm = TRUE))` of them more than
-doubled
-
-A weak shift in a great many genes.
-:::
-:::
+Community moves a few hundred genes a long way. Birth outcome moves a great many
+genes a little.
 
 . . .
 
 Friday we come back to this: thousands of significant genes, and still a poor
 prediction of who delivers early.
 
-## And a warning about proxies {.smaller}
+## A warning about proxies
 
 ```{r}
 #| echo: false
@@ -274,19 +344,19 @@ cs |> filter(contrast %in% c("genes_by_community", "genes_by_bv")) |>
   mutate(grouping = recode(contrast,
     genes_by_community = "Lactobacillus fraction, computed from the 16S table",
     genes_by_bv = "Nugent score of 7 or more, read down a microscope")) |>
-  transmute(grouping, samples, `genes at padj < 0.05` = n_sig) |>
+  transmute(grouping, samples, `genes at padj < 0.05` = scales::comma(n_sig)) |>
   kable(align = "lrr")
 ```
 
 . . .
 
-Two ways of asking "is this community disturbed". One of them is built from the
-data you already have, and finds hundreds of times as many genes.
+Both groupings ask whether the community is disturbed. The one built from data
+you already have finds hundreds of times as many genes.
 
-## Other people's tools {.smaller}
+## Other people's tools
 
 We used DESeq2 on both tables, because the point this week is that both tables
-are count tables. That is not what everyone does.
+are count tables. Not everyone does that.
 
 | for gene counts | for microbial counts |
 |---|---|
@@ -299,22 +369,20 @@ are count tables. That is not what everyone does.
 . . .
 
 The microbiome tools exist because that table is compositional and sparse in a
-way gene tables are not. The argument is real and worth reading about.
+way gene tables are not. The case for them is worth reading before you publish a
+microbiome analysis.
 
-## One trap, before you start {.center}
+## Don't test the species table with `community` {.center}
 
-You built `community` from the species table.
-
-. . .
-
-Testing the **gene** table with it is fine.
+You built `community` from the species table, so testing the **gene** table
+with it is fine.
 
 . . .
 
-Testing the **species** table with it is not. You would be asking whether
+Testing the **species** table with it is circular. You would be asking whether
 samples with lots of Lactobacillus have lots of Lactobacillus.
 
-## So your exercise asks a different question {.smaller}
+## The exercise tests species against birth outcome
 
 ```{r}
 #| eval: false
@@ -330,12 +398,12 @@ sp |> filter(!is.na(padj), padj < 0.05) |> arrange(padj) |>
   transmute(species = str_replace_all(species, "_", " "),
             log2FoldChange = round(log2FoldChange, 2),
             padj = format(padj, digits = 2)) |>
-  head(6) |> kable(align = "lrr")
+  head(5) |> kable(align = "lrr")
 ```
 
-`r n_sig(sp)` of `r cs$features_in[cs$contrast == "species_by_outcome"]` species,
-and `r sum(sp$padj < 0.05 & sp$log2FoldChange > 0, na.rm = TRUE)` of them are
-higher in the people who delivered early.
+`r n_sig(sp)` of `r cs$features_in[cs$contrast == "species_by_outcome"]` species
+are significant, and `r sum(sp$padj < 0.05 & sp$log2FoldChange > 0, na.rm = TRUE)`
+of them are higher in the people who delivered early.
 
 ## Your turn {.your-turn}
 

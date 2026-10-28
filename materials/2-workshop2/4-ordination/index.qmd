@@ -5,8 +5,9 @@ format:
     toc: true
 ---
 
-> How similar are two samples? Pick a distance, draw the picture, then put a
-> number on whatever you think you see.
+> This module measures how similar whole samples are to each other. You pick a
+> distance, draw the ordination, then put a number on whatever pattern you
+> think you see.
 
 ## Slides
 [Make slides full screen](slides.qmd)

@@ -38,15 +38,32 @@ r2 <- function(tbl, trm) {
   v <- perm$R2[perm$table == tbl & perm$term == trm]
   scales::percent(v, 0.1)
 }
+
+# toy pair of samples for the distance slide (counts invented for illustration)
+toy <- tibble(
+  species = c("L. crispatus", "G. vaginalis", "A. vaginae", "Prevotella", "Sneathia"),
+  A = c(900, 60, 30, 10, 0),
+  B = c(300, 400, 200, 0, 100)
+)
+pA <- toy$A / sum(toy$A); pB <- toy$B / sum(toy$B)
+toy_bray <- sum(abs(pA - pB)) / sum(pA + pB)
+toy_jac <- 1 - sum(toy$A > 0 & toy$B > 0) / sum(toy$A > 0 | toy$B > 0)
+clr <- function(x) log(x) - mean(log(x))
+toy_ait <- sqrt(sum((clr(toy$A + 1) - clr(toy$B + 1))^2))
+
+term_labels <- c(community = "community", outcome = "birth outcome",
+                 time_point = "visit", rnaseq_batch = "RNA-seq batch")
 ```
 
-## Yesterday: which feature differs? {.center}
+## From one feature to whole samples {.center}
 
-Today: **how similar are two whole samples?**
+Yesterday you tested one feature at a time. Today the question is **how similar
+two whole samples are**.
 
 . . .
 
-One number per pair of samples, and then a picture of all of them at once.
+That gives one number per pair of samples, and then a picture of all of them at
+once.
 
 ## A distance matrix
 
@@ -70,25 +87,42 @@ as_tibble(m, .name_repair = ~ paste0("S", seq_along(.x))) |>
   theme(panel.grid = element_blank())
 ```
 
-471 samples gives 110,685 pairs. Zero on the diagonal, symmetric, and that is
-the whole object.
+This toy has 12 samples. Ours has 471, which makes 110,685 pairs. The diagonal
+is zero, the matrix is symmetric, and there is nothing else in it.
 
-## Three ways to measure a distance {.smaller}
+## Choosing a distance
 
+:::: {.columns style="font-size: 0.8em"}
+::: {.column width="55%"}
 ::: {.incremental}
-- **Bray-Curtis** on proportions. How much of the two communities overlaps.
-  Abundant features dominate the answer.
-- **Jaccard** on presence and absence. What share of the features present in
-  either sample are present in both. Abundance is ignored entirely.
-- **Aitchison**, which is Euclidean distance on centred log-ratios. Built for
-  data where only the ratios between features mean anything.
+- Bray-Curtis works on proportions and measures how much of the two
+  communities overlaps. Abundant features dominate the answer.
+- Jaccard works on presence and absence: the share of features present in
+  either sample that are present in both. Abundance is ignored entirely.
+- Aitchison is Euclidean distance on centred log-ratios, built for data where
+  only the ratios between features mean anything.
+:::
 :::
 
-. . .
+::: {.column width="45%"}
+Two invented samples:
 
-These are not interchangeable. They answer different questions.
+```{r}
+#| echo: false
+kable(toy, align = "lrr")
+```
 
-## One pipeline, three knobs {.smaller}
+::: {.fragment}
+| distance | A to B |
+|---|---|
+| Bray-Curtis | `r round(toy_bray, 2)` |
+| Jaccard | `r round(toy_jac, 2)` |
+| Aitchison, pseudocount 1 | `r round(toy_ait, 2)` |
+:::
+:::
+::::
+
+## The microViz pipeline
 
 ```{r}
 #| eval: false
@@ -112,12 +146,12 @@ as_counts(table = "microbiome") |>
 
 : {tbl-colwidths="[50,50]"}
 
-## The same samples, three distances
+## The species ordination under each distance
 
 ```{r}
 #| echo: false
 #| fig-width: 15
-#| fig-height: 5
+#| fig-height: 5.6
 p1 <- ord_fig("species / Bray-Curtis", "community", "Bray-Curtis", "none")
 p2 <- ord_fig("species / Jaccard", "community", "Jaccard", "none")
 p3 <- ord_fig("species / Aitchison", "community", "Aitchison", "bottom")
@@ -125,17 +159,18 @@ p3 <- ord_fig("species / Aitchison", "community", "Aitchison", "bottom")
   scale_colour_manual(values = c(anaerobe = pal[["orange"]], lactobacillus = pal[["teal"]]))
 ```
 
-Three pictures of one table. Which would you put in a paper, and could you
-defend it?
+All three plots come from the same table. Which would you put in a paper, and
+how would you defend it?
 
-## What the axes are worth {.smaller}
+## Variation held by each axis
 
 ```{r}
 #| echo: false
-#| fig-width: 12
-#| fig-height: 3.9
+#| fig-width: 13
+#| fig-height: 4.6
 scree |>
   filter(axis <= 8) |>
+  mutate(table = factor(table, c("species / Bray-Curtis", "genes / Aitchison"))) |>
   ggplot(aes(factor(axis), variance_share, fill = table)) +
   geom_col() +
   scale_y_continuous(labels = scales::percent) +
@@ -166,10 +201,10 @@ a + b
 
 . . .
 
-The left panel is obvious. The right panel is the one you actually want, and you
-cannot see it.
+Community type splits the plot cleanly. Birth outcome is the label you actually
+care about, and by eye you cannot see it.
 
-## So stop squinting and test it {.smaller}
+## Testing a label with PERMANOVA
 
 ```{r}
 #| eval: false
@@ -180,14 +215,16 @@ as_counts(table = "microbiome") |>
                  n_perms = 999, by = "margin")
 ```
 
-PERMANOVA asks: if I shuffled this label across samples, would the groups be
-this far apart by chance?
+PERMANOVA asks: if I shuffled this label across samples, how often would the
+groups end up this far apart by chance?
 
 . . .
 
 `R2` is the share of the total variation that the label explains.
 
-## The species table {.smaller}
+## The species table
+
+::::: {style="font-size: 0.88em"}
 
 ```{r}
 #| echo: false
@@ -199,17 +236,33 @@ perm |>
 ```
 
 ::: {.incremental}
-- Community type: `r r2("species / Bray-Curtis", "community")`. Enormous, and
-  no surprise, since we defined it from this table.
-- Visit: `r r2("species / Bray-Curtis", "time_point")`. These communities move
-  over pregnancy.
-- Birth outcome: `r r2("species / Bray-Curtis", "outcome")`. Significant and
-  tiny.
-- Sequencing batch of the **RNA**: `r r2("species / Bray-Curtis", "rnaseq_batch")`,
-  not significant. Good. It should not matter here.
+- Community type explains `r r2("species / Bray-Curtis", "community")`. Enormous,
+  and expected, since we defined it from this table.
+- Visit explains `r r2("species / Bray-Curtis", "time_point")`. These
+  communities move over pregnancy.
+- Birth outcome explains `r r2("species / Bray-Curtis", "outcome")`. Significant
+  and tiny.
+- The **RNA** sequencing batch explains `r r2("species / Bray-Curtis", "rnaseq_batch")`,
+  not significant. It should not touch the 16S data.
 :::
 
-## Now the gene table, same pipeline {.smaller}
+:::::
+
+## Now the gene table
+
+The species code from this morning:
+
+```{r}
+#| eval: false
+as_counts(table = "microbiome") |>
+  tax_transform("identity", rank = "species") |>
+  dist_calc("bray") |>
+  ord_calc("PCoA") |>
+  ord_plot(colour = "community")
+```
+
+The gene version filters out rare genes and swaps the transform, rank and
+distance. The rest is the same:
 
 ```{r}
 #| eval: false
@@ -220,14 +273,12 @@ as_counts(table = "rnaseq", min_count = 10, min_samples = 100) |>
   ord_plot(colour = "community")
 ```
 
-Three words changed. Everything else is the line you just ran.
-
-## Three labels on the gene ordination
+## Gene ordination: community, outcome, batch
 
 ```{r}
 #| echo: false
 #| fig-width: 15
-#| fig-height: 5
+#| fig-height: 6.6
 g1 <- ord_fig("genes / Aitchison", "community", "by community", "bottom") +
   scale_colour_manual(values = c(anaerobe = pal[["orange"]], lactobacillus = pal[["teal"]]))
 g2 <- ord_fig("genes / Aitchison", "outcome", "by birth outcome", "bottom") +
@@ -241,15 +292,28 @@ g3 <- ords |> filter(ordination == "genes / Aitchison") |>
 g1 + g2 + g3
 ```
 
-## The uncomfortable table {.smaller}
+## The uncomfortable table
 
 ```{r}
 #| echo: false
+#| fig-width: 12
+#| fig-height: 4.6
 perm |>
   filter(!term %in% c("Residual", "Total")) |>
-  transmute(table, term, R2 = scales::percent(R2, 0.1), p = p_value) |>
-  pivot_wider(names_from = table, values_from = c(R2, p)) |>
-  kable(align = "lrrrr")
+  mutate(term = factor(term_labels[term], rev(term_labels)),
+         table = factor(table, c("species / Bray-Curtis", "genes / Aitchison")),
+         lab = paste0(scales::percent(R2, 0.1), "  (p = ", p_value, ")")) |>
+  ggplot(aes(R2, term, fill = term == "RNA-seq batch")) +
+  geom_col(width = 0.65) +
+  geom_text(aes(label = lab), hjust = -0.08, size = 5.5) +
+  facet_wrap(~table, scales = "free_x") +
+  scale_x_continuous(labels = scales::label_percent(1), breaks = scales::breaks_pretty(3),
+                     expand = expansion(mult = c(0, 0.8))) +
+  scale_fill_manual(values = c(`FALSE` = pal[["grey"]], `TRUE` = pal[["orange"]])) +
+  labs(x = "R2, share of variation explained", y = NULL) +
+  theme_minimal(base_size = 18) +
+  theme(legend.position = "none", panel.grid.major.y = element_blank(),
+        panel.spacing.x = unit(2, "lines"))
 ```
 
 . . .
@@ -257,19 +321,47 @@ perm |>
 In the gene table, the sequencing batch explains as much as the biology does,
 and it is just as significant.
 
-## What to do about that {.center}
+## Dealing with batch {.center}
 
 ::: {.incremental}
-- You cannot see it in the ordination. You can only measure it.
-- You can put it in the model: `~ rnaseq_batch + outcome`.
-- You cannot fix it if it is confounded with your groups. Check first, always.
-- You cannot check for it at all if nobody wrote the batch down.
+- The ordination did not show it. PERMANOVA measured it.
+- Put it in the model: `~ rnaseq_batch + outcome`.
+- If batch is confounded with your groups, nothing fixes it, so check that first.
+- None of this is possible if nobody wrote the batch down.
 :::
 
-## Significant and small {.smaller}
+## Significant and small
 
-Birth outcome in the gene table: `r r2("genes / Aitchison", "outcome")` of the
-variation, p = 0.005.
+Birth outcome explains `r r2("genes / Aitchison", "outcome")` of the variation
+in the gene table, p = 0.005.
+
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 2.4
+perm |>
+  filter(table == "genes / Aitchison", term != "Total") |>
+  mutate(part = case_when(term == "outcome" ~ "birth outcome",
+                          term == "Residual" ~ "unexplained",
+                          TRUE ~ "other labels"),
+         part = factor(part, c("birth outcome", "other labels", "unexplained"))) |>
+  group_by(part) |>
+  summarise(R2 = sum(R2)) |>
+  arrange(part) |>
+  mutate(xmax = cumsum(R2), xmin = xmax - R2, mid = (xmin + xmax) / 2,
+         lab = paste(part, scales::percent(R2, 0.1)),
+         ylab = c(1.35, -0.35, 0.5), vj = c(0, 1, 0.5),
+         hj = c(0, 0, 0.5), xl = c(0, 0.0, 0.55)) |>
+  ggplot() +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = 0, ymax = 1, fill = part)) +
+  geom_text(aes(x = xl, y = ylab, label = lab, vjust = vj, hjust = hj), size = 7) +
+  scale_fill_manual(values = c(unexplained = "#eeeeee", `other labels` = pal[["grey"]],
+                               `birth outcome` = pal[["orange"]])) +
+  scale_x_continuous(labels = scales::percent, expand = c(0, 0)) +
+  coord_cartesian(ylim = c(-0.8, 1.8), clip = "off") +
+  theme_void(base_size = 15) +
+  theme(legend.position = "none")
+```
 
 . . .
 
@@ -277,14 +369,11 @@ Yesterday the same comparison gave `r scales::comma(n_genes_outcome)` significan
 
 . . .
 
-Both are true. A great many genes shift slightly, and a slight shift in a great
-many genes is a small share of a very large pile of variation.
+Both results hold. Many genes each shift a little, and small shifts in many
+genes still add up to a small share of a very large amount of variation. We come
+back to this on Friday.
 
-. . .
-
-Hold that thought until Friday.
-
-## What you will do {.smaller}
+## In the exercises
 
 ::: {.incremental}
 1. Build the species ordination three ways and argue about which to show

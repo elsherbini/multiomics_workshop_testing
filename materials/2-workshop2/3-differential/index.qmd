@@ -5,8 +5,8 @@ format:
     toc: true
 ---
 
-> Which features differ between two groups of samples? One method, both tables,
-> and a careful look at what a significant result is actually worth.
+> We test which features differ between two groups of samples, using one method
+> on both tables, and then look closely at how much a significant result is worth.
 
 ## Slides
 [Make slides full screen](slides.qmd)

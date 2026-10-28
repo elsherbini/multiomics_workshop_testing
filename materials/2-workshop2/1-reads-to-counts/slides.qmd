@@ -17,16 +17,29 @@ pal <- c(navy = "#2b3a67", teal = "#2a9d8f", orange = "#e76f51",
          gold = "#e9c46a", grey = "#bbbbbb")
 theme_set(theme_minimal(base_size = 15))
 set.seed(11)
+
+# Small real examples from the instructional dataset.
+dat <- "../../../datasets/2-workshop2/instructional_dataset"
+mb <- read_csv(file.path(dat, "02_microbiome_counts.csv"), show_col_types = FALSE)
+rn <- read_csv(file.path(dat, "04_rnaseq_counts.csv.gz"), show_col_types = FALSE)
+genes <- read_csv(file.path(dat, "05_gene_annotation.csv"), show_col_types = FALSE) |>
+  select(ensembl_gene_id, symbol)
+top_share <- function(m) {
+  x <- as.matrix(m[, -1])
+  tibble(sample = colnames(x), share = apply(x, 2, max) / colSums(x))
+}
+dominance <- bind_rows(species = top_share(mb), genes = top_share(rn), .id = "table") |>
+  mutate(table = factor(table, c("species", "genes")))
 ```
 
 ## This afternoon {.center}
 
-We are not running any software.
+We won't run any software today.
 
 . . .
 
-By the end you should be able to say, in your own words, where each number in a
-count table came from.
+By the end of the afternoon you should be able to explain, in your own words,
+where each number in a count table came from.
 
 ## A sequencer returns text
 
@@ -39,12 +52,13 @@ FFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFF,FFFFFFFFFFFFFFFFFF,FFF
 
 . . .
 
-Millions of these per sample. A name, a sequence, and a quality score per base.
+Each sample produces millions of these records: a read name, the sequence, and
+a quality score for every base.
 
 . . .
 
-Everything that follows is an attempt to answer one question: **what was in the
-tube, and how much of it?**
+All the processing after this tries to answer **what was in the tube, and how
+much of it?**
 
 ## Not every base is trustworthy
 
@@ -65,9 +79,10 @@ tibble(cycle = 1:150) |>
   ylim(10, 42)
 ```
 
-Quality falls along the read. Before anything else, somebody trimmed these.
+Quality drops toward the end of each read. Before any counting, someone trimmed
+off the low-quality ends.
 
-## The decisions already made for you {.smaller}
+## The decisions already made for you
 
 By the time you receive a count table, someone has chosen:
 
@@ -81,30 +96,27 @@ By the time you receive a count table, someone has chosen:
 
 . . .
 
-None of those choices are in the table. All of them changed its contents.
+You won't find these choices in the table, but each one changed its numbers, so
+ask who made them.
 
-. . .
-
-Ask who made them.
-
-## Two experiments, two paths, one destination
+## Both pipelines end in a count table
 
 ```{r}
 #| fig-width: 15
-#| fig-height: 6
+#| fig-height: 6.4
 steps <- tribble(
   ~path, ~step, ~label,
-  "16S", 1, "cervicovaginal\nswab",
-  "16S", 2, "amplify the\n16S V3-V4 region",
+  "16S", 1, "cervico-\nvaginal\nswab",
+  "16S", 2, "amplify\n16S V3-V4",
   "16S", 3, "sequence",
-  "16S", 4, "denoise into\nexact sequences",
-  "16S", 5, "classify against\na reference",
+  "16S", 4, "denoise\ninto exact\nsequences",
+  "16S", 5, "classify\nagainst a\nreference",
   "16S", 6, "counts per\nspecies",
-  "RNA", 1, "cervicovaginal\nswab",
-  "RNA", 2, "capture mRNA,\nmake cDNA",
+  "RNA", 1, "cervico-\nvaginal\nswab",
+  "RNA", 2, "capture\nmRNA, make\ncDNA",
   "RNA", 3, "sequence",
-  "RNA", 4, "align to the\nhuman genome",
-  "RNA", 5, "count reads\nper gene model",
+  "RNA", 4, "align to\nthe human\ngenome",
+  "RNA", 5, "count reads\nper gene\nmodel",
   "RNA", 6, "counts per\ngene"
 ) |>
   mutate(y = if_else(path == "16S", 2, 1),
@@ -117,20 +129,21 @@ ggplot(steps, aes(step, y)) +
                data = steps |> filter(step < 6),
                colour = pal[["grey"]], linewidth = 0.8,
                arrow = arrow(length = unit(0.18, "cm"), type = "closed")) +
-  geom_tile(aes(fill = fill), width = 0.86, height = 0.62, colour = "white", linewidth = 2) +
-  geom_text(aes(label = label), colour = "white", size = 3.8, lineheight = 0.95,
+  geom_tile(aes(fill = fill), width = 0.92, height = 0.8, colour = "white", linewidth = 2) +
+  geom_text(aes(label = label), colour = "white", size = 6.6, lineheight = 0.9,
             fontface = "bold") +
   scale_fill_identity() +
   scale_y_continuous(breaks = c(2, 1), labels = c("16S", "RNA-seq"), limits = c(0.5, 2.5)) +
   labs(x = NULL, y = NULL) +
-  theme_void(base_size = 16) +
+  theme_void(base_size = 20) +
   theme(axis.text.y = element_text(face = "bold", colour = "grey25", hjust = 1,
                                    margin = margin(r = 10)))
 ```
 
-Different biology, different software, same final object.
+The lab work and the software differ at every step. Both end with features in
+rows, samples in columns, and read counts in the cells.
 
-## 16S: one gene, every bacterium {.smaller}
+## 16S: one gene, every bacterium
 
 ::: {.columns}
 ::: {.column width="55%"}
@@ -153,18 +166,18 @@ tibble(x = seq(0, 10, length.out = 500)) |>
          variable = if_else(x > 3 & x < 5 | x > 7 & x < 8.5, 0.9, 0.15)) |>
   ggplot(aes(x)) +
   geom_area(aes(y = variable), fill = pal[["teal"]], alpha = 0.85) +
-  annotate("text", x = 4, y = 1.05, label = "V3", size = 5, fontface = "bold") +
-  annotate("text", x = 7.75, y = 1.05, label = "V4", size = 5, fontface = "bold") +
-  annotate("text", x = 1.5, y = 0.33, label = "conserved", size = 4, colour = "grey30") +
+  annotate("text", x = 4, y = 1.05, label = "V3", size = 6, fontface = "bold") +
+  annotate("text", x = 7.75, y = 1.05, label = "V4", size = 6, fontface = "bold") +
+  annotate("text", x = 1.5, y = 0.36, label = "conserved", size = 5, colour = "grey30") +
   labs(x = "position along the 16S gene", y = "variation between species") +
   ylim(0, 1.15) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 17) +
   theme(axis.text.y = element_blank(), panel.grid.minor = element_blank())
 ```
 :::
 :::
 
-## PCR is not a neutral copier
+## PCR distorts the proportions
 
 ```{r}
 #| fig-width: 13
@@ -185,18 +198,20 @@ tibble(
 ```
 
 Primers bind some templates better than others, and 16S copy number varies
-between species. The ordering can change.
+between species, so the most common species in the reads may not be the most
+common in the tube.
 
-## Grouping reads: ASVs and OTUs {.smaller}
+## Grouping reads: ASVs and OTUs
 
 ::: {.columns}
 ::: {.column width="52%"}
-Two sequences differing by one base. Same organism, or two?
+If two reads differ by one base, did they come from one organism or two?
 
 ::: {.incremental}
-- **OTUs** cluster anything within, say, 3% of each other. Robust, blunt.
-- **ASVs** model the sequencing error process and resolve exact sequences.
-  Sharper, and sensitive to the error model being right.
+- **OTUs** cluster anything within some cutoff of each other, say 3%. Errors get
+  absorbed, and so do close relatives.
+- **ASVs** model the sequencing error process and keep exact sequences. They can
+  separate close relatives, if the error model is right.
 :::
 :::
 ::: {.column width="48%"}
@@ -212,18 +227,18 @@ tibble(x = c(rnorm(60, 2, 0.35), rnorm(40, 4, 0.35), rnorm(8, 3, 1.2)),
   geom_point(alpha = 0.8) +
   scale_colour_manual(values = c(`abundant variant` = pal[["navy"]],
                                  `error reads` = pal[["orange"]])) +
-  scale_size_manual(values = c(2.6, 1.4)) +
+  scale_size_manual(values = c(3, 1.8)) +
   labs(x = NULL, y = NULL, colour = NULL) +
   guides(size = "none") +
-  theme_void(base_size = 13) +
+  theme_void(base_size = 18) +
   theme(legend.position = "bottom")
 ```
 :::
 :::
 
-## Then you look it up, and often cannot tell {.smaller}
+## Classification often stops short of species
 
-The variable region you sequenced is short. Some species are identical across it.
+The sequenced region is short, and some species are identical across it.
 
 ```{r}
 #| echo: false
@@ -241,17 +256,17 @@ tibble(
 
 . . .
 
-Two of our 220 row names are honest admissions of uncertainty. Read your row
-names before you interpret them.
+Two of our 220 row names admit this uncertainty in the name itself, so read the
+row names before you interpret them.
 
-## What a 16S count means
+## A 16S count is a number of reads
 
-A cell in the species table is: **the number of amplicon reads in this sample
+A cell in the species table is **the number of amplicon reads in this sample
 that matched this species.**
 
 . . .
 
-That is not the number of bacteria. Between the cell and the count sit
+It is not the number of bacteria. The count also depends on
 
 ::: {.incremental}
 - how many copies of the 16S gene that species carries
@@ -260,7 +275,7 @@ That is not the number of bacteria. Between the cell and the count sit
 - how deeply the sample was sequenced
 :::
 
-## RNA-seq: every gene, one organism {.smaller}
+## RNA-seq: every gene, one organism
 
 ::: {.columns}
 ::: {.column width="52%"}
@@ -283,25 +298,25 @@ tibble(x = 0) |>
            fill = pal[["grey"]]) +
   annotate("rect", xmin = c(1, 4.2, 7.5), xmax = c(2.6, 6, 9.2), ymin = 0.05, ymax = 0.17,
            fill = pal[["navy"]]) +
-  annotate("text", x = 1.8, y = 0.01, label = "exon", size = 4, colour = "grey30") +
+  annotate("text", x = 1.8, y = -0.01, label = "exon", size = 5, colour = "grey30") +
   geom_segment(data = reads, aes(x = start, xend = start + 0.75, y = y, yend = y),
                colour = pal[["orange"]], linewidth = 1.6) +
   labs(x = "position along the gene", y = NULL) +
   xlim(0, 10) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 17) +
   theme(axis.text.y = element_blank(), panel.grid = element_blank())
 ```
 :::
 :::
 
-## What an RNA-seq count means
+## An RNA-seq count is a number of fragments
 
-A cell in the gene table is: **the number of fragments in this sample assigned
+A cell in the gene table is **the number of fragments in this sample assigned
 to this gene.**
 
 . . .
 
-Also not a molecule count. Between the transcript and the count sit
+It is not the number of mRNA molecules either. The count also depends on
 
 ::: {.incremental}
 - how long the gene is
@@ -310,21 +325,50 @@ Also not a molecule count. Between the transcript and the count sit
 - how deeply the sample was sequenced
 :::
 
-## One swab, two experiments {.smaller}
+## One swab, two experiments
 
 A cervicovaginal swab contains human cells and bacteria together.
 
 ::: {.incremental}
 - The 16S run amplifies a bacterial gene, so human material is mostly ignored.
 - The RNA-seq run captures polyadenylated RNA, which is mostly human.
-- Neither is pure. Both are the same swab.
+- Neither table is pure, but both come from the same swab.
 :::
 
 . . .
 
-That is why we can pair the two tables sample by sample at all.
+Because they share a swab, we can pair the two tables sample by sample.
 
-## Reads that could have come from anywhere
+## The two tables share their columns {.smaller}
+
+```{r}
+show_ids <- c("P001_week_18", "P001_week_24", "P002_week_18")
+peek <- function(m, label, what) {
+  names(m)[1] <- "feature"
+  m |>
+    select(feature, all_of(show_ids)) |>
+    mutate(total = rowSums(across(all_of(show_ids)))) |>
+    slice_max(total, n = 4) |>
+    select(-total) |>
+    mutate(across(all_of(show_ids), ~ scales::comma(.x))) |>
+    add_row(feature = paste("...", scales::comma(nrow(m) - 4), "more", what)) |>
+    mutate(table = c(label, rep("", n() - 1)), .before = 1)
+}
+bind_rows(
+  peek(mb, "16S", "species"),
+  rn |>
+    left_join(genes, by = "ensembl_gene_id") |>
+    select(symbol, everything(), -ensembl_gene_id) |>
+    peek('<span style="white-space: nowrap">RNA-seq</span>', "genes")
+) |>
+  mutate(across(everything(), ~ replace_na(.x, ""))) |>
+  knitr::kable(col.names = c("table", "row", show_ids), align = "llrrr")
+```
+
+The rows with the most reads, in the first three columns of each table. Every
+sample ID is a column in both tables, so any sample can be looked up in both.
+
+## Some reads fit more than one gene
 
 ```{r}
 #| fig-width: 13
@@ -344,15 +388,14 @@ tibble(x = 0) |>
   theme_void()
 ```
 
-Gene families and repeats produce reads that fit several genes. Counting them
-once, twice or not at all are three different tables.
+Gene families and repeated sequences produce reads that match several genes
+equally well. Counting such a read once, twice, or not at all gives a different
+table each time.
 
 ## Counts, not TPM, for testing {.smaller}
 
 You will see expression reported as TPM, FPKM or RPKM. Those divide by gene
 length so you can compare genes within a sample.
-
-. . .
 
 ::: {.incremental}
 - Good for: "is gene A higher than gene B in this sample?"
@@ -364,11 +407,32 @@ length so you can compare genes within a sample.
 Those tests need raw counts, because they model counting noise. Hand them
 normalised values and they will believe the noise is smaller than it is.
 
-## The compositional problem, drawn
+. . .
+
+```{r}
+tibble(sample = c("sample 1", "sample 2"),
+       library = c(2e6, 20e6),
+       reads = c(10, 100)) |>
+  mutate(per_million = reads / library * 1e6,
+         lo = qpois(0.025, reads) / library * 1e6,
+         hi = qpois(0.975, reads) / library * 1e6,
+         `reads for gene X` = reads,
+         `library size` = scales::comma(library),
+         `reads per million` = per_million,
+         `range if sequenced again` = sprintf("%.1f to %.1f", lo, hi)) |>
+  select(sample, `library size`, `reads for gene X`, `reads per million`,
+         `range if sequenced again`) |>
+  knitr::kable(align = "lrrrr")
+```
+
+The normalised values match. Only the raw counts show that sample 1 rests on
+ten reads.
+
+## When C grows, A and B appear to shrink
 
 ```{r}
 #| fig-width: 14
-#| fig-height: 4.6
+#| fig-height: 5.2
 d <- tibble(
   sample = rep(c("sample 1", "sample 2"), each = 3),
   feature = rep(c("A", "B", "C"), 2),
@@ -387,26 +451,45 @@ p_rel <- ggplot(d, aes(sample, relative, fill = feature)) +
   scale_y_continuous(labels = scales::percent) +
   labs(title = "what the count table shows", x = NULL, y = "share of reads") +
   scale_fill_manual(values = unname(pal[c("teal", "navy", "orange")]))
-p_abs + p_rel
+p_abs + p_rel + plot_layout(guides = "collect")
 ```
 
-A and B never changed. In the table, both appear to fall by more than half.
+A and B have 100 cells in both samples, but their share of the reads falls from
+a third to a ninth.
 
-## Which bites both tables {.smaller}
+## Both of our tables are compositional
 
+:::: {.columns}
+::: {.column width="48%"}
 ::: {.incremental}
-- It is severe in 16S, where one species routinely holds 90% of the reads.
-- It is milder in RNA-seq, where no single gene dominates, but it is still
-  there.
-- It is why "relative abundance went down" is not the same claim as "there was
-  less of it".
+- 16S is hit hardest, because one species routinely holds 90% of the reads.
+- RNA-seq is affected less, since no single gene dominates, but the effect is
+  still there.
 :::
 
-. . .
+"Relative abundance went down" and "there was less of it" are different claims.
+Without a spike-in or an absolute measurement, you cannot tell them apart.
+:::
+::: {.column width="52%"}
+```{r}
+#| fig-width: 7
+#| fig-height: 6.2
+ggplot(dominance, aes(table, share, colour = table)) +
+  ggbeeswarm::geom_quasirandom(size = 1.3, alpha = 0.7, width = 0.38) +
+  scale_colour_manual(values = c(species = pal[["teal"]], genes = pal[["orange"]]),
+                      guide = "none") +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  scale_x_discrete(labels = c(species = "16S species", genes = "RNA-seq genes")) +
+  labs(x = NULL, y = "reads held by the top feature",
+       title = "one dot per sample, our 471 samples") +
+  theme_minimal(base_size = 17) +
+  theme(panel.grid.major.x = element_blank(),
+        plot.title = element_text(size = 15, colour = "grey35"))
+```
+:::
+::::
 
-Without a spike-in or an absolute measurement, you cannot tell the two apart.
-
-## What to demand from your sequencing facility {.smaller}
+## Ask your sequencing facility for
 
 ::: {.incremental}
 - the raw reads, not just the table
@@ -418,9 +501,9 @@ Without a spike-in or an absolute measurement, you cannot tell the two apart.
 
 . . .
 
-That last one catches contamination, and almost nobody asks for it.
+The controls are how you catch contamination, and few people ask for them.
 
-## What goes wrong, in practice {.smaller}
+## Common problems and how to spot them
 
 | problem | how you notice |
 |---|---|
@@ -433,18 +516,14 @@ That last one catches contamination, and almost nobody asks for it.
 
 . . .
 
-Three of those four are invisible unless somebody recorded the metadata.
+You can only see three of these four if somebody recorded the metadata.
 
 ## The sentence to remember {.center}
 
-A count table is **not** a measurement of how much was there.
+A count measures how much of something was in the tube **relative to everything
+else in that tube**, multiplied by how hard we looked.
 
-. . .
-
-It is a measurement of how much was there, **relative to everything else in that
-tube**, multiplied by how hard we looked.
-
-## Which is why every analysis starts the same way
+## Every analysis starts the same way
 
 ::: {.incremental}
 1. How deeply was each sample sequenced?
@@ -454,21 +533,22 @@ tube**, multiplied by how hard we looked.
 
 . . .
 
-Tomorrow morning is step 1 and step 2, on both tables at once.
+Tomorrow morning covers the first two, on both tables at once.
 
-## One more label we will keep {.smaller}
+## Our gene table has a batch label
 
-Our gene table was produced in **two sequencing batches**.
-
-. . .
-
-We could have hidden that. We left it in, because on Wednesday you will measure
-how much of the table it explains, and the answer is uncomfortable.
+The gene table was produced in **two sequencing batches**, and we kept that
+label in the metadata.
 
 . . .
 
-Keep every technical label your sequencing facility gives you. You cannot check
-for a problem you did not write down.
+On Wednesday you will measure how much of the table the batch explains, and
+the answer is uncomfortable.
+
+. . .
+
+Keep every technical label your sequencing facility gives you. A batch effect
+you never recorded is one you cannot test for.
 
 ## On your feet {.center}
 
@@ -476,4 +556,4 @@ Put the laptops away.
 
 . . .
 
-The next ninety minutes we build count tables out of objects.
+For the next ninety minutes we build count tables by hand.

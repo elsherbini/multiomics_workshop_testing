@@ -1,10 +1,9 @@
 ## Exercise 1: From a gene list to a sentence
 
 Open `notebooks/05-enrichment.qmd`. You need Tuesday's DESeq2 results. If you no
-longer have them, rerun the three lines; the whole point of a script is that you
-can.
+longer have them, rerun the three lines that made them.
 
-### Part 1 — Predict
+### Part 1: Predict
 
 1. You are about to test 50 gene sets. If none were truly enriched, how many
    would come out with `padj < 0.05`?
@@ -14,7 +13,7 @@ can.
 3. Name one biological program you expect to be elevated in the people who
    delivered preterm. You will check this against the answer.
 
-### Part 2 — Build
+### Part 2: Build
 
 1. Build the ranking vector from your outcome results: `res$stat`, named by
    gene, with missing values dropped. How many genes are in it?
@@ -28,7 +27,7 @@ can.
 
    Check that the identifiers in `sets` are the same kind as the names of your
    ranking vector. If one is Ensembl and the other is a symbol, nothing will
-   match and `fgsea` will return almost nothing rather than an error.
+   match, and `fgsea` will return almost nothing without raising an error.
 
 3. Run `fgsea(sets, stat, minSize = 15, maxSize = 500)`. Sort by `padj`. How
    many sets are significant, and how many point in each direction?
@@ -47,11 +46,11 @@ can.
    symbols with `05_gene_annotation.csv` and read the list. Plot normalised
    counts for two of them by outcome.
 
-### Part 3 — Check the agent
+### Part 3: Check the agent
 
 - Ask Pi to run the enrichment. Then ask how many of your genes matched into any
-  set at all. A silent identifier mismatch is the most common failure here and
-  it produces plausible-looking output.
+  set at all. An identifier mismatch is the most common failure here, and it
+  fails silently with plausible-looking output.
 - Ask it to interpret the top five sets. It will write a confident paragraph
   about inflammation and preterm birth. Ask it which of those five sets share
   genes with each other. Overlapping sets are not independent findings.
@@ -66,5 +65,5 @@ can.
 - Was your Part 1 prediction of the elevated program right?
 - Two of the top sets overlap heavily. How would you report them without double
   counting?
-- Tuesday the outcome contrast gave 1,698 genes and a shrug. Today it gives a
-  sentence. What did enrichment actually add, and what did it hide?
+- On Tuesday the outcome contrast gave you 1,698 genes and no clear story; today
+  it gives you one sentence. What did enrichment add, and what did it hide?

@@ -1,13 +1,13 @@
-## Exercise 1: What is in these two files?
+## Exercise 1: Inside the two files
 
-> Working with the agent. You have Pi in your Codespace for every exercise this
-> week. Use it. Each exercise ends with a part that asks you to check what it
-> produced, because the habit we are actually teaching is catching a confident
-> wrong answer.
+> Working with the agent: Pi is in your Codespace for every exercise this week,
+> so use it. Each exercise ends with a part that asks you to check what it
+> produced. The habit we most want you to build is catching a confident wrong
+> answer.
 
 Open `notebooks/02-count-table-anatomy.qmd`.
 
-### Part 1 — Predict, before you run anything
+### Part 1: Predict, before you run anything
 
 Write your answers down. You will compare them to the real numbers in Part 2.
 
@@ -18,7 +18,7 @@ Write your answers down. You will compare them to the real numbers in Part 2.
 4. One sample in the species table has 438 total reads. The median is about
    28,700. What do you expect to be wrong with that sample's numbers?
 
-### Part 2 — Build
+### Part 2: Build
 
 1. Read `01_metadata.csv`, `02_microbiome_counts.csv` and
    `04_rnaseq_counts.csv.gz`. Confirm that both count tables have a column for
@@ -34,8 +34,8 @@ Write your answers down. You will compare them to the real numbers in Part 2.
    - `top_feature_share`, the largest single value divided by the column total
 
 3. Put those four numbers for both tables into one tidy data frame with a
-   `table` column saying `"species"` or `"genes"`. You want one data frame, not
-   two, because every plot after this is a facet.
+   `table` column saying `"species"` or `"genes"`. Keep both tables in one data
+   frame, because every plot after this facets by table.
 
 4. Plot `library_size` for both tables. You will need a log scale. Then plot
    `features_detected` against `library_size`, faceted by table.
@@ -43,7 +43,7 @@ Write your answers down. You will compare them to the real numbers in Part 2.
 5. Find the sample with 438 bacterial reads. Look at its full column. How many
    species does it show? What is its `top_feature_share`?
 
-### Part 3 — Check the agent
+### Part 3: Check the agent
 
 Ask Pi to compute the four summaries for you if you have not already. Then,
 before you believe any of it:
@@ -52,7 +52,7 @@ before you believe any of it:
 - `features_detected` should never exceed the number of rows in the table. Is
   that true for every sample in its output?
 - Does its data frame have 942 rows, 471 samples for each of two tables? If it
-  has 471, it quietly dropped a table.
+  has 471, it dropped one of the tables without saying so.
 - Ask it: "which samples should I drop and why?" Then ask it what happens to
   your results if you keep them. See whether the second answer contradicts the
   first.

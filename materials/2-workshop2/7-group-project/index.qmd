@@ -5,19 +5,26 @@ format:
     toc: true
 ---
 
-> Two datasets, ten groups, two working sessions and one presentation. Nobody
-> tells you the answer.
+> Each group picks a question about one of two new datasets, works on it over two
+> mornings, and on Friday presents to a group that worked on the other dataset.
+> We do not give you an answer to check against.
 
-## How it works
+## Groups and schedule
 
-Ten groups of six. Five groups take Study A, five take Study B. You meet your
-group on Wednesday morning and present on Friday.
+There are ten groups of six people. Five groups (A1 to A5) take Study A and five
+(B1 to B5) take Study B. You meet your group on Wednesday morning.
+
+On Friday each Study A group pairs with the Study B group of the same number and
+sits with them. A1 presents to B1, then B1 presents to A1; A2 and B2 do the same
+nearby, and so on. Your audience has spent two mornings on a different dataset,
+so explain your study before your result.
 
 | when | how long | what |
 |---|---|---|
 | Wednesday AM | 3 hours | meet, read the data, agree a question, first analysis |
 | Thursday AM | 3 hours | finish the analysis, build the figures, write the talk |
-| Friday AM | 8 minutes each | present |
+| Friday AM | 30 minutes | final preparation |
+| Friday AM | 1 hour | present to your paired group for 30 minutes, then listen to theirs for 30 |
 
 : {tbl-colwidths="[18,16,66]"}
 
@@ -44,16 +51,16 @@ product or a placebo, and were sampled before and after the course of treatment.
 
 : {tbl-colwidths="[30,70]"}
 
-**The obvious question.** Did the product change the bacterial community, and did
-it change host gene expression?
+The obvious question is whether the product changed the bacterial community, and
+whether it changed host gene expression.
 
-**The less obvious questions.** Did it work in everyone, or only in people whose
+There are less obvious ones. Did it work in everyone, or only in people whose
 community was already a particular way before treatment? Does the host response
 track the community change, or move on its own? Is a difference after treatment
 meaningful if the two arms already differed before it?
 
-**One warning.** The arms are unbalanced, 121 against 55. Check your baseline
-before you interpret anything about the follow-up.
+The arms are unbalanced, 121 against 55, so check your baseline before you
+interpret anything about the follow-up.
 
 ## Study B: do hormonal contraceptives differ in their effect?
 
@@ -68,30 +75,32 @@ once.
 
 : {tbl-colwidths="[30,70]"}
 
-**The obvious question.** Do the three methods differ in bacterial community
-composition, in host gene expression, or in both?
+The obvious question is whether the three methods differ in bacterial community
+composition, in host gene expression, or in both.
 
-**The less obvious questions.** One of the three is delivered locally and two are
-systemic. Does that grouping explain more than the three-way split does? Is
+Then the less obvious ones. One of the three methods is delivered locally and two
+are systemic. Does that grouping explain more than the three-way split does? Is
 bacterial vaginosis more common in one arm, and if so is that the explanation for
 everything else you find? With 93 samples and three groups, which of your
 comparisons is actually powered?
 
-**One warning.** This is cross-sectional. Nobody was randomised to a method, and
-people who choose different methods differ in other ways.
+Keep in mind that the study is cross-sectional. Nobody was randomised to a
+method, and people who choose different methods differ in other ways.
 
-## What to deliver
+## Deliverables
 
-An eight-minute presentation with no more than eight slides, containing:
+A presentation that fits your 30-minute slot, containing:
 
-1. **The question** you settled on, in one sentence
-2. **What you did**, including what you filtered and why
-3. **Two or three figures**, each with a caption you read out
-4. **The answer**, stated as plainly as the data allow
-5. **What you do not believe** about your own result
+1. the question you settled on, in one sentence
+2. what you did, including what you filtered and why
+3. two or three figures, each with a caption you read out
+4. the answer, stated as plainly as the data allow
+5. what you do not believe about your own result
 
-That last slide is not optional and it is the one we will ask about. Every
-analysis this week had something wrong with it. Find yours before we do.
+The last of these is required. When you are the audience, ask the other group
+about theirs. Every
+analysis this week had something wrong with it, so look for the problems in
+yours before you present.
 
 ## Advice from the modules
 
@@ -110,10 +119,11 @@ analysis this week had something wrong with it. Find yours before we do.
 
 ## Using the agent
 
-Use Pi freely. It will write most of your code faster than you can, and the
-groups that get furthest will be the ones who use it well.
+Use Pi as much as you like. It writes most code faster than you can, and groups
+that use it well tend to get further.
 
-It will also, at some point this week, hand you a confident and wrong answer.
+At some point this week it will also give you an answer that is confident and
+wrong.
 Before any number goes on a slide, one person in the group who did not write the
 code should be able to say where it came from.
 

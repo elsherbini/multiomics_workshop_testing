@@ -5,7 +5,7 @@ format:
     toc: true
 ---
 
-> Where we are, what we are going to do, and the one idea that holds the week together.
+> The venue, the week's schedule, and the study whose data you will analyse.
 
 ## Slides
 [Make slides full screen](slides.qmd)
@@ -14,16 +14,23 @@ format:
 <iframe class="slide-deck" src="slides.html" height="420" width="747" style="border: 1px solid #2e3846;"></iframe>
 ```
 
+## Library prep
+
+Lindsay Droit (Washington University School of Medicine) walks through how a
+swab becomes a sequencing library for 16S and for RNA-seq. Her slides will be
+added here.
+
 ## Practical details
 
 **Venue.** Golden Tulip Westlands, Nairobi. Monday 9 to Friday 13 November 2026.
 
 **Evenings.** Dinner together on Monday for instructors, teaching assistants and
-participants. A networking evening midweek. Both are optional and both are the
-best part of the week.
+participants, and a networking evening midweek. Both are optional, but we hope
+you come.
 
-**Your group.** Ten groups of six. You will meet your group on Wednesday morning
-and present with them on Friday.
+**Your group.** There are ten groups of six. You meet your group on Wednesday
+morning. On Friday your group presents to one paired group that worked on the
+other dataset, and listens to theirs.
 
 **Getting set up.** Follow [Getting Started](../../../getting-started.qmd) before
 Tuesday morning. You need a GitHub account and the Codespace from the workshop
