@@ -1,12 +1,13 @@
 ## Analog activities (90 minutes, no computers)
 
-The whole session acts out one story: **pick a bag, then draw balls**. A bag is
-a community, a tissue state, or a patch of forest. A ball is a read, a fragment,
-or an animal you spotted. Any study that fits that story produces a count table,
-and everything this week works on count tables.
+The session acts out one story: **pick a bag, then draw balls**. A bag might be
+a vaginal community or a patch of forest; a ball might be a 16S read or a bird
+someone spotted. Any study that fits that story produces a count table, and
+everything this week works on count tables.
 
-The first fifty minutes are on your feet. The last thirty-five are pen and paper.
-The slides for every step are at the end of this afternoon's deck.
+People are on their feet for the first forty-five minutes and at tables with pen
+and paper for the rest. The slides for every step are at the end of this
+afternoon's deck.
 
 ### Materials
 
@@ -69,9 +70,9 @@ Ask the room:
 - Which of the two cards do you trust more? Why?
 - If the 5-ball card were all you had, what would you conclude about that bag?
 
-> Picking the bag is biology. Drawing the balls is measurement. Every sample
-> you will see this week has both kinds of variation in it, and only the second
-> one shrinks when you sequence deeper.
+> Which bag you pick is biological variation, and which balls you draw is
+> measurement variation. Every sample this week carries both, and sequencing
+> deeper only reduces the second.
 
 ### Hand out cards (3 min)
 
@@ -83,8 +84,8 @@ bags.
 
 ### Round 1: closest partner, then pairs of pairs (12 min)
 
-1. Everyone finds the one card most like theirs and stands together.
-   Compare bars, not card numbers. A group of three is fine.
+1. Everyone finds the one card most like theirs and stands together, judging
+   by the bars and ignoring the card numbers. A group of three is fine.
 2. Each pair finds its closest pair.
 3. Each group of four finds its closest group.
 
@@ -140,19 +141,19 @@ column, and fills the feature metadata from the slide. Point out the layout:
 sample information sits above the columns it describes, feature information sits
 beside the rows it describes. That alignment is what R has to keep in sync.
 
-Side 2 has the questions. Walk round and push on these two:
+Side 2 has the questions. Walk round and push on these:
 
-- **Collapse the rows.** "Makes lactic acid" plus "encodes lysin" does not equal
+- Collapsing the rows: "makes lactic acid" plus "encodes lysin" does not equal
   the column total, because green is in both groups. Taxonomy is a hierarchy, so
   every row has one parent and adding up is safe. Gene sets overlap, so one gene
-  counts in many sets. That overlap comes back on Thursday.
-- **Keep only high inflammation.** Crossing out columns in the counts means
-  crossing out the same entries in the sample metadata. Nothing else on the
-  sheet changes.
+  counts in many sets, which matters for enrichment on Thursday.
+- Keeping only high inflammation: crossing out columns in the counts means
+  crossing out the same entries in the sample metadata, and the feature
+  metadata stays as it is.
 
 ### Report to the room (5 min)
 
-Each group copies its 2 × 2 (mostly lactic acid or not, high or low
+Each group copies its two-by-two table (mostly lactic acid or not, high or low
 inflammation) onto the flip chart with its **n**. Add up the columns for the
 room total.
 
@@ -161,11 +162,11 @@ Ask the room:
 - Did your table show the pattern the room shows?
 - Was any group wrong, or just small?
 
-> Tomorrow afternoon this question gets a number: a p-value, and how it depends
-> on n.
+> Tomorrow afternoon you will put a p-value on this question and see how it
+> changes with n.
 
 ### Close (5 min)
 
-Leave the flip chart up. Tomorrow the same table has 220 rows of bacteria or
-14,226 rows of human genes, and 471 columns. Everything done by hand today is
-one line of R.
+Leave the flip chart up. Tomorrow morning the table has 220 rows of bacteria or
+14,226 rows of human genes, and 471 columns, and the column totals and
+proportions from the worksheet are the first things you compute in R.

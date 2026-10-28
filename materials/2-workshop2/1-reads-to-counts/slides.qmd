@@ -592,11 +592,9 @@ source_scale <- scale_colour_manual(values = source_hex, breaks = sources, name 
 
 ## Pick a bag, then draw balls
 
-Every count table in this workshop comes from two steps.
-
-1. **Pick a bag.** A bag is one community, one tissue state, one patch of forest.
-2. **Draw balls.** Each ball is one read, one fragment, one animal you spotted.
-   How many you draw is the **depth**.
+1. Pick a bag. Each bag is one community.
+2. Draw balls. Each ball is one read, and the number of balls you draw is the
+   **depth**.
 
 . . .
 
@@ -643,8 +641,8 @@ of sample information.
 
 ## Round 1: find your closest partner
 
-Compare bars, not card numbers. Find the one card most like yours and stand
-together.
+Find the one card most like yours and stand together. Judge by the bars and
+ignore the card numbers.
 
 . . .
 
@@ -680,7 +678,7 @@ The next slides show which bag every card came from.
 
 If you are reading these slides before Monday afternoon, stop here.
 
-## Which bag did your card come from? {.smaller}
+## The bag behind each card {.smaller}
 
 ```{r key-table}
 cards |>
@@ -692,7 +690,7 @@ cards |>
 
 A `~` is a blend: a community caught partway between two bags.
 
-## What the floor should have looked like
+## The floor, computed
 
 ```{r reveal-floor}
 #| fig-width: 7
@@ -727,7 +725,7 @@ ggplot(pcoa, aes(PCo1, PCo2, colour = source, shape = blend)) +
 
 Bray-Curtis PCoA of all 80 cards. Big points are the cards with 5 to 10 balls.
 
-## Two axes cannot show everything
+## A third axis
 
 ```{r reveal-pcoa3}
 #| fig-width: 8
@@ -764,7 +762,7 @@ ggplot() +
 
 Average-linkage clustering: join the two closest, then the two closest groups.
 
-## What went wrong, and why
+## Debrief
 
 ::: {.incremental}
 - Who struggled to find a partner? Check the **n** on their card.
@@ -794,7 +792,7 @@ Copy your table's cards into the columns, one card per column.
 
 ## Report to the room
 
-Copy your table's 2 × 2 onto the flip chart, with your **n**.
+Copy your two-by-two table onto the flip chart, with your **n**.
 
 | table | n | mostly lactic acid, high | mostly lactic acid, low | not, high | not, low |
 |---|---|---|---|---|---|
@@ -812,4 +810,5 @@ Does your table agree with the room? Who is right?
 The same table, with 220 rows of bacteria or 14,226 rows of human genes, and
 471 columns.
 
-Everything you did by hand today is one line of R.
+The column totals and proportions from your worksheet are the first things you
+compute in R.
