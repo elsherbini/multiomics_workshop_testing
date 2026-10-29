@@ -30,6 +30,11 @@ generank <- read_csv(file.path(res, "gene_ranking_outcome.csv.gz"), show_col_typ
 out <- gsea |> filter(ranking == "preterm vs term")
 comm <- gsea |> filter(ranking == "anaerobe vs Lactobacillus")
 
+# yesterday's gene counts, straight from Module 4's results
+cs <- read_csv("../4-differential/results/contrast_summary.csv", show_col_types = FALSE)
+n_out <- cs$n_sig[cs$contrast == "genes_by_outcome"]
+n_comm <- cs$n_sig[cs$contrast == "genes_by_community"]
+
 # members of the top set, in ranked order, for the "gene set" slide
 tnfa_members <- generank |> filter(in_top_set) |> arrange(rank) |> pull(symbol)
 
@@ -40,9 +45,13 @@ set_sizes <- bind_rows(
 ) |> mutate(table = factor(table, c("Hallmark gene sets", "genus sets")))
 ```
 
-## Yesterday you produced this {.center}
+## Yesterday, preterm against term gave you this {.center}
 
-1,698 genes with an adjusted p-value below 0.05.
+`r scales::comma(n_out)` genes with an adjusted p-value below 0.05.
+
+This is the gene table tested against birth outcome, from the end of yesterday's
+second exercise, not the anaerobe-against-*Lactobacillus* test with its
+`r scales::comma(n_comm)` genes.
 
 . . .
 
@@ -51,7 +60,7 @@ What is the finding?
 ## A gene list is hard to report {.center}
 
 ::: {.incremental}
-- You cannot read 1,698 names
+- You cannot read `r scales::comma(n_out)` names
 - You cannot put them in an abstract
 - Two groups with the same data will hand you two different lists
 :::
@@ -84,7 +93,7 @@ picked arbitrarily.
 #| echo: false
 #| fig-width: 6
 #| fig-height: 6
-cut <- sort(abs(generank$stat), decreasing = TRUE)[1698]
+cut <- sort(abs(generank$stat), decreasing = TRUE)[n_out]
 gr <- generank |> mutate(kept = abs(stat) >= cut)
 p_rank <- ggplot(gr, aes(rank, stat)) +
   geom_hline(yintercept = 0, colour = "grey70") +
@@ -252,7 +261,7 @@ all shifted up in the people who delivered early.
 . . .
 
 You could put that sentence in an abstract, and it comes from the same 13,738
-statistics that gave you the list of 1,698 genes.
+statistics that gave you the list of `r scales::comma(n_out)` genes.
 
 ## Now try the community contrast
 

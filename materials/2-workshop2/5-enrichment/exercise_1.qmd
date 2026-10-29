@@ -1,6 +1,7 @@
 ## Exercise 1: From a gene list to a sentence
 
-Open `notebooks/05-enrichment.qmd`. You need yesterday's DESeq2 results. If you no
+Open `notebooks/05-enrichment.qmd`. You need yesterday's preterm-versus-term
+results for the gene table, from step 7 of Module 4's second exercise. If you no
 longer have them, rerun the three lines that made them.
 
 ### Part 1: Predict
@@ -65,5 +66,5 @@ longer have them, rerun the three lines that made them.
 - Was your Part 1 prediction of the elevated program right?
 - Two of the top sets overlap heavily. How would you report them without double
   counting?
-- Yesterday the outcome contrast gave you 1,698 genes and no clear story; today
+- Yesterday preterm against term gave you 1,698 genes and no clear story; today
   it gives you one sentence. What did enrichment add, and what did it hide?

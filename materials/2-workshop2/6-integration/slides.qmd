@@ -20,6 +20,8 @@ pal <- c(navy = "#2b3a67", teal = "#2a9d8f", orange = "#e76f51",
 theme_set(theme_minimal(base_size = 15))
 
 res <- "results"
+cs <- read_csv("../4-differential/results/contrast_summary.csv", show_col_types = FALSE)
+n_out <- cs$n_sig[cs$contrast == "genes_by_outcome"]
 person <- read_csv(file.path(res, "scores_per_person.csv"), show_col_types = FALSE)
 models <- read_csv(file.path(res, "model_comparison.csv"), show_col_types = FALSE) |>
   mutate(model = factor(model, c("microbiome only", "host only", "both")))
@@ -200,7 +202,7 @@ case for multiomics.
 
 :::: {.columns}
 ::: {.column width="55%"}
-On Wednesday, preterm versus term gave **1,698 significant genes**.
+On Wednesday, preterm versus term gave **`r scales::comma(n_out)` significant genes**.
 
 ::: {.fragment}
 Today, those same genes predict the outcome with an AUC of

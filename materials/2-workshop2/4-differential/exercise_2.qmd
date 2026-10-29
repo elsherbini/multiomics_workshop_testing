@@ -55,6 +55,8 @@ grouping that comes from the clinic rather than from either count table.
    - how many were significant in each
    - what share of the significant ones changed by more than a factor of two
 
+   Save these gene results. Tomorrow's enrichment module starts from them.
+
    Write down what that comparison tells you about where the outcome signal
    lives.
 
