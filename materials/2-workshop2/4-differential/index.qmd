@@ -18,3 +18,23 @@ format:
 {{< include exercise_1.qmd >}}
 
 {{< include exercise_2.qmd >}}
+
+## Further reading
+
+On normalisation, with thanks to Afrah Khairallah, whose slides the size-factor
+example comes from:
+
+- Anders and Huber 2010, *Genome Biology*: DESeq and the median-of-ratios size factor
+- Love, Huber and Anders 2014, *Genome Biology*: DESeq2
+- Robinson and Oshlack 2010, *Genome Biology*: TMM, edgeR's equivalent
+- Law et al. 2014, *Genome Biology*: limma-voom
+- Li et al. 2010, *Bioinformatics*: TPM, for comparing genes within a sample
+
+For microbiome counts:
+
+- Gloor et al. 2017, *Frontiers in Microbiology*: "Microbiome datasets are
+  compositional: and this is not optional"
+- McMurdie and Holmes 2014, *PLoS Computational Biology*: the case against
+  rarefying
+- Nearing et al. 2022, *Nature Communications*: fourteen differential abundance
+  methods run on 38 datasets, and how much they disagree

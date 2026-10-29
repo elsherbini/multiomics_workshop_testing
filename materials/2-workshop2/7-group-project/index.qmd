@@ -110,6 +110,8 @@ yours before you present.
 - Check your sample table and your count matrix are in the same order before you
   run any test.
 - Decide your filter before you look at the result, and write down why.
+- On a species table, give DESeq2 `poscounts` size factors and check how many
+  species they were built from.
 - Define a grouping from one table and test the other, never the same table
   twice.
 - Look at how lopsided a ranking is before you believe an enrichment.

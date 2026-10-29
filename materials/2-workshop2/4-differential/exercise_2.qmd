@@ -10,9 +10,10 @@ grouping that comes from the clinic rather than from either count table.
    yesterday? Answer in one sentence.
 2. You will test species against birth outcome. The species table has 220 rows,
    but most are nearly always absent. How many do you expect to survive a
-   filter of "present in at least 10% of samples"?
-3. Do you expect the significant species to be higher in the preterm group or
-   the term group?
+   filter of "present in at least 10% of samples"? Of those, how many are present
+   in every one of the 157 samples?
+3. If any species come out significant, do you expect them to be higher in the
+   preterm group or the term group?
 
 ### Part 2: Build
 
@@ -20,17 +21,34 @@ grouping that comes from the clinic rather than from either count table.
    features present in at least 10% of samples.
 
 2. Run the same three lines with `design = ~ outcome` and
-   `contrast = c("outcome", "preterm", "term")`.
+   `contrast = c("outcome", "preterm", "term")`. How many species are
+   significant?
 
-3. How many species are significant? Join `03_microbiome_taxonomy.csv` so you
-   have readable names, and list them with their fold changes.
+3. Look at how DESeq2 normalised the samples. Count the species with no zero in
+   any sample, `sum(rowSums(counts == 0) == 0)`. Then plot `sizeFactors(dds)`
+   against each sample's *L. iners* share, both on log scales. What are the
+   size factors really measuring?
 
-4. How many are higher in preterm, and how many in term?
+4. Run it again with size factors built for a table full of zeros:
 
-5. Plot the relative abundance of the top three species by outcome. Use
+   ```r
+   dds <- DESeqDataSetFromMatrix(counts, sample_table, ~ outcome)
+   dds <- estimateSizeFactors(dds, type = "poscounts")
+   dds <- DESeq(dds)
+   res <- results(dds, contrast = c("outcome", "preterm", "term"))
+   ```
+
+   How many species are significant now? Keep this version for the rest of the
+   exercise and for tomorrow.
+
+5. Join `03_microbiome_taxonomy.csv` so you have readable names, and list the
+   top ten species by `padj` with their fold changes, whether or not any pass.
+   How many of the ten lean toward preterm?
+
+6. Plot the relative abundance of the top three species by outcome. Use
    proportions, not raw counts, and consider a log scale.
 
-6. Now run the test a second way, on the gene table, with the same
+7. Now run the test a second way, on the gene table, with the same
    `~ outcome` design. Compare the two result sets:
 
    - how many features were tested in each
@@ -47,7 +65,9 @@ grouping that comes from the clinic rather than from either count table.
 - Ask it whether DESeq2 is an appropriate method for microbiome counts. Read its
   answer critically. Researchers disagree about this, so a confident one-sided
   answer is a warning sign.
-- Ask it to name the significant species. Then check two of them against
+- Ask Pi how DESeq2 computed the size factors for the species table, and how
+  many species went into them. Check its answer against your count from step 3.
+- Ask it to name the top species. Then check two of them against
   `03_microbiome_taxonomy.csv` by hand. Agents invent plausible species names.
 - Ask it to also run the test with `~ nugent >= 7` as the grouping instead of
   outcome. Fewer samples have a Nugent score, so the sample count drops. Make
@@ -63,10 +83,13 @@ More samples gave you more hits. Are they real? What assumption did you break?
 
 ### Discussion
 
-- The significant species are recognisable to anyone who works on bacterial
-  vaginosis. Does that make the result more believable or less interesting?
+- The default size factors gave a list of species that anyone who works on
+  bacterial vaginosis would recognise. Why is a familiar-looking list not
+  evidence that the method was right?
 - One group found many more hits in the gene table than the species table, and
   another found the reverse depending on their filter. What does that say about
   how much of a differential analysis is decided before the test runs?
-- Both tables show an outcome signal. If you had to pick one to predict preterm
-  birth, which would you pick, and what would you want to know first?
+- At week 18 the gene table shows an outcome signal and the species table, one
+  species at a time, does not. Does that mean the bacteria do not matter for
+  preterm birth? What other way of looking at the species table could still
+  find a signal?

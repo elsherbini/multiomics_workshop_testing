@@ -30,12 +30,14 @@ write_csv(md |> select(sample_id, participant_id, time_point, outcome, nugent,
 
 w18 <- md |> filter(time_point == "week_18")
 
-deseq_contrast <- function(counts, meta, group_col, hi, lo, min_count, min_frac) {
+deseq_contrast <- function(counts, meta, group_col, hi, lo, min_count, min_frac,
+                           sf_type = "ratio") {
   meta <- meta |> filter(.data[[group_col]] %in% c(hi, lo))
   m <- counts[, meta$sample_id, drop = FALSE]
   keep <- rowSums(m >= min_count) >= ceiling(min_frac * ncol(m))
   design <- as.formula(paste("~", group_col))
   dds <- DESeqDataSetFromMatrix(m[keep, ], as.data.frame(meta), design)
+  dds <- estimateSizeFactors(dds, type = sf_type)
   dds <- DESeq(dds, quiet = TRUE)
   res <- results(dds, contrast = c(group_col, hi, lo))
   list(n_in = sum(keep), n_tested = ncol(m), dds = dds,
@@ -57,9 +59,27 @@ write_csv(label_genes(g_comm$res), file.path(out, "genes_by_community.csv.gz"))
 runs$genes_by_community <- g_comm
 
 # Exercise contrast: clinical outcome, tested on the species table.
-s_out <- deseq_contrast(d$species, w18, "outcome", "preterm", "term", 1, 0.10)
+# The default median-of-ratios size factors only use features with no zeros,
+# and after filtering one species (L. iners) is present in every sample, so
+# they track that species' share rather than depth. poscounts is the fix, and
+# the default run is kept so the slides can show what it does.
+s_out <- deseq_contrast(d$species, w18, "outcome", "preterm", "term", 1, 0.10,
+                        sf_type = "poscounts")
 write_csv(label_species(s_out$res), file.path(out, "species_by_outcome.csv"))
 runs$species_by_outcome <- s_out
+
+s_out_ratio <- deseq_contrast(d$species, w18, "outcome", "preterm", "term", 1, 0.10)
+write_csv(label_species(s_out_ratio$res), file.path(out, "species_by_outcome_ratio.csv"))
+
+s_counts <- counts(s_out$dds)
+s_lib <- colSums(s_counts)
+write_csv(tibble(sample_id = colnames(s_counts),
+                 library_size = s_lib,
+                 iners_share = s_counts["lactobacillus_iners", ] / s_lib,
+                 sf_ratio = sizeFactors(s_out_ratio$dds)[colnames(s_counts)],
+                 sf_poscounts = sizeFactors(s_out$dds)[colnames(s_counts)]) |>
+            left_join(w18 |> select(sample_id, outcome), by = "sample_id"),
+          file.path(out, "species_size_factors.csv"))
 
 # Shown for comparison: the same question asked of the gene table.
 g_out <- deseq_contrast(d$genes, w18, "outcome", "preterm", "term", 10, 0.25)
@@ -87,5 +107,15 @@ summary_tbl <- imap_dfr(runs, function(r, nm) {
          n_sig_lfc1 = sum(r$res$padj < 0.05 & abs(r$res$log2FoldChange) > 1, na.rm = TRUE))
 })
 write_csv(summary_tbl, file.path(out, "contrast_summary.csv"))
+
+# How many features could median-of-ratios use in each table: those with no
+# zero in any sample of the contrast.
+no_zero <- function(r) sum(rowSums(counts(r$dds) == 0) == 0)
+write_csv(tibble(table = c("genes", "species"),
+                 features_in = c(g_out$n_in, s_out$n_in),
+                 in_every_sample = c(no_zero(g_out), no_zero(s_out)),
+                 n_sig_ratio = c(NA, sum(s_out_ratio$res$padj < 0.05, na.rm = TRUE)),
+                 n_sig_poscounts = c(NA, sum(s_out$res$padj < 0.05, na.rm = TRUE))),
+          file.path(out, "size_factor_basis.csv"))
 print(summary_tbl)
 cat("module 4 results written to", out, "\n")

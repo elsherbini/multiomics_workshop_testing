@@ -445,7 +445,10 @@ ggplot(sp, aes(rank, stat, colour = group)) +
 :::
 ::::
 
-*Gardnerella* comes out: two of its three species rank 1st and 4th toward preterm, which is enough for a three-member set.
+*Gardnerella* leads, but only one of its three species ranks near the top, and
+at padj `r format(tax$padj[tax$ranking == "genus" & tax$pathway == "Gardnerella"], digits = 2)`
+it does not pass. With no species significant on its own, a set has little to
+gather.
 
 ## Set sizes on the two tables
 

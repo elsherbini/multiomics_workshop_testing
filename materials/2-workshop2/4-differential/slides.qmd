@@ -30,10 +30,17 @@ perm_outcome <- perm |> filter(table == "genes / Aitchison", term == "outcome")
 n_sig <- function(x) sum(x$padj < 0.05, na.rm = TRUE)
 n_big <- function(x) sum(x$padj < 0.05 & abs(x$log2FoldChange) > 1, na.rm = TRUE)
 
-# toy example for size factors: sample C was sequenced twice as deeply
-toy_depth <- c(A = 1, B = 1, C = 2)
-toy_sf <- toy_depth / exp(mean(log(toy_depth)))   # geometric mean of 1, as DESeq2 scales them
-toy_raw <- c(A = 50, B = 48, C = 100)
+# toy example for size factors, from Afrah Khairallah's normalisation slides:
+# B was sequenced about twice as deeply as A, and only G4 really changes
+toy <- tibble(gene = paste0("G", 1:4),
+              A = c(100, 50, 300, 1000), B = c(200, 100, 600, 500)) |>
+  mutate(gmean = sqrt(A * B), rA = A / gmean, rB = B / gmean)
+toy_sf <- c(A = median(toy$rA), B = median(toy$rB))
+
+# which features median-of-ratios could use, and what it did to the species
+sfb <- read_csv(file.path(res, "size_factor_basis.csv"), show_col_types = FALSE)
+sfs <- read_csv(file.path(res, "species_size_factors.csv"), show_col_types = FALSE)
+sp_ratio <- read_csv(file.path(res, "species_by_outcome_ratio.csv"), show_col_types = FALSE)
 
 # both gene contrasts in one table, for the side-by-side volcano
 vol <- bind_rows(community = gc, outcome = go, .id = "contrast") |>
@@ -140,34 +147,70 @@ res <- results(dds, contrast = c("community", "anaerobe", "lactobacillus"))
 Give it raw counts, never CPM and never logged values. DESeq2 does its own
 normalisation, and feeding it normalised data breaks it.
 
+## Three things distort a count {.smaller}
+
+| | gene table | species table | comparing one feature across samples |
+|---|---|---|---|
+| **depth** | some samples sequenced deeper | the same | matters |
+| **feature yield** | long genes collect more fragments | 16S copy number, primer fit | cancels, because a gene is the same length in every sample |
+| **composition** | a few genes take up the reads | one species often takes 90% of them | matters, most of all for species |
+
+: {tbl-colwidths="[16,24,24,36]"}
+
+. . .
+
+Differential testing compares one feature across samples, so it has to handle
+depth and composition. That is the job of the size factor, and it is why the
+size factor is not simply the library size.
+
+. . .
+
+Length does matter when you compare two genes inside one sample. That is what
+TPM is for, and it is not what we are doing today.
+
 ## Inside `DESeq()`
 
-:::: {.columns}
-::: {.column width="55%"}
 ::: {.incremental}
-1. **Size factors.** Works out how deeply each sample was sequenced, so samples
-   become comparable.
+1. **Size factors.** One number per sample that puts the samples on a common
+   scale, correcting for depth and composition.
 2. **Dispersion.** Estimates each feature's variance, then pulls extreme
    estimates toward the trend you just saw.
 3. **Test.** Fits a model per feature and tests whether the group term is zero.
 :::
-:::
-::: {.column width="45%"}
-::: {style="font-size: 0.75em;"}
-A toy gene in three samples. Sample C was sequenced twice as deeply.
+
+## Size factors: the median of ratios {.smaller}
 
 ```{r}
 #| echo: false
-tibble(sample = names(toy_raw), raw = toy_raw,
-       `size factor` = round(toy_sf, 2),
-       normalised = round(toy_raw / toy_sf)) |>
-  kable(align = "lrrr")
+toy |>
+  transmute(gene, A, B, `geometric mean` = round(gmean),
+            `A ÷ mean` = round(rA, 2), `B ÷ mean` = round(rB, 2),
+            `normalised A` = round(A / toy_sf[["A"]]),
+            `normalised B` = round(B / toy_sf[["B"]])) |>
+  mutate(across(everything(), as.character)) |>
+  add_row(gene = "**size factor**", `A ÷ mean` = sprintf("**%.2f**", toy_sf[["A"]]),
+          `B ÷ mean` = sprintf("**%.2f**", toy_sf[["B"]])) |>
+  mutate(across(everything(), ~ replace_na(.x, ""))) |>
+  kable(align = "lrrrrrrr")
 ```
 
-Dividing by the size factor puts the three samples back on one scale.
+::: {.incremental}
+1. Each gene's geometric mean across samples is its reference: for G1,
+   √(100 × 200) = 141.
+2. Divide each count by its reference. A sample's size factor is the median of
+   its ratios, so G4, the one gene that changed, cannot move it.
+3. Divide by the size factor. G1 to G3 now match, and only G4 differs.
 :::
+
+. . .
+
+The library sizes are `r scales::comma(sum(toy$A))` and
+`r scales::comma(sum(toy$B))`, nearly equal, because G4 takes most of A's
+reads. Dividing by library size would call G1 to G3 doubled in B.
+
+::: {style="font-size: 0.7em; color: #666;"}
+Example adapted from Afrah Khairallah's slides on normalising gene expression.
 :::
-::::
 
 ## The results table
 
@@ -370,25 +413,6 @@ cs |> filter(contrast %in% c("genes_by_community", "genes_by_bv")) |>
 Both groupings ask whether the community is disturbed. The one built from data
 you already have finds hundreds of times as many genes.
 
-## Other people's tools
-
-We used DESeq2 on both tables, because the point this week is that both tables
-are count tables. Not everyone does that.
-
-| for gene counts | for microbial counts |
-|---|---|
-| DESeq2, edgeR | ALDEx2, ANCOM-BC |
-| limma-voom | MaAsLin 2, corncob |
-| | DESeq2, still, often |
-
-: {tbl-colwidths="[50,50]"}
-
-. . .
-
-The microbiome tools exist because that table is compositional and sparse in a
-way gene tables are not. The case for them is worth reading before you publish a
-microbiome analysis.
-
 ## Don't test the species table with `community` {.center}
 
 You built `community` from the species table, so testing the **gene** table
@@ -405,22 +429,99 @@ samples with lots of Lactobacillus have lots of Lactobacillus.
 #| eval: false
 # the grouping comes from the clinic, not from either count table
 dds <- DESeqDataSetFromMatrix(species_counts, sample_table, ~ outcome)
+dds <- DESeq(dds)
 ```
 
 . . .
 
+Before you trust the result, look at how the size factors were made.
+
+## Median of ratios needs features found in every sample
+
+:::: {.columns}
+::: {.column width="45%"}
 ```{r}
 #| echo: false
-sp |> filter(!is.na(padj), padj < 0.05) |> arrange(padj) |>
-  transmute(species = str_replace_all(species, "_", " "),
-            log2FoldChange = round(log2FoldChange, 2),
-            padj = format(padj, digits = 2)) |>
-  head(5) |> kable(align = "lrr")
+sfb |>
+  transmute(table, `features tested` = scales::comma(features_in),
+            `in all 157 samples` = scales::comma(in_every_sample)) |>
+  kable(align = "lrr")
 ```
 
-`r n_sig(sp)` of `r cs$features_in[cs$contrast == "species_by_outcome"]` species
-are significant, and `r sum(sp$padj < 0.05 & sp$log2FoldChange > 0, na.rm = TRUE)`
-of them are higher in the people who delivered early.
+A geometric mean with a zero in it is zero, so DESeq2 leaves those features
+out of the size factors.
+
+::: {.fragment}
+In the species table that leaves one species, *L. iners*.
+:::
+:::
+::: {.column width="55%"}
+```{r}
+#| echo: false
+#| fig-width: 6.5
+#| fig-height: 5
+ggplot(sfs, aes(iners_share, sf_ratio)) +
+  geom_point(alpha = 0.6, size = 2, colour = pal[["navy"]]) +
+  scale_x_log10(labels = scales::label_percent(0.1, drop0trailing = TRUE)) +
+  scale_y_log10() +
+  labs(x = expression(italic("L. iners") ~ "share of the sample (log scale)"),
+       y = "default size factor (log scale)",
+       title = sprintf("r = %.2f, one dot per sample",
+                       cor(log(sfs$iners_share), log(sfs$sf_ratio)))) +
+  theme(plot.title = element_text(size = 13, colour = "grey35"))
+```
+:::
+::::
+
+## The normalisation decided the result
+
+```{r}
+#| eval: false
+dds <- DESeqDataSetFromMatrix(species_counts, sample_table, ~ outcome)
+dds <- estimateSizeFactors(dds, type = "poscounts")   # built for tables with zeros
+dds <- DESeq(dds)
+```
+
+```{r}
+#| echo: false
+tibble(`size factors` = c("default: median of ratios, from L. iners alone",
+                          "poscounts: uses every species"),
+       `species at padj < 0.05` = c(sfb$n_sig_ratio[sfb$table == "species"],
+                                     sfb$n_sig_poscounts[sfb$table == "species"]),
+       `higher in preterm` = c(sum(sp_ratio$padj < 0.05 & sp_ratio$log2FoldChange > 0, na.rm = TRUE),
+                               sum(sp$padj < 0.05 & sp$log2FoldChange > 0, na.rm = TRUE))) |>
+  kable(align = "lrr")
+```
+
+. . .
+
+The default run tested each species against *L. iners*. Nearly all of its hits
+are familiar BV organisms, which is why nobody would have questioned it.
+
+. . .
+
+At one visit, no single species separates preterm from term. That matches the
+field: preterm birth has modest associations with community type and few clear
+ones with individual taxa. Check single features, then look beyond them.
+
+## Other people's tools
+
+We used DESeq2 on both tables, because the point this week is that both tables
+are count tables. Not everyone does that.
+
+| for gene counts | for microbial counts |
+|---|---|
+| DESeq2, edgeR | ALDEx2, ANCOM-BC |
+| limma-voom | MaAsLin 2, corncob |
+| | DESeq2, still, often |
+
+: {tbl-colwidths="[50,50]"}
+
+. . .
+
+The microbiome tools exist because that table is compositional and sparse in a
+way gene tables are not, as the size factors just showed. The case for them is worth reading before you publish a
+microbiome analysis.
 
 ## Your turn {.your-turn}
 

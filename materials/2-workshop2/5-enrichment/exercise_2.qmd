@@ -13,8 +13,8 @@ features instead of 13,738, with sets built from taxonomy instead of curation.
 
 ### Part 2: Build
 
-1. Take your species-by-outcome DESeq2 results from yesterday. Build the ranking
-   vector from `stat` as before.
+1. Take your species-by-outcome DESeq2 results from yesterday, the `poscounts`
+   version. Build the ranking vector from `stat` as before.
 
 2. Join `03_microbiome_taxonomy.csv` so each species carries its `Genus` and
    `Family`.
@@ -32,7 +32,7 @@ features instead of 13,738, with sets built from taxonomy instead of curation.
    genera are significant?
 
 5. Repeat with `Family` instead of `Genus`. Does the answer agree? Check whether the
-   significant family contains the significant genus.
+   top family contains the top genus.
 
 6. Now do it the simple way. Just sort your 53 species by `stat` and print the
    table with genus labels. Would you have reached the same conclusion without
@@ -65,8 +65,8 @@ can beat a taxonomic one, and designing such sets is research in its own right.
 
 ### Discussion
 
-- The significant genus is the one every clinician would have guessed. Is that
-  reassuring or is it a sign the analysis added nothing?
+- The top genus is the one every clinician would have guessed, even though it
+  does not pass. Is that reassuring, or a sign the analysis added nothing?
 - Taxonomy is a hierarchy and gene sets are a flat list. Does that difference
   matter for how you correct for multiple testing?
 - This is the last single-table module. Tomorrow we put the two tables
