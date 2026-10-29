@@ -444,7 +444,7 @@ FFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFF,FFFFFFFFFFFFFFFFFF,FFF</code></pre>
 <p>You will see expression reported as TPM, FPKM or RPKM. Those divide by gene length so you can compare genes within a sample.</p>
 <ul>
 <li class="fragment">Good for: “is gene A higher than gene B in this sample?”</li>
-<li class="fragment">Wrong for: the statistical tests we run on Tuesday</li>
+<li class="fragment">Wrong for: the statistical tests we run on Wednesday</li>
 </ul>
 <div class="fragment">
 <p>Those tests need raw counts, because they model counting noise. Hand them normalised values and they will believe the noise is smaller than it is.</p>
@@ -575,17 +575,18 @@ FFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFF,FFFFFFFFFFFFFFFFFF,FFF</code></pre>
 <ol type="1">
 <li class="fragment">How deeply was each sample sequenced?</li>
 <li class="fragment">Which features are we even able to see?</li>
-<li class="fragment">Only then: does anything differ between groups?</li>
+<li class="fragment">How alike are whole samples, and what makes them alike?</li>
+<li class="fragment">Only then: which features differ between groups?</li>
 </ol>
 <div class="fragment">
-<p>Tomorrow morning covers the first two, on both tables at once.</p>
+<p>Tomorrow morning covers the first two, on both tables at once, and tomorrow afternoon the third. The fourth waits until Wednesday.</p>
 </div>
 </section>
 <section id="our-gene-table-has-a-batch-label" class="slide level2">
 <h2>Our gene table has a batch label</h2>
 <p>The gene table was produced in <strong>two sequencing batches</strong>, and we kept that label in the metadata.</p>
 <div class="fragment">
-<p>On Wednesday you will measure how much of the table the batch explains, and the answer is uncomfortable.</p>
+<p>Tomorrow afternoon you will measure how much of the table the batch explains, and the answer is uncomfortable.</p>
 </div>
 <div class="fragment">
 <p>Keep every technical label your sequencing facility gives you. A batch effect you never recorded is one you cannot test for.</p>

@@ -44,7 +44,7 @@
     "href": "materials/2-workshop2/7-group-project/index.html#groups-and-schedule",
     "title": "Group Project",
     "section": "Groups and schedule",
-    "text": "Groups and schedule\nThere are ten groups of six people. Five groups (A1 to A5) take Study A and five (B1 to B5) take Study B. You meet your group on Wednesday morning.\nOn Friday each Study A group pairs with the Study B group of the same number and sits with them. A1 presents to B1, then B1 presents to A1; A2 and B2 do the same nearby, and so on. Your audience has spent two mornings on a different dataset, so explain your study before your result.\n\n\n\n\n\n\n\n\nwhen\nhow long\nwhat\n\n\n\n\nWednesday AM\n3 hours\nmeet, read the data, agree a question, first analysis\n\n\nThursday AM\n3 hours\nfinish the analysis, build the figures, write the talk\n\n\nFriday AM\n30 minutes\nfinal preparation\n\n\nFriday AM\n1 hour\npresent to your paired group for 30 minutes, then listen to theirs for 30\n\n\n\nBoth datasets have exactly the file layout you have been using all week, with the same column names. Your code from the modules should run on them with the file path changed and nothing else.\nsource(\"R/count_tables.R\")\nd &lt;- read_counts(\"group_a\")   # or \"group_b\"",
+    "text": "Groups and schedule\nThere are ten groups of six people. Five groups (A1 to A5) take Study A and five (B1 to B5) take Study B. You meet your group on Wednesday morning.\nOn Friday each Study A group pairs with the Study B group of the same number and sits with them. A1 presents to B1, then B1 presents to A1; A2 and B2 do the same nearby, and so on. Your audience has spent two mornings on a different dataset, so explain your study before your result.\n\n\n\n\n\n\n\n\nwhen\nhow long\nwhat\n\n\n\n\nWednesday AM\n3 hours\nmeet, read the data, agree a question, first analysis: Tuesday’s ordination and PERMANOVA are a good place to start\n\n\nThursday AM\n3 hours\nadd Wednesday’s differential tests, finish the analysis, build the figures, write the talk\n\n\nFriday AM\n30 minutes\nfinal preparation\n\n\nFriday AM\n1 hour\npresent to your paired group for 30 minutes, then listen to theirs for 30\n\n\n\nBoth datasets have exactly the file layout you have been using all week, with the same column names. Your code from the modules should run on them with the file path changed and nothing else.\nsource(\"R/count_tables.R\")\nd &lt;- read_counts(\"group_a\")   # or \"group_b\"",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
@@ -92,7 +92,7 @@
     "href": "materials/2-workshop2/7-group-project/index.html#advice-from-the-modules",
     "title": "Group Project",
     "section": "Advice from the modules",
-    "text": "Advice from the modules\n\n\n\n\n\n\nTipThings that bit people earlier in the week\n\n\n\n\nCheck your sample table and your count matrix are in the same order before you run any test.\nDecide your filter before you look at the result, and write down why.\nDefine a grouping from one table and test the other, never the same table twice.\nLook at how lopsided a ranking is before you believe an enrichment.\nYour dataset has an rnaseq_batch column. Cross-tabulate it against your groups early, and find out whether you have a confound rather than a finding.",
+    "text": "Advice from the modules\n\n\n\n\n\n\nTipThings that bit people earlier in the week\n\n\n\n\nCheck your sample table and your count matrix are in the same order before you run any test.\nDecide your filter before you look at the result, and write down why.\nOn a species table, give DESeq2 poscounts size factors and check how many species they were built from.\nDefine a grouping from one table and test the other, never the same table twice.\nLook at how lopsided a ranking is before you believe an enrichment.\nYour dataset has an rnaseq_batch column. Cross-tabulate it against your groups early, and find out whether you have a confound rather than a finding.",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
@@ -200,7 +200,7 @@
     "href": "materials/2-workshop2/5-enrichment/index.html#exercise-1-from-a-gene-list-to-a-sentence",
     "title": "Sets and Enrichment",
     "section": "Exercise 1: From a gene list to a sentence",
-    "text": "Exercise 1: From a gene list to a sentence\nOpen notebooks/05-enrichment.qmd. You need Tuesday’s DESeq2 results. If you no longer have them, rerun the three lines that made them.\n\nPart 1: Predict\n\nYou are about to test 50 gene sets. If none were truly enriched, how many would come out with padj &lt; 0.05?\nYour preterm-versus-term gene list had 838 genes up and 860 down, which is almost perfectly balanced. Does that make you more or less willing to believe an enrichment result?\nName one biological program you expect to be elevated in the people who delivered preterm. You will check this against the answer.\n\n\n\nPart 2: Build\n\nBuild the ranking vector from your outcome results: res$stat, named by gene, with missing values dropped. How many genes are in it?\nGet the Hallmark sets:\nhallmark &lt;- msigdbr::msigdbr(species = \"Homo sapiens\", collection = \"H\")\nsets &lt;- split(hallmark$ensembl_gene, hallmark$gs_name)\nCheck that the identifiers in sets are the same kind as the names of your ranking vector. If one is Ensembl and the other is a symbol, nothing will match, and fgsea will return almost nothing without raising an error.\nRun fgsea(sets, stat, minSize = 15, maxSize = 500). Sort by padj. How many sets are significant, and how many point in each direction?\nPlot the top twelve as a bar chart of NES, coloured by direction.\nCheck for imbalance. What share of your ranking statistic is positive? What is its mean? Now do the same for your anaerobe-versus-Lactobacillus ranking, and run fgsea on that too. Compare the two in a small table: genes up, genes down, sets significant, sets pointing one way.\nWrite one sentence saying which of the two enrichment results you trust and why.\nTake the leading edge of your top set. Map those Ensembl identifiers to symbols with 05_gene_annotation.csv and read the list. Plot normalised counts for two of them by outcome.\n\n\n\nPart 3: Check the agent\n\nAsk Pi to run the enrichment. Then ask how many of your genes matched into any set at all. An identifier mismatch is the most common failure here, and it fails silently with plausible-looking output.\nAsk it to interpret the top five sets. It will write a confident paragraph about inflammation and preterm birth. Ask it which of those five sets share genes with each other. Overlapping sets are not independent findings.\nAsk it whether your result could be an artifact of the ranking being lopsided. See whether it checks or just reassures you.\nAsk it for the hypergeometric version using only your significant genes. Compare the two answers. Where they disagree, work out which is throwing away information.\n\n\n\nDiscussion\n\nWas your Part 1 prediction of the elevated program right?\nTwo of the top sets overlap heavily. How would you report them without double counting?\nOn Tuesday the outcome contrast gave you 1,698 genes and no clear story; today it gives you one sentence. What did enrichment add, and what did it hide?",
+    "text": "Exercise 1: From a gene list to a sentence\nOpen notebooks/05-enrichment.qmd. You need yesterday’s DESeq2 results. If you no longer have them, rerun the three lines that made them.\n\nPart 1: Predict\n\nYou are about to test 50 gene sets. If none were truly enriched, how many would come out with padj &lt; 0.05?\nYour preterm-versus-term gene list had 838 genes up and 860 down, which is almost perfectly balanced. Does that make you more or less willing to believe an enrichment result?\nName one biological program you expect to be elevated in the people who delivered preterm. You will check this against the answer.\n\n\n\nPart 2: Build\n\nBuild the ranking vector from your outcome results: res$stat, named by gene, with missing values dropped. How many genes are in it?\nGet the Hallmark sets:\nhallmark &lt;- msigdbr::msigdbr(species = \"Homo sapiens\", collection = \"H\")\nsets &lt;- split(hallmark$ensembl_gene, hallmark$gs_name)\nCheck that the identifiers in sets are the same kind as the names of your ranking vector. If one is Ensembl and the other is a symbol, nothing will match, and fgsea will return almost nothing without raising an error.\nRun fgsea(sets, stat, minSize = 15, maxSize = 500). Sort by padj. How many sets are significant, and how many point in each direction?\nPlot the top twelve as a bar chart of NES, coloured by direction.\nCheck for imbalance. What share of your ranking statistic is positive? What is its mean? Now do the same for your anaerobe-versus-Lactobacillus ranking, and run fgsea on that too. Compare the two in a small table: genes up, genes down, sets significant, sets pointing one way.\nWrite one sentence saying which of the two enrichment results you trust and why.\nTake the leading edge of your top set. Map those Ensembl identifiers to symbols with 05_gene_annotation.csv and read the list. Plot normalised counts for two of them by outcome.\n\n\n\nPart 3: Check the agent\n\nAsk Pi to run the enrichment. Then ask how many of your genes matched into any set at all. An identifier mismatch is the most common failure here, and it fails silently with plausible-looking output.\nAsk it to interpret the top five sets. It will write a confident paragraph about inflammation and preterm birth. Ask it which of those five sets share genes with each other. Overlapping sets are not independent findings.\nAsk it whether your result could be an artifact of the ranking being lopsided. See whether it checks or just reassures you.\nAsk it for the hypergeometric version using only your significant genes. Compare the two answers. Where they disagree, work out which is throwing away information.\n\n\n\nDiscussion\n\nWas your Part 1 prediction of the elevated program right?\nTwo of the top sets overlap heavily. How would you report them without double counting?\nYesterday the outcome contrast gave you 1,698 genes and no clear story; today it gives you one sentence. What did enrichment add, and what did it hide?",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
@@ -212,7 +212,7 @@
     "href": "materials/2-workshop2/5-enrichment/index.html#exercise-2-the-same-function-on-53-species",
     "title": "Sets and Enrichment",
     "section": "Exercise 2: The same function, on 53 species",
-    "text": "Exercise 2: The same function, on 53 species\nSame notebook. You will now use the identical fgsea() call on a table with 53 features instead of 13,738, with sets built from taxonomy instead of curation.\n\nPart 1: Predict\n\nA gene set holds about 200 genes. A genus in our table holds between 2 and 12 species. What does that do to your ability to detect enrichment?\nWhich genus do you expect to come out associated with preterm birth?\nWill testing ten genus sets need as aggressive a multiple-testing correction as testing fifty gene sets?\n\n\n\nPart 2: Build\n\nTake your species-by-outcome DESeq2 results from Tuesday. Build the ranking vector from stat as before.\nJoin 03_microbiome_taxonomy.csv so each species carries its Genus and Family.\nBuild the sets:\ngenus_sets &lt;- split(results$feature, results$Genus)\ngenus_sets &lt;- genus_sets[lengths(genus_sets) &gt;= 2]\nHow many genus sets do you have? How many species are in the largest?\nRun fgsea(genus_sets, species_stat, minSize = 2, maxSize = 50). Which genera are significant?\nRepeat with Family instead of Genus. Does the answer agree? Check whether the significant family contains the significant genus.\nNow do it the simple way. Just sort your 53 species by stat and print the table with genus labels. Would you have reached the same conclusion without any enrichment analysis at all?\nWrite two or three sentences in your notebook answering: for which of our two tables was set-based analysis worth doing, and what feature of the table decides that?\n\n\n\nPart 3: Check the agent\n\nAsk Pi to build the genus sets. Then check that no species appears in two sets, and that the set sizes sum to no more than the number of species you ranked.\nSpecies with a missing genus become a set called NA if you are careless. Check whether that happened.\nAsk Pi whether enrichment analysis was useful on the species table. Then ask it to defend the opposite position. Compare the two answers and decide which argument is stronger.\n\n\n\nPart 4: Reach (optional)\nInvent a better set definition for the species table. Rather than taxonomy, group species by something functional: whether they are Lactobacillus or not, whether they are strict anaerobes, whether they are on a published list of BV-associated organisms.\nRun fgsea with your hand-built sets. A set definition that encodes real biology can beat a taxonomic one, and designing such sets is research in its own right.\n\n\nDiscussion\n\nThe significant genus is the one every clinician would have guessed. Is that reassuring or is it a sign the analysis added nothing?\nTaxonomy is a hierarchy and gene sets are a flat list. Does that difference matter for how you correct for multiple testing?\nThis is the last single-table module. Tomorrow we put the two tables together. Before you leave, write down what you think combining them could tell you that neither told you alone.",
+    "text": "Exercise 2: The same function, on 53 species\nSame notebook. You will now use the identical fgsea() call on a table with 53 features instead of 13,738, with sets built from taxonomy instead of curation.\n\nPart 1: Predict\n\nA gene set holds about 200 genes. A genus in our table holds between 2 and 12 species. What does that do to your ability to detect enrichment?\nWhich genus do you expect to come out associated with preterm birth?\nWill testing ten genus sets need as aggressive a multiple-testing correction as testing fifty gene sets?\n\n\n\nPart 2: Build\n\nTake your species-by-outcome DESeq2 results from yesterday, the poscounts version. Build the ranking vector from stat as before.\nJoin 03_microbiome_taxonomy.csv so each species carries its Genus and Family.\nBuild the sets:\ngenus_sets &lt;- split(results$feature, results$Genus)\ngenus_sets &lt;- genus_sets[lengths(genus_sets) &gt;= 2]\nHow many genus sets do you have? How many species are in the largest?\nRun fgsea(genus_sets, species_stat, minSize = 2, maxSize = 50). Which genera are significant?\nRepeat with Family instead of Genus. Does the answer agree? Check whether the top family contains the top genus.\nNow do it the simple way. Just sort your 53 species by stat and print the table with genus labels. Would you have reached the same conclusion without any enrichment analysis at all?\nWrite two or three sentences in your notebook answering: for which of our two tables was set-based analysis worth doing, and what feature of the table decides that?\n\n\n\nPart 3: Check the agent\n\nAsk Pi to build the genus sets. Then check that no species appears in two sets, and that the set sizes sum to no more than the number of species you ranked.\nSpecies with a missing genus become a set called NA if you are careless. Check whether that happened.\nAsk Pi whether enrichment analysis was useful on the species table. Then ask it to defend the opposite position. Compare the two answers and decide which argument is stronger.\n\n\n\nPart 4: Reach (optional)\nInvent a better set definition for the species table. Rather than taxonomy, group species by something functional: whether they are Lactobacillus or not, whether they are strict anaerobes, whether they are on a published list of BV-associated organisms.\nRun fgsea with your hand-built sets. A set definition that encodes real biology can beat a taxonomic one, and designing such sets is research in its own right.\n\n\nDiscussion\n\nThe top genus is the one every clinician would have guessed, even though it does not pass. Is that reassuring, or a sign the analysis added nothing?\nTaxonomy is a hierarchy and gene sets are a flat list. Does that difference matter for how you correct for multiple testing?\nThis is the last single-table module. Tomorrow we put the two tables together. Before you leave, write down what you think combining them could tell you that neither told you alone.",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
@@ -220,99 +220,111 @@
     ]
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/index.html",
-    "href": "materials/2-workshop2/4-ordination/index.html",
-    "title": "Distances and Ordination",
-    "section": "",
-    "text": "This module measures how similar whole samples are to each other. You pick a distance, draw the ordination, then put a number on whatever pattern you think you see.",
-    "crumbs": [
-      "Get Started",
-      "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
-      "<b>Module 4</b>: Distances and Ordination"
-    ]
-  },
-  {
-    "objectID": "materials/2-workshop2/4-ordination/index.html#slides",
-    "href": "materials/2-workshop2/4-ordination/index.html#slides",
-    "title": "Distances and Ordination",
-    "section": "Slides",
-    "text": "Slides\nMake slides full screen",
-    "crumbs": [
-      "Get Started",
-      "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
-      "<b>Module 4</b>: Distances and Ordination"
-    ]
-  },
-  {
-    "objectID": "materials/2-workshop2/4-ordination/index.html#exercise-1-distances-and-ordination-on-the-species-table",
-    "href": "materials/2-workshop2/4-ordination/index.html#exercise-1-distances-and-ordination-on-the-species-table",
-    "title": "Distances and Ordination",
-    "section": "Exercise 1: Distances and ordination on the species table",
-    "text": "Exercise 1: Distances and ordination on the species table\nOpen notebooks/04-ordination.qmd.\n\nPart 1: Predict\n\nBray-Curtis uses abundances. Jaccard uses only presence and absence. Our species table is about 89% zeros. Which of the two do you expect to separate the two community types more clearly, and why?\nIf you shuffled the outcome label randomly across all 471 samples, what R2 would PERMANOVA report? Give a number.\nOne sample has 438 reads. Where do you expect it to sit in a Bray-Curtis ordination?\n\n\n\nPart 2: Build\n\nBuild the phyloseq object for the species table:\nlibrary(microViz)\nsource(\"R/count_tables.R\")\nps &lt;- as_counts(table = \"microbiome\")\nInspect it. How many taxa, how many samples, how many sample variables? Add the community column you built on Tuesday if it is not already there.\nRun the pipeline three times, changing only the transform and the distance:\n\n\"identity\" with \"bray\"\n\"binary\" with \"jaccard\"\n\"clr\" with \"euclidean\"\n\nPlot all three, coloured by community. Put them side by side.\nColour your Bray-Curtis ordination by outcome instead. Then by time_point. Then by nugent.\nRun dist_permanova() on the Bray-Curtis distance with community, outcome, time_point and rnaseq_batch as variables. Report the R2 for each.\nFind your 438-read sample in the ordination. Was your Part 1 prediction right? Re-run the Bray-Curtis ordination with that sample removed and see whether anything else moves.\nMake a stacked bar plot of community composition with comp_barplot(tax_level = \"Genus\", n_taxa = 10), faceted or ordered by community. Most 16S papers open with this figure.\n\n\n\nPart 3: Check the agent\n\nAsk Pi for the R2 of outcome. Then ask it what the R2 of a random label would be. If it does not say “close to zero but not zero”, push back.\nPERMANOVA with by = \"margin\" and by = \"terms\" give different answers when variables are correlated. Ask Pi which it used and why it matters.\nAsk it to interpret your ordination. It will produce a paragraph of confident biological narrative about axis 1. Then ask it what axis 1 actually is. Neither it nor you can tell from the plot alone.\nAsk it whether your three distance choices “agree”. Then look at the three plots yourself and decide if its answer matches what you see.\n\n\n\nDiscussion\n\nWhich of the three distances would you publish? Defend it in one sentence.\ncommunity explains a very large share of this table. Is that a finding?\nYour ordination shows visit structure. Each participant appears three times. Does PERMANOVA know that, and does it matter?",
-    "crumbs": [
-      "Get Started",
-      "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
-      "<b>Module 4</b>: Distances and Ordination"
-    ]
-  },
-  {
-    "objectID": "materials/2-workshop2/4-ordination/index.html#exercise-2-the-identical-pipeline-on-14000-genes",
-    "href": "materials/2-workshop2/4-ordination/index.html#exercise-2-the-identical-pipeline-on-14000-genes",
-    "title": "Distances and Ordination",
-    "section": "Exercise 2: The identical pipeline on 14,000 genes",
-    "text": "Exercise 2: The identical pipeline on 14,000 genes\nUse the same notebook. Change three words in your code from Exercise 1 and run it again on a table sixty times larger.\n\nPart 1: Predict\n\nBray-Curtis is standard for microbiome data. Would you use it on gene counts? Say why or why not before you try.\ncommunity explained about 18% of the species table. What share do you expect it to explain of the gene table?\nThe gene table was produced in two sequencing batches. What share do you expect rnaseq_batch to explain?\n\n\n\nPart 2: Build\n\nBuild the gene object, filtering as you go:\nps_genes &lt;- as_counts(table = \"rnaseq\", min_count = 10, min_samples = 100)\nRun the pipeline with \"clr\" and \"euclidean\", aggregating at rank = \"symbol\". Plot it coloured by community, then outcome, then rnaseq_batch.\nRun dist_permanova() with the same four variables you used on the species table. Put the two sets of R2 values side by side in one small table.\nLook at the batch row. Then do something about it: add rnaseq_batch to the PERMANOVA formula before outcome and see whether the outcome R2 changes.\nCheck whether batch is confounded with anything you care about. A cross-tabulation of rnaseq_batch against outcome and against community is enough. If the groups were unbalanced across batches, what would that mean for Tuesday’s differential results?\nAlso try Bray-Curtis on the gene table, just to see. Compare it to your CLR ordination and decide which you believe.\n\n\n\nPart 3: Check the agent\n\nAsk Pi to compare the species and gene R2 tables and tell you what it means. Its answer will probably say the gene table has “weaker biological signal”. That is a claim about biology drawn from an ordination. Is it justified, given that Tuesday found almost two thousand differentially expressed genes?\nAsk it whether you should remove the batch effect. Then ask it to actually do it. Look closely at what it does, because “batch correction” covers several very different operations with very different consequences.\nCLR cannot handle zeros without a pseudocount. Ask Pi what pseudocount it used and where that choice came from.\n\n\n\nPart 4: Reach (optional)\nTake the first two axes of your gene ordination and the first two of your species ordination, and plot gene axis 1 against species axis 1 for the same samples. Are they related?\nThis scatter plot is the simplest form of multiomics integration. Friday morning starts from it.\n\n\nDiscussion\n\nBoth tables showed a significant outcome effect of about 2% or less. Would you write that in a paper, and how would you phrase it?\nThe batch effect is as large as the biological effect. What should the people who generated this data have done differently?\nYou now have two ordinations of the same 471 samples. What would it take to combine them, and what would you hope to gain?",
-    "crumbs": [
-      "Get Started",
-      "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
-      "<b>Module 4</b>: Distances and Ordination"
-    ]
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/index.html",
-    "href": "materials/2-workshop2/3-differential/index.html",
+    "objectID": "materials/2-workshop2/4-differential/index.html",
+    "href": "materials/2-workshop2/4-differential/index.html",
     "title": "Differential Testing",
     "section": "",
     "text": "We test which features differ between two groups of samples, using one method on both tables, and then look closely at how much a significant result is worth.",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
-      "<b>Module 3</b>: Differential Testing"
+      "<b>Module 4</b>: Differential Testing"
     ]
   },
   {
-    "objectID": "materials/2-workshop2/3-differential/index.html#slides",
-    "href": "materials/2-workshop2/3-differential/index.html#slides",
+    "objectID": "materials/2-workshop2/4-differential/index.html#slides",
+    "href": "materials/2-workshop2/4-differential/index.html#slides",
     "title": "Differential Testing",
     "section": "Slides",
     "text": "Slides\nMake slides full screen",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
-      "<b>Module 3</b>: Differential Testing"
+      "<b>Module 4</b>: Differential Testing"
     ]
   },
   {
-    "objectID": "materials/2-workshop2/3-differential/index.html#exercise-1-test-the-gene-table-with-a-grouping-from-the-species-table",
-    "href": "materials/2-workshop2/3-differential/index.html#exercise-1-test-the-gene-table-with-a-grouping-from-the-species-table",
+    "objectID": "materials/2-workshop2/4-differential/index.html#exercise-1-test-the-gene-table-with-a-grouping-from-the-species-table",
+    "href": "materials/2-workshop2/4-differential/index.html#exercise-1-test-the-gene-table-with-a-grouping-from-the-species-table",
     "title": "Differential Testing",
     "section": "Exercise 1: Test the gene table with a grouping from the species table",
-    "text": "Exercise 1: Test the gene table with a grouping from the species table\nOpen notebooks/03-differential.qmd. Start by reading back the per-sample table you saved yesterday, the one with lacto_fraction and community in it. If you did not save it, rebuild it now; the slides from Module 2 have the recipe.\n\nPart 1: Predict\n\nWe will test 13,738 genes. If no gene were truly different between the two community types, how many would come out with a raw p-value below 0.05?\nYou will test at week 18 only, which is 157 samples, 37 against 120. Would you rather have 157 samples at one visit or 471 samples across three visits? Say why before you look at anything.\nOf the genes that do come out significant, do you expect more to be higher in anaerobe-dominant samples or in Lactobacillus-dominant samples?\n\n\n\nPart 2: Build\n\nSubset both the metadata and the gene counts to time_point == \"week_18\". Confirm you have 157 samples and that the column order of the count matrix matches the row order of the sample table. If they don’t match, DESeq2 gives you nonsense without any warning.\nFilter the genes. Keep a gene if it has a count of at least 10 in at least a quarter of the samples.\nRun the three lines:\ndds &lt;- DESeqDataSetFromMatrix(counts, sample_table, ~ community)\ndds &lt;- DESeq(dds)\nres &lt;- results(dds, contrast = c(\"community\", \"anaerobe\", \"lactobacillus\"))\nHow many genes have padj &lt; 0.05? How many of those have an absolute log2FoldChange above 1?\nJoin 05_gene_annotation.csv so your results carry gene symbols rather than Ensembl identifiers. Sort by padj and read the top twenty names out loud to your group.\nDraw a volcano plot: log2FoldChange on x, -log10(padj) on y, coloured by whether the gene passed.\nPick the single top gene and plot its normalised counts as a boxplot by community. The direction of that plot must match the sign of its log2FoldChange. Check that it does.\n\n\n\nPart 3: Check the agent\n\nAsk Pi how many genes were significant. Then ask it how many genes went into the test. If it can’t give you both numbers, it doesn’t know what it ran.\nAsk it to explain the sign convention of your contrast. Then verify against the boxplot from step 7. Getting the direction backwards is the most common error in this analysis, and it regularly gets through peer review.\nAsk it for the number of genes with pvalue &lt; 0.05 as well as padj &lt; 0.05. The first number should be far larger. If it is not, something is wrong.\nAsk it to run the same test on CPM-normalised counts instead of raw counts. It will probably do it. Look at what happens to the results and work out why that is wrong.\n\n\n\nDiscussion\n\nDid the direction of the effect surprise you?\nWhat do the top genes have in common? You do not need to know the genes; read the names in gene_name and describe the pattern in plain words.\nSomeone will have used all 471 samples instead of 157. What is wrong with that, and how wrong is it?",
+    "text": "Exercise 1: Test the gene table with a grouping from the species table\nOpen notebooks/04-differential.qmd. Start by reading back the per-sample table you saved yesterday, the one with lacto_fraction and community in it. If you did not save it, rebuild it now; the slides from Module 2 have the recipe.\n\nPart 1: Predict\n\nWe will test 13,738 genes. If no gene were truly different between the two community types, how many would come out with a raw p-value below 0.05?\nYou will test at week 18 only, which is 157 samples, 37 against 120. Would you rather have 157 samples at one visit or 471 samples across three visits? Say why before you look at anything.\nOf the genes that do come out significant, do you expect more to be higher in anaerobe-dominant samples or in Lactobacillus-dominant samples?\n\n\n\nPart 2: Build\n\nSubset both the metadata and the gene counts to time_point == \"week_18\". Confirm you have 157 samples and that the column order of the count matrix matches the row order of the sample table. If they don’t match, DESeq2 gives you nonsense without any warning.\nFilter the genes. Keep a gene if it has a count of at least 10 in at least a quarter of the samples.\nRun the three lines:\ndds &lt;- DESeqDataSetFromMatrix(counts, sample_table, ~ community)\ndds &lt;- DESeq(dds)\nres &lt;- results(dds, contrast = c(\"community\", \"anaerobe\", \"lactobacillus\"))\nHow many genes have padj &lt; 0.05? How many of those have an absolute log2FoldChange above 1?\nJoin 05_gene_annotation.csv so your results carry gene symbols rather than Ensembl identifiers. Sort by padj and read the top twenty names out loud to your group.\nDraw a volcano plot: log2FoldChange on x, -log10(padj) on y, coloured by whether the gene passed.\nPick the single top gene and plot its normalised counts as a boxplot by community. The direction of that plot must match the sign of its log2FoldChange. Check that it does.\n\n\n\nPart 3: Check the agent\n\nAsk Pi how many genes were significant. Then ask it how many genes went into the test. If it can’t give you both numbers, it doesn’t know what it ran.\nAsk it to explain the sign convention of your contrast. Then verify against the boxplot from step 7. Getting the direction backwards is the most common error in this analysis, and it regularly gets through peer review.\nAsk it for the number of genes with pvalue &lt; 0.05 as well as padj &lt; 0.05. The first number should be far larger. If it is not, something is wrong.\nAsk it to run the same test on CPM-normalised counts instead of raw counts. It will probably do it. Look at what happens to the results and work out why that is wrong.\n\n\n\nDiscussion\n\nDid the direction of the effect surprise you?\nWhat do the top genes have in common? You do not need to know the genes; read the names in gene_name and describe the pattern in plain words.\nSomeone will have used all 471 samples instead of 157. What is wrong with that, and how wrong is it?",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
-      "<b>Module 3</b>: Differential Testing"
+      "<b>Module 4</b>: Differential Testing"
     ]
   },
   {
-    "objectID": "materials/2-workshop2/3-differential/index.html#exercise-2-the-same-test-on-the-species-table",
-    "href": "materials/2-workshop2/3-differential/index.html#exercise-2-the-same-test-on-the-species-table",
+    "objectID": "materials/2-workshop2/4-differential/index.html#exercise-2-the-same-test-on-the-species-table",
+    "href": "materials/2-workshop2/4-differential/index.html#exercise-2-the-same-test-on-the-species-table",
     "title": "Differential Testing",
     "section": "Exercise 2: The same test, on the species table",
-    "text": "Exercise 2: The same test, on the species table\nThis is the second half of the same notebook. You run the same three lines of code on the 220-row species table instead of the 14,226-row gene table, with a grouping that comes from the clinic rather than from either count table.\n\nPart 1: Predict\n\nWhy can you not test the species table using the community column you built yesterday? Answer in one sentence.\nYou will test species against birth outcome. The species table has 220 rows, but most are nearly always absent. How many do you expect to survive a filter of “present in at least 10% of samples”?\nDo you expect the significant species to be higher in the preterm group or the term group?\n\n\n\nPart 2: Build\n\nSubset to time_point == \"week_18\" again. Filter the species table to features present in at least 10% of samples.\nRun the same three lines with design = ~ outcome and contrast = c(\"outcome\", \"preterm\", \"term\").\nHow many species are significant? Join 03_microbiome_taxonomy.csv so you have readable names, and list them with their fold changes.\nHow many are higher in preterm, and how many in term?\nPlot the relative abundance of the top three species by outcome. Use proportions, not raw counts, and consider a log scale.\nNow run the test a second way, on the gene table, with the same ~ outcome design. Compare the two result sets:\n\nhow many features were tested in each\nhow many were significant in each\nwhat share of the significant ones changed by more than a factor of two\n\nWrite down what that comparison tells you about where the outcome signal lives.\n\n\n\nPart 3: Check the agent\n\nA filter on a sparse table is easy to get wrong. Ask Pi how many species it kept and recompute that number yourself from rowMeans(counts &gt; 0).\nAsk it whether DESeq2 is an appropriate method for microbiome counts. Read its answer critically. Researchers disagree about this, so a confident one-sided answer is a warning sign.\nAsk it to name the significant species. Then check two of them against 03_microbiome_taxonomy.csv by hand. Agents invent plausible species names.\nAsk it to also run the test with ~ nugent &gt;= 7 as the grouping instead of outcome. Fewer samples have a Nugent score, so the sample count drops. Make sure it tells you that it dropped samples.\n\n\n\nPart 4: Reach (optional)\nRun your species-by-outcome analysis on all 471 samples, with each participant appearing three times. Compare the number of significant species to your 157-sample result.\nMore samples gave you more hits. Are they real? What assumption did you break?\n\n\nDiscussion\n\nThe significant species are recognisable to anyone who works on bacterial vaginosis. Does that make the result more believable or less interesting?\nOne group found many more hits in the gene table than the species table, and another found the reverse depending on their filter. What does that say about how much of a differential analysis is decided before the test runs?\nBoth tables show an outcome signal. If you had to pick one to predict preterm birth, which would you pick, and what would you want to know first?",
+    "text": "Exercise 2: The same test, on the species table\nThis is the second half of the same notebook. You run the same three lines of code on the 220-row species table instead of the 14,226-row gene table, with a grouping that comes from the clinic rather than from either count table.\n\nPart 1: Predict\n\nWhy can you not test the species table using the community column you built yesterday? Answer in one sentence.\nYou will test species against birth outcome. The species table has 220 rows, but most are nearly always absent. How many do you expect to survive a filter of “present in at least 10% of samples”? Of those, how many are present in every one of the 157 samples?\nIf any species come out significant, do you expect them to be higher in the preterm group or the term group?\n\n\n\nPart 2: Build\n\nSubset to time_point == \"week_18\" again. Filter the species table to features present in at least 10% of samples.\nRun the same three lines with design = ~ outcome and contrast = c(\"outcome\", \"preterm\", \"term\"). How many species are significant?\nLook at how DESeq2 normalised the samples. Count the species with no zero in any sample, sum(rowSums(counts == 0) == 0). Then plot sizeFactors(dds) against each sample’s L. iners share, both on log scales. What are the size factors really measuring?\nRun it again with size factors built for a table full of zeros:\ndds &lt;- DESeqDataSetFromMatrix(counts, sample_table, ~ outcome)\ndds &lt;- estimateSizeFactors(dds, type = \"poscounts\")\ndds &lt;- DESeq(dds)\nres &lt;- results(dds, contrast = c(\"outcome\", \"preterm\", \"term\"))\nHow many species are significant now? Keep this version for the rest of the exercise and for tomorrow.\nJoin 03_microbiome_taxonomy.csv so you have readable names, and list the top ten species by padj with their fold changes, whether or not any pass. How many of the ten lean toward preterm?\nPlot the relative abundance of the top three species by outcome. Use proportions, not raw counts, and consider a log scale.\nNow run the test a second way, on the gene table, with the same ~ outcome design. Compare the two result sets:\n\nhow many features were tested in each\nhow many were significant in each\nwhat share of the significant ones changed by more than a factor of two\n\nWrite down what that comparison tells you about where the outcome signal lives.\n\n\n\nPart 3: Check the agent\n\nA filter on a sparse table is easy to get wrong. Ask Pi how many species it kept and recompute that number yourself from rowMeans(counts &gt; 0).\nAsk it whether DESeq2 is an appropriate method for microbiome counts. Read its answer critically. Researchers disagree about this, so a confident one-sided answer is a warning sign.\nAsk Pi how DESeq2 computed the size factors for the species table, and how many species went into them. Check its answer against your count from step 3.\nAsk it to name the top species. Then check two of them against 03_microbiome_taxonomy.csv by hand. Agents invent plausible species names.\nAsk it to also run the test with ~ nugent &gt;= 7 as the grouping instead of outcome. Fewer samples have a Nugent score, so the sample count drops. Make sure it tells you that it dropped samples.\n\n\n\nPart 4: Reach (optional)\nRun your species-by-outcome analysis on all 471 samples, with each participant appearing three times. Compare the number of significant species to your 157-sample result.\nMore samples gave you more hits. Are they real? What assumption did you break?\n\n\nDiscussion\n\nThe default size factors gave a list of species that anyone who works on bacterial vaginosis would recognise. Why is a familiar-looking list not evidence that the method was right?\nOne group found many more hits in the gene table than the species table, and another found the reverse depending on their filter. What does that say about how much of a differential analysis is decided before the test runs?\nAt week 18 the gene table shows an outcome signal and the species table, one species at a time, does not. Does that mean the bacteria do not matter for preterm birth? What other way of looking at the species table could still find a signal?",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
-      "<b>Module 3</b>: Differential Testing"
+      "<b>Module 4</b>: Differential Testing"
+    ]
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/index.html#further-reading",
+    "href": "materials/2-workshop2/4-differential/index.html#further-reading",
+    "title": "Differential Testing",
+    "section": "Further reading",
+    "text": "Further reading\nOn normalisation, with thanks to Afrah Khairallah, whose slides the size-factor example comes from:\n\nAnders and Huber 2010, Genome Biology: DESeq and the median-of-ratios size factor\nLove, Huber and Anders 2014, Genome Biology: DESeq2\nRobinson and Oshlack 2010, Genome Biology: TMM, edgeR’s equivalent\nLaw et al. 2014, Genome Biology: limma-voom\nLi et al. 2010, Bioinformatics: TPM, for comparing genes within a sample\n\nFor microbiome counts:\n\nGloor et al. 2017, Frontiers in Microbiology: “Microbiome datasets are compositional: and this is not optional”\nMcMurdie and Holmes 2014, PLoS Computational Biology: the case against rarefying\nNearing et al. 2022, Nature Communications: fourteen differential abundance methods run on 38 datasets, and how much they disagree",
+    "crumbs": [
+      "Get Started",
+      "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
+      "<b>Module 4</b>: Differential Testing"
+    ]
+  },
+  {
+    "objectID": "materials/2-workshop2/3-ordination/index.html",
+    "href": "materials/2-workshop2/3-ordination/index.html",
+    "title": "Distances and Ordination",
+    "section": "",
+    "text": "This module measures how similar whole samples are to each other. You pick a distance, draw the ordination, then put a number on whatever pattern you think you see.",
+    "crumbs": [
+      "Get Started",
+      "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
+      "<b>Module 3</b>: Distances and Ordination"
+    ]
+  },
+  {
+    "objectID": "materials/2-workshop2/3-ordination/index.html#slides",
+    "href": "materials/2-workshop2/3-ordination/index.html#slides",
+    "title": "Distances and Ordination",
+    "section": "Slides",
+    "text": "Slides\nMake slides full screen",
+    "crumbs": [
+      "Get Started",
+      "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
+      "<b>Module 3</b>: Distances and Ordination"
+    ]
+  },
+  {
+    "objectID": "materials/2-workshop2/3-ordination/index.html#exercise-1-distances-and-ordination-on-the-species-table",
+    "href": "materials/2-workshop2/3-ordination/index.html#exercise-1-distances-and-ordination-on-the-species-table",
+    "title": "Distances and Ordination",
+    "section": "Exercise 1: Distances and ordination on the species table",
+    "text": "Exercise 1: Distances and ordination on the species table\nOpen notebooks/03-ordination.qmd.\n\nPart 1: Predict\n\nBray-Curtis uses abundances. Jaccard uses only presence and absence. Our species table is about 89% zeros. Which of the two do you expect to separate the two community types more clearly, and why?\nIf you shuffled the outcome label randomly across all 471 samples, what R2 would PERMANOVA report? Give a number.\nOne sample has 438 reads. Where do you expect it to sit in a Bray-Curtis ordination?\n\n\n\nPart 2: Build\n\nBuild the phyloseq object for the species table:\nlibrary(microViz)\nsource(\"R/count_tables.R\")\nps &lt;- as_counts(table = \"microbiome\")\nInspect it. How many taxa, how many samples, how many sample variables? Add the community column you built this morning if it is not already there.\nRun the pipeline three times, changing only the transform and the distance:\n\n\"identity\" with \"bray\"\n\"binary\" with \"jaccard\"\n\"clr\" with \"euclidean\"\n\nPlot all three, coloured by community. Put them side by side.\nColour your Bray-Curtis ordination by outcome instead. Then by time_point. Then by nugent.\nRun dist_permanova() on the Bray-Curtis distance with community, outcome, time_point and rnaseq_batch as variables. Report the R2 for each.\nFind your 438-read sample in the ordination. Was your Part 1 prediction right? Re-run the Bray-Curtis ordination with that sample removed and see whether anything else moves.\nMake a stacked bar plot of community composition with comp_barplot(tax_level = \"Genus\", n_taxa = 10), faceted or ordered by community. Most 16S papers open with this figure.\n\n\n\nPart 3: Check the agent\n\nAsk Pi for the R2 of outcome. Then ask it what the R2 of a random label would be. If it does not say “close to zero but not zero”, push back.\nPERMANOVA with by = \"margin\" and by = \"terms\" give different answers when variables are correlated. Ask Pi which it used and why it matters.\nAsk it to interpret your ordination. It will produce a paragraph of confident biological narrative about axis 1. Then ask it what axis 1 actually is. Neither it nor you can tell from the plot alone.\nAsk it whether your three distance choices “agree”. Then look at the three plots yourself and decide if its answer matches what you see.\n\n\n\nDiscussion\n\nWhich of the three distances would you publish? Defend it in one sentence.\ncommunity explains a very large share of this table. Is that a finding?\nYour ordination shows visit structure. Each participant appears three times. Does PERMANOVA know that, and does it matter?",
+    "crumbs": [
+      "Get Started",
+      "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
+      "<b>Module 3</b>: Distances and Ordination"
+    ]
+  },
+  {
+    "objectID": "materials/2-workshop2/3-ordination/index.html#exercise-2-the-identical-pipeline-on-14000-genes",
+    "href": "materials/2-workshop2/3-ordination/index.html#exercise-2-the-identical-pipeline-on-14000-genes",
+    "title": "Distances and Ordination",
+    "section": "Exercise 2: The identical pipeline on 14,000 genes",
+    "text": "Exercise 2: The identical pipeline on 14,000 genes\nUse the same notebook. Change three words in your code from Exercise 1 and run it again on a table sixty times larger.\n\nPart 1: Predict\n\nBray-Curtis is standard for microbiome data. Would you use it on gene counts? Say why or why not before you try.\ncommunity explained about 18% of the species table. What share do you expect it to explain of the gene table?\nThe gene table was produced in two sequencing batches. What share do you expect rnaseq_batch to explain?\n\n\n\nPart 2: Build\n\nBuild the gene object, filtering as you go:\nps_genes &lt;- as_counts(table = \"rnaseq\", min_count = 10, min_samples = 100)\nRun the pipeline with \"clr\" and \"euclidean\", aggregating at rank = \"symbol\". Plot it coloured by community, then outcome, then rnaseq_batch.\nRun dist_permanova() with the same four variables you used on the species table. Put the two sets of R2 values side by side in one small table.\nLook at the batch row. Then do something about it: add rnaseq_batch to the PERMANOVA formula before outcome and see whether the outcome R2 changes.\nCheck whether batch is confounded with anything you care about. A cross-tabulation of rnaseq_batch against outcome and against community is enough. If the groups were unbalanced across batches, what would that mean for tomorrow’s differential tests, which compare the groups one gene at a time?\nAlso try Bray-Curtis on the gene table, just to see. Compare it to your CLR ordination and decide which you believe.\n\n\n\nPart 3: Check the agent\n\nAsk Pi to compare the species and gene R2 tables and tell you what it means. Its answer will probably say the gene table has “weaker biological signal”. That is a claim about biology drawn from an ordination. Is it justified? An ordination summarises every gene at once. Tomorrow you test them one at a time, so write down what you expect to find and check it then.\nAsk it whether you should remove the batch effect. Then ask it to actually do it. Look closely at what it does, because “batch correction” covers several very different operations with very different consequences.\nCLR cannot handle zeros without a pseudocount. Ask Pi what pseudocount it used and where that choice came from.\n\n\n\nPart 4: Reach (optional)\nTake the first two axes of your gene ordination and the first two of your species ordination, and plot gene axis 1 against species axis 1 for the same samples. Are they related?\nThis scatter plot is the simplest form of multiomics integration. Friday morning starts from it.\n\n\nDiscussion\n\nBoth tables showed a significant outcome effect of about 2% or less. Would you write that in a paper, and how would you phrase it?\nThe batch effect is as large as the biological effect. What should the people who generated this data have done differently?\nYou now have two ordinations of the same 471 samples. What would it take to combine them, and what would you hope to gain?",
+    "crumbs": [
+      "Get Started",
+      "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
+      "<b>Module 3</b>: Distances and Ordination"
     ]
   },
   {
@@ -352,11 +364,11 @@
     ]
   },
   {
-    "objectID": "materials/2-workshop2/2-count-table-anatomy/index.html#exercise-2-filtering-normalising-and-one-column-you-will-need-tomorrow",
-    "href": "materials/2-workshop2/2-count-table-anatomy/index.html#exercise-2-filtering-normalising-and-one-column-you-will-need-tomorrow",
+    "objectID": "materials/2-workshop2/2-count-table-anatomy/index.html#exercise-2-filtering-normalising-and-one-column-you-will-need-all-week",
+    "href": "materials/2-workshop2/2-count-table-anatomy/index.html#exercise-2-filtering-normalising-and-one-column-you-will-need-all-week",
     "title": "Count Table Anatomy",
-    "section": "Exercise 2: Filtering, normalising, and one column you will need tomorrow",
-    "text": "Exercise 2: Filtering, normalising, and one column you will need tomorrow\nSame notebook, second half.\n\nPart 1: Predict\n\nIf you keep only species present in at least 10% of samples, how many of the 220 survive? What share of all the bacterial reads do you lose?\nApply the same 10% prevalence rule to the 14,226 genes. How many survive?\nYou want to compare one species between two samples. Name the single operation you must do to the counts first.\n\n\n\nPart 2: Build\n\nCompute prevalence for every feature in both tables, the share of samples where its count is above zero. Plot the distribution for each table.\nFor prevalence cutoffs from 0 to 0.9, compute how many features survive and what share of total counts survives. Plot both. This figure shows that a prevalence filter suits one table and does almost nothing to the other.\nChoose and apply a filter to each table. Write one sentence in your notebook justifying each choice. For the gene table, filter on expression level rather than prevalence, something like a mean CPM of at least 5.\nConvert both filtered tables to counts per million, then to log2(cpm + 1). Plot a histogram of one feature before and after.\nBuild the grouping column. From the species table, compute for each sample the fraction of its reads that belong to the genus Lactobacillus. 03_microbiome_taxonomy.csv tells you which species those are.\nThen make a two-level column:\n\nlactobacillus if that fraction is 0.5 or more\nanaerobe if it is below 0.5\n\nSave your per-sample table, including sample_id, lacto_fraction and this new column, to a csv in your repository. Tomorrow afternoon starts by reading it back.\nHow many samples land in each group? Does the split change across the three visits?\n\n\n\nPart 3: Check the agent\n\nAsk Pi to compute the Lactobacillus fraction. Then check: does its answer for one sample you compute by hand agree to three decimal places?\nA common failure is matching genus names with the wrong case or with partial matching, so that Lactobacillus also catches something it should not. Ask it which species names it matched, and read the list.\nlacto_fraction must lie between 0 and 1 for every sample. Check the minimum and maximum.\nAsk it to justify the 0.5 cutoff. The answer will sound confident. Decide for yourself whether the reasoning holds up.\n\n\n\nPart 4: Reach (optional)\nBuild the same per-sample summary table for one of the group project datasets, group_a_probiotic or group_b_contraception. The column names are identical, so your code should run unchanged. If it does not, you hard-coded something.\n\n\nDiscussion\n\nWhat did you filter, and what did you lose?\nThe 0.5 cutoff is arbitrary. What would change in your conclusions if it were 0.3, or 0.8?\nWe are about to use a grouping built from the species table to test the gene table. Why is that a fair thing to do, and what would make it unfair?",
+    "section": "Exercise 2: Filtering, normalising, and one column you will need all week",
+    "text": "Exercise 2: Filtering, normalising, and one column you will need all week\nSame notebook, second half.\n\nPart 1: Predict\n\nIf you keep only species present in at least 10% of samples, how many of the 220 survive? What share of all the bacterial reads do you lose?\nApply the same 10% prevalence rule to the 14,226 genes. How many survive?\nYou want to compare one species between two samples. Name the single operation you must do to the counts first.\n\n\n\nPart 2: Build\n\nCompute prevalence for every feature in both tables, the share of samples where its count is above zero. Plot the distribution for each table.\nFor prevalence cutoffs from 0 to 0.9, compute how many features survive and what share of total counts survives. Plot both. This figure shows that a prevalence filter suits one table and does almost nothing to the other.\nChoose and apply a filter to each table. Write one sentence in your notebook justifying each choice. For the gene table, filter on expression level rather than prevalence, something like a mean CPM of at least 5.\nConvert both filtered tables to counts per million, then to log2(cpm + 1). Plot a histogram of one feature before and after.\nBuild the grouping column. From the species table, compute for each sample the fraction of its reads that belong to the genus Lactobacillus. 03_microbiome_taxonomy.csv tells you which species those are.\nThen make a two-level column:\n\nlactobacillus if that fraction is 0.5 or more\nanaerobe if it is below 0.5\n\nSave your per-sample table, including sample_id, lacto_fraction and this new column, to a csv in your repository. This afternoon’s notebook reads it back, and so does Wednesday’s.\nHow many samples land in each group? Does the split change across the three visits?\n\n\n\nPart 3: Check the agent\n\nAsk Pi to compute the Lactobacillus fraction. Then check: does its answer for one sample you compute by hand agree to three decimal places?\nA common failure is matching genus names with the wrong case or with partial matching, so that Lactobacillus also catches something it should not. Ask it which species names it matched, and read the list.\nlacto_fraction must lie between 0 and 1 for every sample. Check the minimum and maximum.\nAsk it to justify the 0.5 cutoff. The answer will sound confident. Decide for yourself whether the reasoning holds up.\n\n\n\nPart 4: Reach (optional)\nBuild the same per-sample summary table for one of the group project datasets, group_a_probiotic or group_b_contraception. The column names are identical, so your code should run unchanged. If it does not, you hard-coded something.\n\n\nDiscussion\n\nWhat did you filter, and what did you lose?\nThe 0.5 cutoff is arbitrary. What would change in your conclusions if it were 0.3, or 0.8?\nWe are about to use a grouping built from the species table to test the gene table. Why is that a fair thing to do, and what would make it unfair?",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
@@ -392,7 +404,7 @@
     "href": "materials/2-workshop2/1-reads-to-counts/index.html#analog-activities-90-minutes-no-computers",
     "title": "From Reads to Count Tables",
     "section": "Analog activities (90 minutes, no computers)",
-    "text": "Analog activities (90 minutes, no computers)\nThe session acts out one story: pick a bag, then draw balls. A bag might be a vaginal community or a patch of forest; a ball might be a 16S read or a bird someone spotted. Any study that fits that story produces a count table, and everything this week works on count tables.\nPeople are on their feet for the first forty-five minutes and at tables with pen and paper for the rest. The slides for every step are at the end of this afternoon’s deck.\n\nMaterials\n\n\n\n\n\n\n\n\nitem\nhow many\nused for\n\n\n\n\nOpaque cloth or paper bags\n4\ndemo\n\n\nPom-poms in 8 colours\nabout 50 per bag\ndemo\n\n\nFelt-tip markers in the same 8 colours\n2 sets\ndemo cards\n\n\nBlank cards, D____\n12\ndemo\n\n\nPrinted sample cards, S01 to S80\n1 per participant\nrounds 1 and 2, worksheet\n\n\nWorksheet, printed double-sided\n1 per participant, plus spares\nbuild the table\n\n\nMasking tape\n1 roll\nfloor axes\n\n\nFlip chart and marker\n1\nreport to the room\n\n\nWhiteboard and marker\n1\ndendrogram in round 1\n\n\n\n\n\nPrint files\n\nWorksheet (PDF), one per participant, printed double-sided with flip on short edge.\nAll 80 cards by bag (PDF, spoilers): every card’s bar grouped by the bag it came from, with the PCoA, the floor plot and the dendrogram. For instructors.\n\n\n\nBefore the session\nFill the four bags with about 50 pom-poms each, and tag each bag with its inflammation status.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nbag\norange\ngreen\nblue\npink\nvermillion\nsky blue\nyellow\ngrey\ntag\n\n\n\n\n1\n42\n4\n1\n\n1\n\n1\n1\nlow\n\n\n2\n4\n38\n4\n\n1\n\n1\n2\nlow\n\n\n3\n1\n4\n35\n\n4\n2\n2\n2\nhigh\n\n\n4\n\n1\n9\n23\n5\n5\n5\n2\nhigh\n\n\n\nTape the floor axes in an open part of the room: one long line left to right (more blue toward the right), and one line front to back crossing it at the left end (more orange toward the back, more green toward the front).\nSort the printed cards in order, S01 first. The deck is interleaved, so handing out the first 61 cards still gives a balanced room. Keep the rest as spares.\n\n\nRun sheet\n\n\n\ntime\nblock\n\n\n\n\n0:00\nBags and balls, live demo\n\n\n0:12\nHand out cards\n\n\n0:15\nRound 1: closest partner, then pairs of pairs\n\n\n0:27\nRound 2: the floor is a plot\n\n\n0:37\nReveal and debrief\n\n\n0:45\nBuild the table, worksheet\n\n\n1:20\nReport to the room\n\n\n1:25\nClose\n\n\n\n\n\nBags and balls (12 min)\nPut the four bags on a table at the front and ask for eight volunteers, two per bag. Without looking, the first person at each bag draws 5 pom-poms and the second draws 20. Each tallies their colours on the back of a blank card, colours the bar on the front, and copies the bag’s inflammation tag. Hold the pairs of cards up side by side.\nAsk the room:\n\nDid the two people at the same bag make the same card?\nWhich of the two cards do you trust more? Why?\nIf the 5-ball card were all you had, what would you conclude about that bag?\n\n\nWhich bag you pick is biological variation, and which balls you draw is measurement variation. Every sample this week carries both, and sequencing deeper only reduces the second.\n\n\n\nHand out cards (3 min)\nGive everyone one printed card. The eight volunteers keep their hand-made card. Explain the card on the slide: the front shows proportions, so every bar is the same length, and the small n is how many balls were drawn. The back has the counts and the inflammation tag. The printed cards came from the same kind of bags.\n\n\nRound 1: closest partner, then pairs of pairs (12 min)\n\nEveryone finds the one card most like theirs and stands together, judging by the bars and ignoring the card numbers. A group of three is fine.\nEach pair finds its closest pair.\nEach group of four finds its closest group.\n\nWhile they move, draw the merges on the whiteboard as a tree: two names joined, then two pairs joined. That drawing is a dendrogram.\nAsk the room:\n\nHow did you decide two cards were similar? That rule is a distance.\nWhen two groups both wanted the same pair, how did you settle it? That choice is the linkage rule, and software makes it for you.\nWho had trouble finding a partner? Look at the n on their card.\n\n\nThis is hierarchical clustering. On Wednesday the distance gets a name, Bray-Curtis, and the tree gets drawn by a computer.\n\n\n\nRound 2: the floor is a plot (10 min)\nEveryone stands where their card belongs on the taped axes: left to right by how much of the bar is blue, back to front by orange share minus green share. Take a photo from as high as you can, a chair is enough. The slides have a precomputed version of the plot if the photo does not work out.\nAsk the room:\n\nThe blue and pink cards are standing close together. Are their bars alike?\nWe chose these two axes. What would you need to separate everyone properly?\n\n\nA PCoA is the computer choosing the axes for you. It finds the directions along which the cards differ most, and it reports how much of the difference each axis captures.\n\n\n\nReveal and debrief (8 min)\nGo past the spoiler slide. Show which bag each card came from, then the computer versions of both rounds: the floor plot, the PCoA, and the dendrogram.\nPoints to pull out:\n\nCards with 5 to 10 balls end up in the wrong place more often. Too few reads turn into ordination error.\nBlends stand between groups. Real communities shift, and a clustering forces each one into a single group anyway.\nTwo axes squash the blue and pink bags together. A third axis separates them.\n\n\n\nBuild the table (35 min)\nPeople sit with whoever is near them. Groups will be different sizes, and that is fine. Each person gets a worksheet, and the group pools its cards.\nOn side 1, everyone copies the group’s cards into the columns, one card per column. The feature metadata is printed on the sheet. Point out the layout: sample information sits above the columns it describes, feature information sits beside the rows it describes. That alignment is what R has to keep in sync.\nSide 2 has the questions. Walk round and push on these:\n\nCollapsing the rows: “makes lactic acid” plus “encodes lysin” does not equal the column total, because green is in both groups. Taxonomy is a hierarchy, so every row has one parent and adding up is safe. Gene sets overlap, so one gene counts in many sets, which matters for enrichment on Thursday.\nKeeping only high inflammation: crossing out columns in the counts means crossing out the same entries in the sample metadata, and the feature metadata stays as it is.\n\n\n\nReport to the room (5 min)\nEach group copies its two-by-two table (mostly lactic acid or not, high or low inflammation) onto the flip chart with its n. Add up the columns for the room total.\nAsk the room:\n\nDid your table show the pattern the room shows?\nWas any group wrong, or just small?\n\n\nTomorrow afternoon you will put a p-value on this question and see how it changes with n.\n\n\n\nClose (5 min)\nLeave the flip chart up. Tomorrow morning the table has 220 rows of bacteria or 14,226 rows of human genes, and 471 columns, and the column totals and proportions from the worksheet are the first things you compute in R.",
+    "text": "Analog activities (90 minutes, no computers)\nThe session acts out one story: pick a bag, then draw balls. A bag might be a vaginal community or a patch of forest; a ball might be a 16S read or a bird someone spotted. Any study that fits that story produces a count table, and everything this week works on count tables.\nPeople are on their feet for the first forty-five minutes and at tables with pen and paper for the rest. The slides for every step are at the end of this afternoon’s deck.\n\nMaterials\n\n\n\n\n\n\n\n\nitem\nhow many\nused for\n\n\n\n\nOpaque cloth or paper bags\n4\ndemo\n\n\nPom-poms in 8 colours\nabout 50 per bag\ndemo\n\n\nFelt-tip markers in the same 8 colours\n2 sets\ndemo cards\n\n\nBlank cards, D____\n12\ndemo\n\n\nPrinted sample cards, S01 to S80\n1 per participant\nrounds 1 and 2, worksheet\n\n\nWorksheet, printed double-sided\n1 per participant, plus spares\nbuild the table\n\n\nMasking tape\n1 roll\nfloor axes\n\n\nFlip chart and marker\n1\nreport to the room\n\n\nWhiteboard and marker\n1\ndendrogram in round 1\n\n\n\n\n\nPrint files\n\nWorksheet (PDF), one per participant, printed double-sided with flip on short edge.\nAll 80 cards by bag (PDF, spoilers): every card’s bar grouped by the bag it came from, with the PCoA, the floor plot and the dendrogram. For instructors.\n\n\n\nBefore the session\nFill the four bags with about 50 pom-poms each, and tag each bag with its inflammation status.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nbag\norange\ngreen\nblue\npink\nvermillion\nsky blue\nyellow\ngrey\ntag\n\n\n\n\n1\n42\n4\n1\n\n1\n\n1\n1\nlow\n\n\n2\n4\n38\n4\n\n1\n\n1\n2\nlow\n\n\n3\n1\n4\n35\n\n4\n2\n2\n2\nhigh\n\n\n4\n\n1\n9\n23\n5\n5\n5\n2\nhigh\n\n\n\nTape the floor axes in an open part of the room: one long line left to right (more blue toward the right), and one line front to back crossing it at the left end (more orange toward the back, more green toward the front).\nSort the printed cards in order, S01 first. The deck is interleaved, so handing out the first 61 cards still gives a balanced room. Keep the rest as spares.\n\n\nRun sheet\n\n\n\ntime\nblock\n\n\n\n\n0:00\nBags and balls, live demo\n\n\n0:12\nHand out cards\n\n\n0:15\nRound 1: closest partner, then pairs of pairs\n\n\n0:27\nRound 2: the floor is a plot\n\n\n0:37\nReveal and debrief\n\n\n0:45\nBuild the table, worksheet\n\n\n1:20\nReport to the room\n\n\n1:25\nClose\n\n\n\n\n\nBags and balls (12 min)\nPut the four bags on a table at the front and ask for eight volunteers, two per bag. Without looking, the first person at each bag draws 5 pom-poms and the second draws 20. Each tallies their colours on the back of a blank card, colours the bar on the front, and copies the bag’s inflammation tag. Hold the pairs of cards up side by side.\nAsk the room:\n\nDid the two people at the same bag make the same card?\nWhich of the two cards do you trust more? Why?\nIf the 5-ball card were all you had, what would you conclude about that bag?\n\n\nWhich bag you pick is biological variation, and which balls you draw is measurement variation. Every sample this week carries both, and sequencing deeper only reduces the second.\n\n\n\nHand out cards (3 min)\nGive everyone one printed card. The eight volunteers keep their hand-made card. Explain the card on the slide: the front shows proportions, so every bar is the same length, and the small n is how many balls were drawn. The back has the counts and the inflammation tag. The printed cards came from the same kind of bags.\n\n\nRound 1: closest partner, then pairs of pairs (12 min)\n\nEveryone finds the one card most like theirs and stands together, judging by the bars and ignoring the card numbers. A group of three is fine.\nEach pair finds its closest pair.\nEach group of four finds its closest group.\n\nWhile they move, draw the merges on the whiteboard as a tree: two names joined, then two pairs joined. That drawing is a dendrogram.\nAsk the room:\n\nHow did you decide two cards were similar? That rule is a distance.\nWhen two groups both wanted the same pair, how did you settle it? That choice is the linkage rule, and software makes it for you.\nWho had trouble finding a partner? Look at the n on their card.\n\n\nThis is hierarchical clustering. Tomorrow afternoon the distance gets a name, Bray-Curtis, and the tree gets drawn by a computer.\n\n\n\nRound 2: the floor is a plot (10 min)\nEveryone stands where their card belongs on the taped axes: left to right by how much of the bar is blue, back to front by orange share minus green share. Take a photo from as high as you can, a chair is enough. The slides have a precomputed version of the plot if the photo does not work out.\nAsk the room:\n\nThe blue and pink cards are standing close together. Are their bars alike?\nWe chose these two axes. What would you need to separate everyone properly?\n\n\nA PCoA is the computer choosing the axes for you. It finds the directions along which the cards differ most, and it reports how much of the difference each axis captures.\n\n\n\nReveal and debrief (8 min)\nGo past the spoiler slide. Show which bag each card came from, then the computer versions of both rounds: the floor plot, the PCoA, and the dendrogram.\nPoints to pull out:\n\nCards with 5 to 10 balls end up in the wrong place more often. Too few reads turn into ordination error.\nBlends stand between groups. Real communities shift, and a clustering forces each one into a single group anyway.\nTwo axes squash the blue and pink bags together. A third axis separates them.\n\n\n\nBuild the table (35 min)\nPeople sit with whoever is near them. Groups will be different sizes, and that is fine. Each person gets a worksheet, and the group pools its cards.\nOn side 1, everyone copies the group’s cards into the columns, one card per column. The feature metadata is printed on the sheet. Point out the layout: sample information sits above the columns it describes, feature information sits beside the rows it describes. That alignment is what R has to keep in sync.\nSide 2 has the questions. Walk round and push on these:\n\nCollapsing the rows: “makes lactic acid” plus “encodes lysin” does not equal the column total, because green is in both groups. Taxonomy is a hierarchy, so every row has one parent and adding up is safe. Gene sets overlap, so one gene counts in many sets, which matters for enrichment on Thursday.\nKeeping only high inflammation: crossing out columns in the counts means crossing out the same entries in the sample metadata, and the feature metadata stays as it is.\n\n\n\nReport to the room (5 min)\nEach group copies its two-by-two table (mostly lactic acid or not, high or low inflammation) onto the flip chart with its n. Add up the columns for the room total.\nAsk the room:\n\nDid your table show the pattern the room shows?\nWas any group wrong, or just small?\n\n\nOn Wednesday afternoon you will put a p-value on this question and see how it changes with n.\n\n\n\nClose (5 min)\nLeave the flip chart up. Tomorrow morning the table has 220 rows of bacteria or 14,226 rows of human genes, and 471 columns, and the column totals and proportions from the worksheet are the first things you compute in R.",
     "crumbs": [
       "Get Started",
       "<b>2. Multiomics: Microbiome and Host Gene Expression</b>",
@@ -3550,7 +3562,7 @@
     "href": "materials/2-workshop2/0-welcome/slides.html#the-questions-you-will-ask-of-both-tables",
     "title": "Welcome to the Multiomics Workshop",
     "section": "The questions you will ask of both tables",
-    "text": "The questions you will ask of both tables\n\n\n\n\n\n\n\n\n\n\nof species\nof genes\nwhen\n\n\n\n\nHow much did we sequence?\nlibrary size\nlibrary size\nTue AM\n\n\nWhat is here at all?\nprevalence\nexpression level\nTue AM\n\n\nWhich features differ between groups?\ndifferential abundance\ndifferential expression\nTue PM\n\n\nHow similar are two samples?\nbeta diversity\nsample distance\nWed PM\n\n\nWhat do the hits have in common?\ntaxonomy\ngene sets\nThu PM"
+    "text": "The questions you will ask of both tables\n\n\n\n\n\n\n\n\n\n\nof species\nof genes\nwhen\n\n\n\n\nHow much did we sequence?\nlibrary size\nlibrary size\nTue AM\n\n\nWhat is here at all?\nprevalence\nexpression level\nTue AM\n\n\nHow similar are two samples?\nbeta diversity\nsample distance\nTue PM\n\n\nWhich features differ between groups?\ndifferential abundance\ndifferential expression\nWed PM\n\n\nWhat do the hits have in common?\ntaxonomy\ngene sets\nThu PM"
   },
   {
     "objectID": "materials/2-workshop2/0-welcome/slides.html#the-study-we-will-work-on",
@@ -3704,7 +3716,7 @@
     "href": "materials/2-workshop2/1-reads-to-counts/slides.html#counts-not-tpm-for-testing",
     "title": "From Reads to Count Tables",
     "section": "Counts, not TPM, for testing",
-    "text": "Counts, not TPM, for testing\nYou will see expression reported as TPM, FPKM or RPKM. Those divide by gene length so you can compare genes within a sample.\n\nGood for: “is gene A higher than gene B in this sample?”\nWrong for: the statistical tests we run on Tuesday\n\n\nThose tests need raw counts, because they model counting noise. Hand them normalised values and they will believe the noise is smaller than it is.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nsample\nlibrary size\nreads for gene X\nreads per million\nrange if sequenced again\n\n\n\n\nsample 1\n2,000,000\n10\n5\n2.0 to 8.5\n\n\nsample 2\n20,000,000\n100\n5\n4.0 to 6.0\n\n\n\n\n\nThe normalised values match. Only the raw counts show that sample 1 rests on ten reads."
+    "text": "Counts, not TPM, for testing\nYou will see expression reported as TPM, FPKM or RPKM. Those divide by gene length so you can compare genes within a sample.\n\nGood for: “is gene A higher than gene B in this sample?”\nWrong for: the statistical tests we run on Wednesday\n\n\nThose tests need raw counts, because they model counting noise. Hand them normalised values and they will believe the noise is smaller than it is.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nsample\nlibrary size\nreads for gene X\nreads per million\nrange if sequenced again\n\n\n\n\nsample 1\n2,000,000\n10\n5\n2.0 to 8.5\n\n\nsample 2\n20,000,000\n100\n5\n4.0 to 6.0\n\n\n\n\n\nThe normalised values match. Only the raw counts show that sample 1 rests on ten reads."
   },
   {
     "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#when-c-grows-a-and-b-appear-to-shrink",
@@ -3746,14 +3758,14 @@
     "href": "materials/2-workshop2/1-reads-to-counts/slides.html#every-analysis-starts-the-same-way",
     "title": "From Reads to Count Tables",
     "section": "Every analysis starts the same way",
-    "text": "Every analysis starts the same way\n\nHow deeply was each sample sequenced?\nWhich features are we even able to see?\nOnly then: does anything differ between groups?\n\n\nTomorrow morning covers the first two, on both tables at once."
+    "text": "Every analysis starts the same way\n\nHow deeply was each sample sequenced?\nWhich features are we even able to see?\nHow alike are whole samples, and what makes them alike?\nOnly then: which features differ between groups?\n\n\nTomorrow morning covers the first two, on both tables at once, and tomorrow afternoon the third. The fourth waits until Wednesday."
   },
   {
     "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#our-gene-table-has-a-batch-label",
     "href": "materials/2-workshop2/1-reads-to-counts/slides.html#our-gene-table-has-a-batch-label",
     "title": "From Reads to Count Tables",
     "section": "Our gene table has a batch label",
-    "text": "Our gene table has a batch label\nThe gene table was produced in two sequencing batches, and we kept that label in the metadata.\n\nOn Wednesday you will measure how much of the table the batch explains, and the answer is uncomfortable.\n\n\nKeep every technical label your sequencing facility gives you. A batch effect you never recorded is one you cannot test for."
+    "text": "Our gene table has a batch label\nThe gene table was produced in two sequencing batches, and we kept that label in the metadata.\n\nTomorrow afternoon you will measure how much of the table the batch explains, and the answer is uncomfortable.\n\n\nKeep every technical label your sequencing facility gives you. A batch effect you never recorded is one you cannot test for."
   },
   {
     "objectID": "materials/2-workshop2/1-reads-to-counts/slides.html#on-your-feet",
@@ -3998,7 +4010,7 @@
     "href": "materials/2-workshop2/2-count-table-anatomy/slides.html#plan-for-the-next-ninety-minutes",
     "title": "Count Table Anatomy",
     "section": "Plan for the next ninety minutes",
-    "text": "Plan for the next ninety minutes\n\nLoad both tables and check their shape against the metadata\nCompute library size, features detected and dominance for both\nDecide which samples and features to drop, and write down why\nBuild the one column Tuesday afternoon depends on\n\n\nDo not skip the last one. Tuesday afternoon starts from that column."
+    "text": "Plan for the next ninety minutes\n\nLoad both tables and check their shape against the metadata\nCompute library size, features detected and dominance for both\nDecide which samples and features to drop, and write down why\nBuild the one column the rest of the week depends on\n\n\nDo not skip the last one. This afternoon you colour your ordinations by that column, and Wednesday afternoon starts from it."
   },
   {
     "objectID": "materials/2-workshop2/2-count-table-anatomy/slides.html#your-turn",
@@ -4008,256 +4020,291 @@
     "text": "Your turn\nOpen notebooks/02-count-table-anatomy.qmd in your Codespace."
   },
   {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#this-morning-you-built-a-column",
-    "href": "materials/2-workshop2/3-differential/slides.html#this-morning-you-built-a-column",
-    "title": "Differential Testing",
-    "section": "This morning you built a column",
-    "text": "This morning you built a column\n\n\n\n\n\ncommunity\nn\n\n\n\n\nanaerobe\n37\n\n\nlactobacillus\n120\n\n\n\n\n\nThese are the week 18 samples only, one per person.\n\nYou built community from the species table. Now we test the gene table with it."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#the-question",
-    "href": "materials/2-workshop2/3-differential/slides.html#the-question",
-    "title": "Differential Testing",
-    "section": "The question",
-    "text": "The question\nFor each feature, is its count systematically different between two groups of samples?\n\nIn the gene table we ask it about 14,000 times, once per gene."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#counts-break-the-assumptions-of-a-t-test",
-    "href": "materials/2-workshop2/3-differential/slides.html#counts-break-the-assumptions-of-a-t-test",
-    "title": "Differential Testing",
-    "section": "Counts break the assumptions of a t-test",
-    "text": "Counts break the assumptions of a t-test\n\n\n\nCounts can’t go below zero, and they are skewed.\nThe variance depends on the mean: a gene at 10 counts behaves differently from one at 10,000.\nLibrary sizes differ, so raw counts aren’t comparable between samples.\nEstimating each gene’s variance on its own, from 157 samples, ignores what the other 14,000 genes can tell you."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#the-variance-really-does-track-the-mean",
-    "href": "materials/2-workshop2/3-differential/slides.html#the-variance-really-does-track-the-mean",
-    "title": "Differential Testing",
-    "section": "The variance really does track the mean",
-    "text": "The variance really does track the mean\n\nFold changes for low-count genes are much less certain. A method built for counts uses this trend to borrow information across genes."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#running-deseq2",
-    "href": "materials/2-workshop2/3-differential/slides.html#running-deseq2",
-    "title": "Differential Testing",
-    "section": "Running DESeq2",
-    "text": "Running DESeq2\n\nlibrary(DESeq2)\n\ndds &lt;- DESeqDataSetFromMatrix(\n  countData = gene_counts,          # features x samples, raw counts\n  colData   = sample_table,         # one row per sample, same order\n  design    = ~ community\n)\n\ndds &lt;- DESeq(dds)\nres &lt;- results(dds, contrast = c(\"community\", \"anaerobe\", \"lactobacillus\"))\n\n\nGive it raw counts, never CPM and never logged values. DESeq2 does its own normalisation, and feeding it normalised data breaks it."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#inside-deseq",
-    "href": "materials/2-workshop2/3-differential/slides.html#inside-deseq",
-    "title": "Differential Testing",
-    "section": "Inside DESeq()",
-    "text": "Inside DESeq()\n\n\n\nSize factors. Works out how deeply each sample was sequenced, so samples become comparable.\nDispersion. Estimates each feature’s variance, then pulls extreme estimates toward the trend you just saw.\nTest. Fits a model per feature and tests whether the group term is zero.\n\n\n\nA toy gene in three samples. Sample C was sequenced twice as deeply.\n\n\n\n\n\nsample\nraw\nsize factor\nnormalised\n\n\n\n\nA\n50\n0.79\n63\n\n\nB\n48\n0.79\n60\n\n\nC\n100\n1.59\n63\n\n\n\n\n\nDividing by the size factor puts the three samples back on one scale."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#the-results-table",
-    "href": "materials/2-workshop2/3-differential/slides.html#the-results-table",
-    "title": "Differential Testing",
-    "section": "The results table",
-    "text": "The results table\n\n\n\n\n\ngene\nbaseMean\nlog2FoldChange\nstat\npvalue\npadj\n\n\n\n\nMUC22\n6710\n-2.74\n-9.9\n5.9e-23\n8.2e-19\n\n\nFAM25A\n128\n-3.54\n-9.5\n2.5e-21\n1.7e-17\n\n\nFLG\n98986\n-3.25\n-9.3\n1.4e-20\n4.8e-17\n\n\nSERPINB12\n46\n-4.12\n-9.3\n1.1e-20\n4.8e-17\n\n\nEDN2\n177\n-2.51\n-9.1\n8.8e-20\n2.4e-16\n\n\n\n\n\n\nlog2FoldChange of 1 means twice as much, and -1 means half as much.\npvalue is per feature, before any correction.\npadj is what you report."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#testing-13738-genes-at-once",
-    "href": "materials/2-workshop2/3-differential/slides.html#testing-13738-genes-at-once",
-    "title": "Differential Testing",
-    "section": "Testing 13,738 genes at once",
-    "text": "Testing 13,738 genes at once\nIf no gene differed at all, how many would have pvalue below 0.05?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAbout 687, one in every twenty genes. The spike in the first bar is the real signal sitting on top of that.\n\n\nThat is why padj exists. Benjamini-Hochberg controls a different error: of the features you call significant, roughly 5% are wrong."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#volcano-plot-anaerobe-against-lactobacillus",
-    "href": "materials/2-workshop2/3-differential/slides.html#volcano-plot-anaerobe-against-lactobacillus",
-    "title": "Differential Testing",
-    "section": "Volcano plot: anaerobe against Lactobacillus",
-    "text": "Volcano plot: anaerobe against Lactobacillus"
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#significant-genes-led-by-the-epithelial-barrier",
-    "href": "materials/2-workshop2/3-differential/slides.html#significant-genes-led-by-the-epithelial-barrier",
-    "title": "Differential Testing",
-    "section": "1,815 significant genes, led by the epithelial barrier",
-    "text": "1,815 significant genes, led by the epithelial barrier\n\n\n\n\n\n\n\n\n\n\ngene\nname\nlog2FoldChange\n\n\n\n\nMUC22\nmucin 22\n-2.74\n\n\nFAM25A\nfamily with sequence similarity 25 member A\n-3.54\n\n\nFLG\nfilaggrin\n-3.25\n\n\nSERPINB12\nserpin family B member 12\n-4.12\n\n\nEDN2\nendothelin 2\n-2.51\n\n\nXKRX\nXK related X-linked\n-2.26\n\n\nALOX12\narachidonate 12-lipoxygenase, 12S type\n-2.97\n\n\nLCE3D\nlate cornified envelope 3D\n-3.13\n\n\nESAM\nendothelial cell adhesion molecule\n-2.39\n\n\nCNFN\ncornifelin\n-2.19\n\n\n\n\n\nMucins, filaggrin and cornified envelope proteins are epithelial barrier genes, and all of these are higher where Lactobacillus dominates. We did not put that pattern there; it came with the real samples."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#always-plot-the-top-hit",
-    "href": "materials/2-workshop2/3-differential/slides.html#always-plot-the-top-hit",
-    "title": "Differential Testing",
-    "section": "Always plot the top hit",
-    "text": "Always plot the top hit\n\nEvery fold change here is negative, and every boxplot is higher on the Lactobacillus side, so the picture and the sign agree."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#check-the-direction-every-time",
-    "href": "materials/2-workshop2/3-differential/slides.html#check-the-direction-every-time",
-    "title": "Differential Testing",
-    "section": "Check the direction every time",
-    "text": "Check the direction every time\nGetting the direction of a contrast backwards is the most common error in this analysis. Nothing warns you and the table looks normal, so it regularly survives peer review.\n\nA boxplot of the top gene, like the one on the last slide, shows the direction at a glance."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#significant-is-not-the-same-as-large",
-    "href": "materials/2-workshop2/3-differential/slides.html#significant-is-not-the-same-as-large",
-    "title": "Differential Testing",
-    "section": "Significant is not the same as large",
-    "text": "Significant is not the same as large\n\n\n\n\n\n\n\n\n\n\n\n\ncontrast\nfeatures tested\nsamples\npadj &lt; 0.05\nand |log2FC| &gt; 1\n\n\n\n\ngenes ~ community (from the 16S table)\n13,738\n157\n1,815\n303\n\n\ngenes ~ birth outcome\n13,738\n157\n1,698\n50\n\n\ngenes ~ Nugent-defined BV\n13,721\n97\n7\n3\n\n\nspecies ~ birth outcome\n53\n157\n19\n19\n\n\n\n\n\n\nCompare the first two rows: a similar number of significant genes, and a very different number of large changes."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#similar-numbers-of-hits-different-kinds-of-hit",
-    "href": "materials/2-workshop2/3-differential/slides.html#similar-numbers-of-hits-different-kinds-of-hit",
-    "title": "Differential Testing",
-    "section": "Similar numbers of hits, different kinds of hit",
-    "text": "Similar numbers of hits, different kinds of hit\n\nCommunity moves a few hundred genes a long way. Birth outcome moves a great many genes a little.\n\nFriday we come back to this: thousands of significant genes, and still a poor prediction of who delivers early."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#a-warning-about-proxies",
-    "href": "materials/2-workshop2/3-differential/slides.html#a-warning-about-proxies",
-    "title": "Differential Testing",
-    "section": "A warning about proxies",
-    "text": "A warning about proxies\n\n\n\n\n\n\n\n\n\n\ngrouping\nsamples\ngenes at padj &lt; 0.05\n\n\n\n\nLactobacillus fraction, computed from the 16S table\n157\n1,815\n\n\nNugent score of 7 or more, read down a microscope\n97\n7\n\n\n\n\n\n\nBoth groupings ask whether the community is disturbed. The one built from data you already have finds hundreds of times as many genes."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#other-peoples-tools",
-    "href": "materials/2-workshop2/3-differential/slides.html#other-peoples-tools",
-    "title": "Differential Testing",
-    "section": "Other people’s tools",
-    "text": "Other people’s tools\nWe used DESeq2 on both tables, because the point this week is that both tables are count tables. Not everyone does that.\n\n\n\n\n\n\n\nfor gene counts\nfor microbial counts\n\n\n\n\nDESeq2, edgeR\nALDEx2, ANCOM-BC\n\n\nlimma-voom\nMaAsLin 2, corncob\n\n\n\nDESeq2, still, often\n\n\n\n\nThe microbiome tools exist because that table is compositional and sparse in a way gene tables are not. The case for them is worth reading before you publish a microbiome analysis."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#dont-test-the-species-table-with-community",
-    "href": "materials/2-workshop2/3-differential/slides.html#dont-test-the-species-table-with-community",
-    "title": "Differential Testing",
-    "section": "Don’t test the species table with community",
-    "text": "Don’t test the species table with community\nYou built community from the species table, so testing the gene table with it is fine.\n\nTesting the species table with it is circular. You would be asking whether samples with lots of Lactobacillus have lots of Lactobacillus."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#the-exercise-tests-species-against-birth-outcome",
-    "href": "materials/2-workshop2/3-differential/slides.html#the-exercise-tests-species-against-birth-outcome",
-    "title": "Differential Testing",
-    "section": "The exercise tests species against birth outcome",
-    "text": "The exercise tests species against birth outcome\n\n# the grouping comes from the clinic, not from either count table\ndds &lt;- DESeqDataSetFromMatrix(species_counts, sample_table, ~ outcome)\n\n\n\n\n\n\n\nspecies\nlog2FoldChange\npadj\n\n\n\n\nGardnerella swidsinskii leopoldii\n3.58\n3.8e-08\n\n\nPrevotella amnii\n5.14\n3.8e-08\n\n\nFannyhessea vaginae\n2.95\n8.1e-06\n\n\nGardnerella vaginalis\n3.16\n1.1e-05\n\n\nPrevotella sp 1\n4.33\n2.0e-05\n\n\n\n\n\n19 of 53 species are significant, and 18 of them are higher in the people who delivered early."
-  },
-  {
-    "objectID": "materials/2-workshop2/3-differential/slides.html#your-turn",
-    "href": "materials/2-workshop2/3-differential/slides.html#your-turn",
-    "title": "Differential Testing",
-    "section": "Your turn",
-    "text": "Your turn\nOpen notebooks/03-differential.qmd."
-  },
-  {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#from-one-feature-to-whole-samples",
-    "href": "materials/2-workshop2/4-ordination/slides.html#from-one-feature-to-whole-samples",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#from-one-feature-to-whole-samples",
+    "href": "materials/2-workshop2/3-ordination/slides.html#from-one-feature-to-whole-samples",
     "title": "Distances and Ordination",
     "section": "From one feature to whole samples",
-    "text": "From one feature to whole samples\nYesterday you tested one feature at a time. Today the question is how similar two whole samples are.\n\nThat gives one number per pair of samples, and then a picture of all of them at once."
+    "text": "From one feature to whole samples\nThis morning you looked at one sample or one feature at a time. This afternoon the question is how similar two whole samples are.\n\nThat gives one number per pair of samples, and then a picture of all of them at once."
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#a-distance-matrix",
-    "href": "materials/2-workshop2/4-ordination/slides.html#a-distance-matrix",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#a-distance-matrix",
+    "href": "materials/2-workshop2/3-ordination/slides.html#a-distance-matrix",
     "title": "Distances and Ordination",
     "section": "A distance matrix",
     "text": "A distance matrix\n\nThis toy has 12 samples. Ours has 471, which makes 110,685 pairs. The diagonal is zero, the matrix is symmetric, and there is nothing else in it."
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#choosing-a-distance",
-    "href": "materials/2-workshop2/4-ordination/slides.html#choosing-a-distance",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#choosing-a-distance",
+    "href": "materials/2-workshop2/3-ordination/slides.html#choosing-a-distance",
     "title": "Distances and Ordination",
     "section": "Choosing a distance",
     "text": "Choosing a distance\n\n\n\nBray-Curtis works on proportions and measures how much of the two communities overlaps. Abundant features dominate the answer.\nJaccard works on presence and absence: the share of features present in either sample that are present in both. Abundance is ignored entirely.\nAitchison is Euclidean distance on centred log-ratios, built for data where only the ratios between features mean anything.\n\n\nTwo invented samples:\n\n\n\n\n\nspecies\nA\nB\n\n\n\n\nL. crispatus\n900\n300\n\n\nG. vaginalis\n60\n400\n\n\nA. vaginae\n30\n200\n\n\nPrevotella\n10\n0\n\n\nSneathia\n0\n100\n\n\n\n\n\n\n\n\n\ndistance\nA to B\n\n\n\n\nBray-Curtis\n0.61\n\n\nJaccard\n0.4\n\n\nAitchison, pseudocount 1\n5.53"
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#the-microviz-pipeline",
-    "href": "materials/2-workshop2/4-ordination/slides.html#the-microviz-pipeline",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#the-microviz-pipeline",
+    "href": "materials/2-workshop2/3-ordination/slides.html#the-microviz-pipeline",
     "title": "Distances and Ordination",
     "section": "The microViz pipeline",
     "text": "The microViz pipeline\n\nlibrary(microViz)\nsource(\"R/count_tables.R\")\n\nas_counts(table = \"microbiome\") |&gt;\n  tax_transform(\"identity\", rank = \"species\") |&gt;   # knob 1: the transform\n  dist_calc(\"bray\") |&gt;                             # knob 2: the distance\n  ord_calc(\"PCoA\") |&gt;                              # knob 3: the layout\n  ord_plot(colour = \"community\")\n\n\n\n\n\n\n\n\n\ntransform\ndistance\n\n\n\n\n\"identity\" on proportions\n\"bray\"\n\n\n\"binary\"\n\"jaccard\"\n\n\n\"clr\"\n\"euclidean\""
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#the-species-ordination-under-each-distance",
-    "href": "materials/2-workshop2/4-ordination/slides.html#the-species-ordination-under-each-distance",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#the-species-ordination-under-each-distance",
+    "href": "materials/2-workshop2/3-ordination/slides.html#the-species-ordination-under-each-distance",
     "title": "Distances and Ordination",
     "section": "The species ordination under each distance",
     "text": "The species ordination under each distance\n\nAll three plots come from the same table. Which would you put in a paper, and how would you defend it?"
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#variation-held-by-each-axis",
-    "href": "materials/2-workshop2/4-ordination/slides.html#variation-held-by-each-axis",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#variation-held-by-each-axis",
+    "href": "materials/2-workshop2/3-ordination/slides.html#variation-held-by-each-axis",
     "title": "Distances and Ordination",
     "section": "Variation held by each axis",
     "text": "Variation held by each axis\n\nThe first two axes of the species ordination hold about 49% of the variation. For the genes, about 29%."
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#colour-the-same-plot-by-the-thing-you-care-about",
-    "href": "materials/2-workshop2/4-ordination/slides.html#colour-the-same-plot-by-the-thing-you-care-about",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#colour-the-same-plot-by-the-thing-you-care-about",
+    "href": "materials/2-workshop2/3-ordination/slides.html#colour-the-same-plot-by-the-thing-you-care-about",
     "title": "Distances and Ordination",
     "section": "Colour the same plot by the thing you care about",
     "text": "Colour the same plot by the thing you care about\n\n\nCommunity type splits the plot cleanly. Birth outcome is the label you actually care about, and by eye you cannot see it."
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#testing-a-label-with-permanova",
-    "href": "materials/2-workshop2/4-ordination/slides.html#testing-a-label-with-permanova",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#testing-a-label-with-permanova",
+    "href": "materials/2-workshop2/3-ordination/slides.html#testing-a-label-with-permanova",
     "title": "Distances and Ordination",
     "section": "Testing a label with PERMANOVA",
     "text": "Testing a label with PERMANOVA\n\nas_counts(table = \"microbiome\") |&gt;\n  tax_transform(\"identity\", rank = \"species\") |&gt;\n  dist_calc(\"bray\") |&gt;\n  dist_permanova(variables = c(\"community\", \"outcome\", \"time_point\", \"rnaseq_batch\"),\n                 n_perms = 999, by = \"margin\")\n\nPERMANOVA asks: if I shuffled this label across samples, how often would the groups end up this far apart by chance?\n\nR2 is the share of the total variation that the label explains."
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#the-species-table",
-    "href": "materials/2-workshop2/4-ordination/slides.html#the-species-table",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#the-species-table",
+    "href": "materials/2-workshop2/3-ordination/slides.html#the-species-table",
     "title": "Distances and Ordination",
     "section": "The species table",
     "text": "The species table\n\n\n\n\n\n\nterm\nR2\nF\np\n\n\n\n\ncommunity\n17.5%\n115.3\n0.005\n\n\noutcome\n0.5%\n3.0\n0.010\n\n\ntime_point\n8.7%\n28.8\n0.005\n\n\nrnaseq_batch\n0.2%\n1.0\n0.420\n\n\n\n\n\n\nCommunity type explains 17.5%. Enormous, and expected, since we defined it from this table.\nVisit explains 8.7%. These communities move over pregnancy.\nBirth outcome explains 0.5%. Significant and tiny.\nThe RNA sequencing batch explains 0.2%, not significant. It should not touch the 16S data."
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#now-the-gene-table",
-    "href": "materials/2-workshop2/4-ordination/slides.html#now-the-gene-table",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#now-the-gene-table",
+    "href": "materials/2-workshop2/3-ordination/slides.html#now-the-gene-table",
     "title": "Distances and Ordination",
     "section": "Now the gene table",
-    "text": "Now the gene table\nThe species code from this morning:\n\nas_counts(table = \"microbiome\") |&gt;\n  tax_transform(\"identity\", rank = \"species\") |&gt;\n  dist_calc(\"bray\") |&gt;\n  ord_calc(\"PCoA\") |&gt;\n  ord_plot(colour = \"community\")\n\nThe gene version filters out rare genes and swaps the transform, rank and distance. The rest is the same:\n\nas_counts(table = \"rnaseq\", min_count = 10, min_samples = 100) |&gt;\n  tax_transform(\"clr\", rank = \"symbol\") |&gt;\n  dist_calc(\"euclidean\") |&gt;\n  ord_calc(\"PCoA\") |&gt;\n  ord_plot(colour = \"community\")"
+    "text": "Now the gene table\nThe species code from earlier:\n\nas_counts(table = \"microbiome\") |&gt;\n  tax_transform(\"identity\", rank = \"species\") |&gt;\n  dist_calc(\"bray\") |&gt;\n  ord_calc(\"PCoA\") |&gt;\n  ord_plot(colour = \"community\")\n\nThe gene version filters out rare genes and swaps the transform, rank and distance. The rest is the same:\n\nas_counts(table = \"rnaseq\", min_count = 10, min_samples = 100) |&gt;\n  tax_transform(\"clr\", rank = \"symbol\") |&gt;\n  dist_calc(\"euclidean\") |&gt;\n  ord_calc(\"PCoA\") |&gt;\n  ord_plot(colour = \"community\")"
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#gene-ordination-community-outcome-batch",
-    "href": "materials/2-workshop2/4-ordination/slides.html#gene-ordination-community-outcome-batch",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#gene-ordination-community-outcome-batch",
+    "href": "materials/2-workshop2/3-ordination/slides.html#gene-ordination-community-outcome-batch",
     "title": "Distances and Ordination",
     "section": "Gene ordination: community, outcome, batch",
     "text": "Gene ordination: community, outcome, batch"
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#the-uncomfortable-table",
-    "href": "materials/2-workshop2/4-ordination/slides.html#the-uncomfortable-table",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#the-uncomfortable-table",
+    "href": "materials/2-workshop2/3-ordination/slides.html#the-uncomfortable-table",
     "title": "Distances and Ordination",
     "section": "The uncomfortable table",
     "text": "The uncomfortable table\n\n\nIn the gene table, the sequencing batch explains as much as the biology does, and it is just as significant."
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#dealing-with-batch",
-    "href": "materials/2-workshop2/4-ordination/slides.html#dealing-with-batch",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#dealing-with-batch",
+    "href": "materials/2-workshop2/3-ordination/slides.html#dealing-with-batch",
     "title": "Distances and Ordination",
     "section": "Dealing with batch",
     "text": "Dealing with batch\n\nThe ordination did not show it. PERMANOVA measured it.\nPut it in the model: ~ rnaseq_batch + outcome.\nIf batch is confounded with your groups, nothing fixes it, so check that first.\nNone of this is possible if nobody wrote the batch down."
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#significant-and-small",
-    "href": "materials/2-workshop2/4-ordination/slides.html#significant-and-small",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#significant-and-small",
+    "href": "materials/2-workshop2/3-ordination/slides.html#significant-and-small",
     "title": "Distances and Ordination",
     "section": "Significant and small",
-    "text": "Significant and small\nBirth outcome explains 1.9% of the variation in the gene table, p = 0.005.\n\n\nYesterday the same comparison gave 1,698 significant genes.\n\n\nBoth results hold. Many genes each shift a little, and small shifts in many genes still add up to a small share of a very large amount of variation. We come back to this on Friday."
+    "text": "Significant and small\nBirth outcome explains 1.9% of the variation in the gene table, p = 0.005.\n\n\nSmall is not the same as absent. Tomorrow afternoon you ask the same question one gene at a time, and the answer looks very different. Keep this number in mind until then."
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#in-the-exercises",
-    "href": "materials/2-workshop2/4-ordination/slides.html#in-the-exercises",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#in-the-exercises",
+    "href": "materials/2-workshop2/3-ordination/slides.html#in-the-exercises",
     "title": "Distances and Ordination",
     "section": "In the exercises",
     "text": "In the exercises\n\nBuild the species ordination three ways and argue about which to show\nPut a number on each label with PERMANOVA\nRun the identical pipeline on the gene table\nMeasure the batch effect and decide what you would do about it"
   },
   {
-    "objectID": "materials/2-workshop2/4-ordination/slides.html#your-turn",
-    "href": "materials/2-workshop2/4-ordination/slides.html#your-turn",
+    "objectID": "materials/2-workshop2/3-ordination/slides.html#your-turn",
+    "href": "materials/2-workshop2/3-ordination/slides.html#your-turn",
     "title": "Distances and Ordination",
     "section": "Your turn",
-    "text": "Your turn\nOpen notebooks/04-ordination.qmd."
+    "text": "Your turn\nOpen notebooks/03-ordination.qmd."
   },
   {
-    "objectID": "materials/2-workshop2/5-enrichment/slides.html#tuesday-you-produced-this",
-    "href": "materials/2-workshop2/5-enrichment/slides.html#tuesday-you-produced-this",
+    "objectID": "materials/2-workshop2/4-differential/slides.html#on-tuesday-you-built-a-column",
+    "href": "materials/2-workshop2/4-differential/slides.html#on-tuesday-you-built-a-column",
+    "title": "Differential Testing",
+    "section": "On Tuesday you built a column",
+    "text": "On Tuesday you built a column\n\n\n\n\n\ncommunity\nn\n\n\n\n\nanaerobe\n37\n\n\nlactobacillus\n120\n\n\n\n\n\nThese are the week 18 samples only, one per person.\n\nYou built community from the species table. Now we test the gene table with it."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#the-question",
+    "href": "materials/2-workshop2/4-differential/slides.html#the-question",
+    "title": "Differential Testing",
+    "section": "The question",
+    "text": "The question\nFor each feature, is its count systematically different between two groups of samples?\n\nIn the gene table we ask it about 14,000 times, once per gene."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#counts-break-the-assumptions-of-a-t-test",
+    "href": "materials/2-workshop2/4-differential/slides.html#counts-break-the-assumptions-of-a-t-test",
+    "title": "Differential Testing",
+    "section": "Counts break the assumptions of a t-test",
+    "text": "Counts break the assumptions of a t-test\n\n\n\nCounts can’t go below zero, and they are skewed.\nThe variance depends on the mean: a gene at 10 counts behaves differently from one at 10,000.\nLibrary sizes differ, so raw counts aren’t comparable between samples.\nEstimating each gene’s variance on its own, from 157 samples, ignores what the other 14,000 genes can tell you."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#the-variance-really-does-track-the-mean",
+    "href": "materials/2-workshop2/4-differential/slides.html#the-variance-really-does-track-the-mean",
+    "title": "Differential Testing",
+    "section": "The variance really does track the mean",
+    "text": "The variance really does track the mean\n\nFold changes for low-count genes are much less certain. A method built for counts uses this trend to borrow information across genes."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#running-deseq2",
+    "href": "materials/2-workshop2/4-differential/slides.html#running-deseq2",
+    "title": "Differential Testing",
+    "section": "Running DESeq2",
+    "text": "Running DESeq2\n\nlibrary(DESeq2)\n\ndds &lt;- DESeqDataSetFromMatrix(\n  countData = gene_counts,          # features x samples, raw counts\n  colData   = sample_table,         # one row per sample, same order\n  design    = ~ community\n)\n\ndds &lt;- DESeq(dds)\nres &lt;- results(dds, contrast = c(\"community\", \"anaerobe\", \"lactobacillus\"))\n\n\nGive it raw counts, never CPM and never logged values. DESeq2 does its own normalisation, and feeding it normalised data breaks it."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#three-things-distort-a-count",
+    "href": "materials/2-workshop2/4-differential/slides.html#three-things-distort-a-count",
+    "title": "Differential Testing",
+    "section": "Three things distort a count",
+    "text": "Three things distort a count\n\n\n\n\n\n\n\n\n\n\ngene table\nspecies table\ncomparing one feature across samples\n\n\n\n\ndepth\nsome samples sequenced deeper\nthe same\nmatters\n\n\nfeature yield\nlong genes collect more fragments\n16S copy number, primer fit\ncancels, because a gene is the same length in every sample\n\n\ncomposition\na few genes take up the reads\none species often takes 90% of them\nmatters, most of all for species\n\n\n\n\nDifferential testing compares one feature across samples, so it has to handle depth and composition. That is the job of the size factor, and it is why the size factor is not simply the library size.\n\n\nLength does matter when you compare two genes inside one sample. That is what TPM is for, and it is not what we are doing today."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#inside-deseq",
+    "href": "materials/2-workshop2/4-differential/slides.html#inside-deseq",
+    "title": "Differential Testing",
+    "section": "Inside DESeq()",
+    "text": "Inside DESeq()\n\nSize factors. One number per sample that puts the samples on a common scale, correcting for depth and composition.\nDispersion. Estimates each feature’s variance, then pulls extreme estimates toward the trend you just saw.\nTest. Fits a model per feature and tests whether the group term is zero."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#size-factors-the-median-of-ratios",
+    "href": "materials/2-workshop2/4-differential/slides.html#size-factors-the-median-of-ratios",
+    "title": "Differential Testing",
+    "section": "Size factors: the median of ratios",
+    "text": "Size factors: the median of ratios\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ngene\nA\nB\ngeometric mean\nA ÷ mean\nB ÷ mean\nnormalised A\nnormalised B\n\n\n\n\nG1\n100\n200\n141\n0.71\n1.41\n141\n141\n\n\nG2\n50\n100\n71\n0.71\n1.41\n71\n71\n\n\nG3\n300\n600\n424\n0.71\n1.41\n424\n424\n\n\nG4\n1000\n500\n707\n1.41\n0.71\n1414\n354\n\n\nsize factor\n\n\n\n0.71\n1.41\n\n\n\n\n\n\n\n\nEach gene’s geometric mean across samples is its reference: for G1, √(100 × 200) = 141.\nDivide each count by its reference. A sample’s size factor is the median of its ratios, so G4, the one gene that changed, cannot move it.\nDivide by the size factor. G1 to G3 now match, and only G4 differs.\n\n\nThe library sizes are 1,450 and 1,400, nearly equal, because G4 takes most of A’s reads. Dividing by library size would call G1 to G3 doubled in B.\n\nExample adapted from Afrah Khairallah’s slides on normalising gene expression."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#the-results-table",
+    "href": "materials/2-workshop2/4-differential/slides.html#the-results-table",
+    "title": "Differential Testing",
+    "section": "The results table",
+    "text": "The results table\n\n\n\n\n\ngene\nbaseMean\nlog2FoldChange\nstat\npvalue\npadj\n\n\n\n\nMUC22\n6710\n-2.74\n-9.9\n5.9e-23\n8.2e-19\n\n\nFAM25A\n128\n-3.54\n-9.5\n2.5e-21\n1.7e-17\n\n\nFLG\n98986\n-3.25\n-9.3\n1.4e-20\n4.8e-17\n\n\nSERPINB12\n46\n-4.12\n-9.3\n1.1e-20\n4.8e-17\n\n\nEDN2\n177\n-2.51\n-9.1\n8.8e-20\n2.4e-16\n\n\n\n\n\n\nlog2FoldChange of 1 means twice as much, and -1 means half as much.\npvalue is per feature, before any correction.\npadj is what you report."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#testing-13738-genes-at-once",
+    "href": "materials/2-workshop2/4-differential/slides.html#testing-13738-genes-at-once",
+    "title": "Differential Testing",
+    "section": "Testing 13,738 genes at once",
+    "text": "Testing 13,738 genes at once\nIf no gene differed at all, how many would have pvalue below 0.05?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAbout 687, one in every twenty genes. The spike in the first bar is the real signal sitting on top of that.\n\n\nThat is why padj exists. Benjamini-Hochberg controls a different error: of the features you call significant, roughly 5% are wrong."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#volcano-plot-anaerobe-against-lactobacillus",
+    "href": "materials/2-workshop2/4-differential/slides.html#volcano-plot-anaerobe-against-lactobacillus",
+    "title": "Differential Testing",
+    "section": "Volcano plot: anaerobe against Lactobacillus",
+    "text": "Volcano plot: anaerobe against Lactobacillus"
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#significant-genes-led-by-the-epithelial-barrier",
+    "href": "materials/2-workshop2/4-differential/slides.html#significant-genes-led-by-the-epithelial-barrier",
+    "title": "Differential Testing",
+    "section": "1,815 significant genes, led by the epithelial barrier",
+    "text": "1,815 significant genes, led by the epithelial barrier\n\n\n\n\n\n\n\n\n\n\ngene\nname\nlog2FoldChange\n\n\n\n\nMUC22\nmucin 22\n-2.74\n\n\nFAM25A\nfamily with sequence similarity 25 member A\n-3.54\n\n\nFLG\nfilaggrin\n-3.25\n\n\nSERPINB12\nserpin family B member 12\n-4.12\n\n\nEDN2\nendothelin 2\n-2.51\n\n\nXKRX\nXK related X-linked\n-2.26\n\n\nALOX12\narachidonate 12-lipoxygenase, 12S type\n-2.97\n\n\nLCE3D\nlate cornified envelope 3D\n-3.13\n\n\nESAM\nendothelial cell adhesion molecule\n-2.39\n\n\nCNFN\ncornifelin\n-2.19\n\n\n\n\n\nMucins, filaggrin and cornified envelope proteins are epithelial barrier genes, and all of these are higher where Lactobacillus dominates. We did not put that pattern there; it came with the real samples."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#always-plot-the-top-hit",
+    "href": "materials/2-workshop2/4-differential/slides.html#always-plot-the-top-hit",
+    "title": "Differential Testing",
+    "section": "Always plot the top hit",
+    "text": "Always plot the top hit\n\nEvery fold change here is negative, and every boxplot is higher on the Lactobacillus side, so the picture and the sign agree."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#check-the-direction-every-time",
+    "href": "materials/2-workshop2/4-differential/slides.html#check-the-direction-every-time",
+    "title": "Differential Testing",
+    "section": "Check the direction every time",
+    "text": "Check the direction every time\nGetting the direction of a contrast backwards is the most common error in this analysis. Nothing warns you and the table looks normal, so it regularly survives peer review.\n\nA boxplot of the top gene, like the one on the last slide, shows the direction at a glance."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#significant-is-not-the-same-as-large",
+    "href": "materials/2-workshop2/4-differential/slides.html#significant-is-not-the-same-as-large",
+    "title": "Differential Testing",
+    "section": "Significant is not the same as large",
+    "text": "Significant is not the same as large\n\n\n\n\n\n\n\n\n\n\n\n\ncontrast\nfeatures tested\nsamples\npadj &lt; 0.05\nand |log2FC| &gt; 1\n\n\n\n\ngenes ~ community (from the 16S table)\n13,738\n157\n1,815\n303\n\n\ngenes ~ birth outcome\n13,738\n157\n1,698\n50\n\n\ngenes ~ Nugent-defined BV\n13,721\n97\n7\n3\n\n\nspecies ~ birth outcome\n53\n157\n0\n0\n\n\n\n\n\n\nCompare the first two rows: a similar number of significant genes, and a very different number of large changes."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#similar-numbers-of-hits-different-kinds-of-hit",
+    "href": "materials/2-workshop2/4-differential/slides.html#similar-numbers-of-hits-different-kinds-of-hit",
+    "title": "Differential Testing",
+    "section": "Similar numbers of hits, different kinds of hit",
+    "text": "Similar numbers of hits, different kinds of hit\n\nCommunity moves a few hundred genes a long way. Birth outcome moves a great many genes a little."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#yesterday-birth-outcome-looked-small",
+    "href": "materials/2-workshop2/4-differential/slides.html#yesterday-birth-outcome-looked-small",
+    "title": "Differential Testing",
+    "section": "Yesterday, birth outcome looked small",
+    "text": "Yesterday, birth outcome looked small\nPERMANOVA said birth outcome explains 1.9% of the variation in the gene table, p = 0.005.\n\nToday the same question gives 1,698 significant genes.\n\n\nBoth results hold. Many genes each shift a little, and small shifts in many genes still add up to a small share of a very large amount of variation.\n\n\nFriday we come back to this: thousands of significant genes, and still a poor prediction of who delivers early."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#a-warning-about-proxies",
+    "href": "materials/2-workshop2/4-differential/slides.html#a-warning-about-proxies",
+    "title": "Differential Testing",
+    "section": "A warning about proxies",
+    "text": "A warning about proxies\n\n\n\n\n\n\n\n\n\n\ngrouping\nsamples\ngenes at padj &lt; 0.05\n\n\n\n\nLactobacillus fraction, computed from the 16S table\n157\n1,815\n\n\nNugent score of 7 or more, read down a microscope\n97\n7\n\n\n\n\n\n\nBoth groupings ask whether the community is disturbed. The one built from data you already have finds hundreds of times as many genes."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#dont-test-the-species-table-with-community",
+    "href": "materials/2-workshop2/4-differential/slides.html#dont-test-the-species-table-with-community",
+    "title": "Differential Testing",
+    "section": "Don’t test the species table with community",
+    "text": "Don’t test the species table with community\nYou built community from the species table, so testing the gene table with it is fine.\n\nTesting the species table with it is circular. You would be asking whether samples with lots of Lactobacillus have lots of Lactobacillus."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#the-exercise-tests-species-against-birth-outcome",
+    "href": "materials/2-workshop2/4-differential/slides.html#the-exercise-tests-species-against-birth-outcome",
+    "title": "Differential Testing",
+    "section": "The exercise tests species against birth outcome",
+    "text": "The exercise tests species against birth outcome\n\n# the grouping comes from the clinic, not from either count table\ndds &lt;- DESeqDataSetFromMatrix(species_counts, sample_table, ~ outcome)\ndds &lt;- DESeq(dds)\n\n\nBefore you trust the result, look at how the size factors were made."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#median-of-ratios-needs-features-found-in-every-sample",
+    "href": "materials/2-workshop2/4-differential/slides.html#median-of-ratios-needs-features-found-in-every-sample",
+    "title": "Differential Testing",
+    "section": "Median of ratios needs features found in every sample",
+    "text": "Median of ratios needs features found in every sample\n\n\n\n\n\n\n\ntable\nfeatures tested\nin all 157 samples\n\n\n\n\ngenes\n13,738\n12,112\n\n\nspecies\n53\n1\n\n\n\n\n\nA geometric mean with a zero in it is zero, so DESeq2 leaves those features out of the size factors.\n\nIn the species table that leaves one species, L. iners."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#the-normalisation-decided-the-result",
+    "href": "materials/2-workshop2/4-differential/slides.html#the-normalisation-decided-the-result",
+    "title": "Differential Testing",
+    "section": "The normalisation decided the result",
+    "text": "The normalisation decided the result\n\ndds &lt;- DESeqDataSetFromMatrix(species_counts, sample_table, ~ outcome)\ndds &lt;- estimateSizeFactors(dds, type = \"poscounts\")   # built for tables with zeros\ndds &lt;- DESeq(dds)\n\n\n\n\n\n\n\n\n\n\n\nsize factors\nspecies at padj &lt; 0.05\nhigher in preterm\n\n\n\n\ndefault: median of ratios, from L. iners alone\n19\n18\n\n\nposcounts: uses every species\n0\n0\n\n\n\n\n\n\nThe default run tested each species against L. iners. Nearly all of its hits are familiar BV organisms, which is why nobody would have questioned it.\n\n\nAt one visit, no single species separates preterm from term. That matches the field: preterm birth has modest associations with community type and few clear ones with individual taxa. Check single features, then look beyond them."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#other-peoples-tools",
+    "href": "materials/2-workshop2/4-differential/slides.html#other-peoples-tools",
+    "title": "Differential Testing",
+    "section": "Other people’s tools",
+    "text": "Other people’s tools\nWe used DESeq2 on both tables, because the point this week is that both tables are count tables. Not everyone does that.\n\n\n\n\n\n\n\nfor gene counts\nfor microbial counts\n\n\n\n\nDESeq2, edgeR\nALDEx2, ANCOM-BC\n\n\nlimma-voom\nMaAsLin 2, corncob\n\n\n\nDESeq2, still, often\n\n\n\n\nThe microbiome tools exist because that table is compositional and sparse in a way gene tables are not, as the size factors just showed. The case for them is worth reading before you publish a microbiome analysis."
+  },
+  {
+    "objectID": "materials/2-workshop2/4-differential/slides.html#your-turn",
+    "href": "materials/2-workshop2/4-differential/slides.html#your-turn",
+    "title": "Differential Testing",
+    "section": "Your turn",
+    "text": "Your turn\nOpen notebooks/04-differential.qmd."
+  },
+  {
+    "objectID": "materials/2-workshop2/5-enrichment/slides.html#yesterday-you-produced-this",
+    "href": "materials/2-workshop2/5-enrichment/slides.html#yesterday-you-produced-this",
     "title": "Sets and Enrichment",
-    "section": "Tuesday you produced this",
-    "text": "Tuesday you produced this\n1,698 genes with an adjusted p-value below 0.05.\n\nWhat is the finding?"
+    "section": "Yesterday you produced this",
+    "text": "Yesterday you produced this\n1,698 genes with an adjusted p-value below 0.05.\n\nWhat is the finding?"
   },
   {
     "objectID": "materials/2-workshop2/5-enrichment/slides.html#a-gene-list-is-hard-to-report",
@@ -4320,7 +4367,7 @@
     "href": "materials/2-workshop2/5-enrichment/slides.html#now-try-the-community-contrast",
     "title": "Sets and Enrichment",
     "section": "Now try the community contrast",
-    "text": "Now try the community contrast\nRun the same analysis on Tuesday’s other contrast, anaerobe versus Lactobacillus.\n\n\n\n\n\n\nset\nsize\nNES\npadj\n\n\n\n\nEstrogen response early\n189\n-2.06\n2.3e-08\n\n\nTnfa signaling via nfkb\n195\n-1.87\n4.7e-06\n\n\nEstrogen response late\n184\n-1.76\n1.0e-04\n\n\nP53 pathway\n190\n-1.70\n2.0e-04\n\n\nHypoxia\n177\n-1.74\n3.0e-04\n\n\nIl2 stat5 signaling\n190\n-1.64\n6.5e-04\n\n\n\n\n\n\n\n18 of 50 sets are significant, and 17 of those point the same way. Does that look like biology to you?"
+    "text": "Now try the community contrast\nRun the same analysis on yesterday’s other contrast, anaerobe versus Lactobacillus.\n\n\n\n\n\n\nset\nsize\nNES\npadj\n\n\n\n\nEstrogen response early\n189\n-2.06\n2.3e-08\n\n\nTnfa signaling via nfkb\n195\n-1.87\n4.7e-06\n\n\nEstrogen response late\n184\n-1.76\n1.0e-04\n\n\nP53 pathway\n190\n-1.70\n2.0e-04\n\n\nHypoxia\n177\n-1.74\n3.0e-04\n\n\nIl2 stat5 signaling\n190\n-1.64\n6.5e-04\n\n\n\n\n\n\n\n18 of 50 sets are significant, and 17 of those point the same way. Does that look like biology to you?"
   },
   {
     "objectID": "materials/2-workshop2/5-enrichment/slides.html#checking-that-the-statistics-are-centred",
@@ -4383,14 +4430,14 @@
     "href": "materials/2-workshop2/5-enrichment/slides.html#rank-species-test-taxonomy",
     "title": "Sets and Enrichment",
     "section": "Rank species, test taxonomy",
-    "text": "Rank species, test taxonomy\n\n# the same fgsea call; only the sets changed\ngenus_sets &lt;- split(species_results$feature, species_results$Genus)\nfgsea(genus_sets, species_stat, minSize = 2, maxSize = 50)\n\n\n\n\n\n\n\n\ngenus\nsize\nNES\npadj\n\n\n\n\nGardnerella\n3\n1.50\n0.03\n\n\nCorynebacterium\n4\n-1.48\n0.25\n\n\nActinomyces\n2\n-1.41\n0.27\n\n\nDialister\n2\n1.29\n0.27\n\n\nPorphyromonas\n2\n1.19\n0.45\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGardnerella comes out: two of its three species rank 1st and 4th toward preterm, which is enough for a three-member set."
+    "text": "Rank species, test taxonomy\n\n# the same fgsea call; only the sets changed\ngenus_sets &lt;- split(species_results$feature, species_results$Genus)\nfgsea(genus_sets, species_stat, minSize = 2, maxSize = 50)\n\n\n\n\n\n\n\n\ngenus\nsize\nNES\npadj\n\n\n\n\nGardnerella\n3\n1.58\n0.12\n\n\nMegasphaera\n2\n-1.26\n0.62\n\n\nMobiluncus\n2\n-1.30\n0.62\n\n\nSneathia\n2\n1.18\n0.80\n\n\nActinomyces\n2\n-0.88\n0.84\n\n\nCorynebacterium\n4\n-1.05\n0.84\n\n\nDialister\n2\n0.82\n0.84\n\n\nPorphyromonas\n2\n-1.02\n0.84\n\n\nPrevotella\n12\n0.79\n0.84\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGardnerella leads, but only one of its three species ranks near the top, and at padj 0.12 it does not pass. With no species significant on its own, a set has little to gather."
   },
   {
     "objectID": "materials/2-workshop2/5-enrichment/slides.html#set-sizes-on-the-two-tables",
     "href": "materials/2-workshop2/5-enrichment/slides.html#set-sizes-on-the-two-tables",
     "title": "Sets and Enrichment",
     "section": "Set sizes on the two tables",
-    "text": "Set sizes on the two tables\n\n\n\n\n\n\n\n\ngenes\nspecies\n\n\n\n\nfeatures ranked\n13,738\n53\n\n\nsets tested\n50\n10\n\n\ntypical set size\nabout 190\n2 to 12\n\n\nsets significant\n26\n1\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSet-level analysis pays off when you have thousands of features and hundreds of curated groups. With 53 species in ten genera, you are better off reading the species list."
+    "text": "Set sizes on the two tables\n\n\n\n\n\n\n\n\ngenes\nspecies\n\n\n\n\nfeatures ranked\n13,738\n53\n\n\nsets tested\n50\n10\n\n\ntypical set size\nabout 190\n2 to 12\n\n\nsets significant\n26\n0\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSet-level analysis pays off when you have thousands of features and hundreds of curated groups. With 53 species in ten genera, you are better off reading the species list."
   },
   {
     "objectID": "materials/2-workshop2/5-enrichment/slides.html#choosing-a-method-for-your-table",
@@ -4474,7 +4521,7 @@
     "href": "materials/2-workshop2/6-integration/slides.html#significance-and-prediction-are-different-questions",
     "title": "Putting the Two Tables Together",
     "section": "Significance and prediction are different questions",
-    "text": "Significance and prediction are different questions\n\n\nOn Tuesday, preterm versus term gave 1,698 significant genes.\n\nToday, those same genes predict the outcome with an AUC of 0.71.\n\n\nSignificance asks whether the groups differ on average.\nAUC asks whether you can tell which person is in which group.\nMany small differences can give you the first without the second."
+    "text": "Significance and prediction are different questions\n\n\nOn Wednesday, preterm versus term gave 1,698 significant genes.\n\nToday, those same genes predict the outcome with an AUC of 0.71.\n\n\nSignificance asks whether the groups differ on average.\nAUC asks whether you can tell which person is in which group.\nMany small differences can give you the first without the second."
   },
   {
     "objectID": "materials/2-workshop2/6-integration/slides.html#choose-the-method-from-the-goal",

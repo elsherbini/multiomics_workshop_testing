@@ -205,14 +205,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../materials/2-workshop2/3-differential/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><b>Module 3</b>: Differential Testing</span></a>
+  <a href="../../../materials/2-workshop2/3-ordination/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 3</b>: Distances and Ordination</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../materials/2-workshop2/4-ordination/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><b>Module 4</b>: Distances and Ordination</span></a>
+  <a href="../../../materials/2-workshop2/4-differential/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 4</b>: Differential Testing</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -384,12 +384,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td>Wednesday AM</td>
 <td>3 hours</td>
-<td>meet, read the data, agree a question, first analysis</td>
+<td>meet, read the data, agree a question, first analysis: Tuesday’s ordination and PERMANOVA are a good place to start</td>
 </tr>
 <tr class="even">
 <td>Thursday AM</td>
 <td>3 hours</td>
-<td>finish the analysis, build the figures, write the talk</td>
+<td>add Wednesday’s differential tests, finish the analysis, build the figures, write the talk</td>
 </tr>
 <tr class="odd">
 <td>Friday AM</td>
@@ -492,6 +492,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>Check your sample table and your count matrix are in the same order before you run any test.</li>
 <li>Decide your filter before you look at the result, and write down why.</li>
+<li>On a species table, give DESeq2 <code>poscounts</code> size factors and check how many species they were built from.</li>
 <li>Define a grouping from one table and test the other, never the same table twice.</li>
 <li>Look at how lopsided a ranking is before you believe an enrichment.</li>
 <li>Your dataset has an <code>rnaseq_batch</code> column. Cross-tabulate it against your groups early, and find out whether you have a confound rather than a finding.</li>

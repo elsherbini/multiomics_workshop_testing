@@ -203,14 +203,14 @@
 
 <section id="title-slide" data-background-color="#f8f5f0" data-background-image="../../../site_libs/quarto-contrib/quarto-project/qmdr/qmdrslides/durban-watercolor-gradient.png" data-background-size="contain" class="quarto-title-block center">
   <h1 class="title">Differential Testing</h1>
-  <p class="subtitle">Workshop 2, Module 3</p>
+  <p class="subtitle">Workshop 2, Module 4</p>
 
 <div class="quarto-title-authors">
 </div>
 
 </section>
-<section id="this-morning-you-built-a-column" class="slide level2 center">
-<h2>This morning you built a column</h2>
+<section id="on-tuesday-you-built-a-column" class="slide level2 center">
+<h2>On Tuesday you built a column</h2>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top">
@@ -290,55 +290,152 @@
 <p>Give it raw counts, never CPM and never logged values. DESeq2 does its own normalisation, and feeding it normalised data breaks it.</p>
 </div>
 </section>
-<section id="inside-deseq" class="slide level2">
-<h2>Inside <code>DESeq()</code></h2>
-<div class="columns">
-<div class="column" style="width:55%;">
-<ol type="1">
-<li class="fragment"><strong>Size factors.</strong> Works out how deeply each sample was sequenced, so samples become comparable.</li>
-<li class="fragment"><strong>Dispersion.</strong> Estimates each feature’s variance, then pulls extreme estimates toward the trend you just saw.</li>
-<li class="fragment"><strong>Test.</strong> Fits a model per feature and tests whether the group term is zero.</li>
-</ol>
-</div><div class="column" style="width:45%;">
-<div style="font-size: 0.75em;">
-<p>A toy gene in three samples. Sample C was sequenced twice as deeply.</p>
-<div class="cell">
-<div class="cell-output-display">
+<section id="three-things-distort-a-count" class="slide level2 smaller">
+<h2>Three things distort a count</h2>
 <table class="caption-top">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 24%">
+<col style="width: 24%">
+<col style="width: 36%">
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">sample</th>
-<th style="text-align: right;">raw</th>
-<th style="text-align: right;">size factor</th>
-<th style="text-align: right;">normalised</th>
+<th></th>
+<th>gene table</th>
+<th>species table</th>
+<th>comparing one feature across samples</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">A</td>
-<td style="text-align: right;">50</td>
-<td style="text-align: right;">0.79</td>
-<td style="text-align: right;">63</td>
+<td><strong>depth</strong></td>
+<td>some samples sequenced deeper</td>
+<td>the same</td>
+<td>matters</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">B</td>
-<td style="text-align: right;">48</td>
-<td style="text-align: right;">0.79</td>
-<td style="text-align: right;">60</td>
+<td><strong>feature yield</strong></td>
+<td>long genes collect more fragments</td>
+<td>16S copy number, primer fit</td>
+<td>cancels, because a gene is the same length in every sample</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">C</td>
+<td><strong>composition</strong></td>
+<td>a few genes take up the reads</td>
+<td>one species often takes 90% of them</td>
+<td>matters, most of all for species</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p>Differential testing compares one feature across samples, so it has to handle depth and composition. That is the job of the size factor, and it is why the size factor is not simply the library size.</p>
+</div>
+<div class="fragment">
+<p>Length does matter when you compare two genes inside one sample. That is what TPM is for, and it is not what we are doing today.</p>
+</div>
+</section>
+<section id="inside-deseq" class="slide level2">
+<h2>Inside <code>DESeq()</code></h2>
+<ol type="1">
+<li class="fragment"><strong>Size factors.</strong> One number per sample that puts the samples on a common scale, correcting for depth and composition.</li>
+<li class="fragment"><strong>Dispersion.</strong> Estimates each feature’s variance, then pulls extreme estimates toward the trend you just saw.</li>
+<li class="fragment"><strong>Test.</strong> Fits a model per feature and tests whether the group term is zero.</li>
+</ol>
+</section>
+<section id="size-factors-the-median-of-ratios" class="slide level2 smaller">
+<h2>Size factors: the median of ratios</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 17%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 15%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">gene</th>
+<th style="text-align: right;">A</th>
+<th style="text-align: right;">B</th>
+<th style="text-align: right;">geometric mean</th>
+<th style="text-align: right;">A ÷ mean</th>
+<th style="text-align: right;">B ÷ mean</th>
+<th style="text-align: right;">normalised A</th>
+<th style="text-align: right;">normalised B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">G1</td>
 <td style="text-align: right;">100</td>
-<td style="text-align: right;">1.59</td>
-<td style="text-align: right;">63</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">141</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">G2</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">71</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">G3</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">600</td>
+<td style="text-align: right;">424</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">424</td>
+<td style="text-align: right;">424</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">G4</td>
+<td style="text-align: right;">1000</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">707</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">1414</td>
+<td style="text-align: right;">354</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>size factor</strong></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><strong>0.71</strong></td>
+<td style="text-align: right;"><strong>1.41</strong></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p>Dividing by the size factor puts the three samples back on one scale.</p>
+<ol type="1">
+<li class="fragment">Each gene’s geometric mean across samples is its reference: for G1, √(100 × 200) = 141.</li>
+<li class="fragment">Divide each count by its reference. A sample’s size factor is the median of its ratios, so G4, the one gene that changed, cannot move it.</li>
+<li class="fragment">Divide by the size factor. G1 to G3 now match, and only G4 differs.</li>
+</ol>
+<div class="fragment">
+<p>The library sizes are 1,450 and 1,400, nearly equal, because G4 takes most of A’s reads. Dividing by library size would call G1 to G3 doubled in B.</p>
+<div style="font-size: 0.7em; color: #666;">
+<p>Example adapted from Afrah Khairallah’s slides on normalising gene expression.</p>
 </div>
-</div></div>
+</div>
 </section>
 <section id="the-results-table" class="slide level2">
 <h2>The results table</h2>
@@ -568,8 +665,8 @@
 <td style="text-align: left;">species ~ birth outcome</td>
 <td style="text-align: right;">53</td>
 <td style="text-align: right;">157</td>
-<td style="text-align: right;">19</td>
-<td style="text-align: right;">19</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
 </tr>
 </tbody>
 </table>
@@ -583,6 +680,16 @@
 <h2>Similar numbers of hits, different kinds of hit</h2>
 
 <img data-src="slides_files/figure-revealjs/unnamed-chunk-12-1.png" width="1344" class="r-stretch"><p>Community moves a few hundred genes a long way. Birth outcome moves a great many genes a little.</p>
+</section>
+<section id="yesterday-birth-outcome-looked-small" class="slide level2">
+<h2>Yesterday, birth outcome looked small</h2>
+<p>PERMANOVA said birth outcome explains 1.9% of the variation in the gene table, p = 0.005.</p>
+<div class="fragment">
+<p>Today the same question gives 1,698 significant genes.</p>
+</div>
+<div class="fragment">
+<p>Both results hold. Many genes each shift a little, and small shifts in many genes still add up to a small share of a very large amount of variation.</p>
+</div>
 <div class="fragment">
 <p>Friday we come back to this: thousands of significant genes, and still a poor prediction of who delivers early.</p>
 </div>
@@ -623,6 +730,113 @@
 <p>Both groupings ask whether the community is disturbed. The one built from data you already have finds hundreds of times as many genes.</p>
 </div>
 </section>
+<section id="dont-test-the-species-table-with-community" class="slide level2 center">
+<h2>Don’t test the species table with <code>community</code></h2>
+<p>You built <code>community</code> from the species table, so testing the <strong>gene</strong> table with it is fine.</p>
+<div class="fragment">
+<p>Testing the <strong>species</strong> table with it is circular. You would be asking whether samples with lots of Lactobacillus have lots of Lactobacillus.</p>
+</div>
+</section>
+<section id="the-exercise-tests-species-against-birth-outcome" class="slide level2">
+<h2>The exercise tests species against birth outcome</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="co"># the grouping comes from the clinic, not from either count table</span></span>
+<span id="cb2-2"><a></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromMatrix</span>(species_counts, sample_table, <span class="sc">~</span> outcome)</span>
+<span id="cb2-3"><a></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(dds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="fragment">
+<p>Before you trust the result, look at how the size factors were made.</p>
+</div>
+</section>
+<section id="median-of-ratios-needs-features-found-in-every-sample" class="slide level2">
+<h2>Median of ratios needs features found in every sample</h2>
+<div class="columns">
+<div class="column" style="width:45%;">
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">table</th>
+<th style="text-align: right;">features tested</th>
+<th style="text-align: right;">in all 157 samples</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">genes</td>
+<td style="text-align: right;">13,738</td>
+<td style="text-align: right;">12,112</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">species</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>A geometric mean with a zero in it is zero, so DESeq2 leaves those features out of the size factors.</p>
+<div class="fragment">
+<p>In the species table that leaves one species, <em>L. iners</em>.</p>
+</div>
+</div><div class="column" style="width:55%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-16-1.png" width="624"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="the-normalisation-decided-the-result" class="slide level2">
+<h2>The normalisation decided the result</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromMatrix</span>(species_counts, sample_table, <span class="sc">~</span> outcome)</span>
+<span id="cb3-2"><a></a>dds <span class="ot">&lt;-</span> <span class="fu">estimateSizeFactors</span>(dds, <span class="at">type =</span> <span class="st">"poscounts"</span>)   <span class="co"># built for tables with zeros</span></span>
+<span id="cb3-3"><a></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(dds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top">
+<colgroup>
+<col style="width: 53%">
+<col style="width: 26%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">size factors</th>
+<th style="text-align: right;">species at padj &lt; 0.05</th>
+<th style="text-align: right;">higher in preterm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">default: median of ratios, from L. iners alone</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">poscounts: uses every species</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="fragment">
+<p>The default run tested each species against <em>L. iners</em>. Nearly all of its hits are familiar BV organisms, which is why nobody would have questioned it.</p>
+</div>
+<div class="fragment">
+<p>At one visit, no single species separates preterm from term. That matches the field: preterm birth has modest associations with community type and few clear ones with individual taxa. Check single features, then look beyond them.</p>
+</div>
+</section>
 <section id="other-peoples-tools" class="slide level2">
 <h2>Other people’s tools</h2>
 <p>We used DESeq2 on both tables, because the point this week is that both tables are count tables. Not everyone does that.</p>
@@ -653,72 +867,15 @@
 </tbody>
 </table>
 <div class="fragment">
-<p>The microbiome tools exist because that table is compositional and sparse in a way gene tables are not. The case for them is worth reading before you publish a microbiome analysis.</p>
-</div>
-</section>
-<section id="dont-test-the-species-table-with-community" class="slide level2 center">
-<h2>Don’t test the species table with <code>community</code></h2>
-<p>You built <code>community</code> from the species table, so testing the <strong>gene</strong> table with it is fine.</p>
-<div class="fragment">
-<p>Testing the <strong>species</strong> table with it is circular. You would be asking whether samples with lots of Lactobacillus have lots of Lactobacillus.</p>
-</div>
-</section>
-<section id="the-exercise-tests-species-against-birth-outcome" class="slide level2">
-<h2>The exercise tests species against birth outcome</h2>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="co"># the grouping comes from the clinic, not from either count table</span></span>
-<span id="cb2-2"><a></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromMatrix</span>(species_counts, sample_table, <span class="sc">~</span> outcome)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="fragment">
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th style="text-align: left;">species</th>
-<th style="text-align: right;">log2FoldChange</th>
-<th style="text-align: right;">padj</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Gardnerella swidsinskii leopoldii</td>
-<td style="text-align: right;">3.58</td>
-<td style="text-align: right;">3.8e-08</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Prevotella amnii</td>
-<td style="text-align: right;">5.14</td>
-<td style="text-align: right;">3.8e-08</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Fannyhessea vaginae</td>
-<td style="text-align: right;">2.95</td>
-<td style="text-align: right;">8.1e-06</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Gardnerella vaginalis</td>
-<td style="text-align: right;">3.16</td>
-<td style="text-align: right;">1.1e-05</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Prevotella sp 1</td>
-<td style="text-align: right;">4.33</td>
-<td style="text-align: right;">2.0e-05</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>19 of 53 species are significant, and 18 of them are higher in the people who delivered early.</p>
+<p>The microbiome tools exist because that table is compositional and sparse in a way gene tables are not, as the size factors just showed. The case for them is worth reading before you publish a microbiome analysis.</p>
 </div>
 </section>
 <section id="your-turn" class="slide level2 your-turn">
 <h2>Your turn</h2>
-<p>Open <code>notebooks/03-differential.qmd</code>.</p>
+<p>Open <code>notebooks/04-differential.qmd</code>.</p>
 <div class="cell">
 <div class="cell-output-display">
-<countdown-timer class="countdown" id="timer_58a44b6a" minutes="45" seconds="0" update-every="1" play-sound="true" tabindex="0" style="bottom:0;left:0;"></countdown-timer>
+<countdown-timer class="countdown" id="timer_0146af2e" minutes="45" seconds="0" update-every="1" play-sound="true" tabindex="0" style="bottom:0;left:0;"></countdown-timer>
 </div>
 </div>
 

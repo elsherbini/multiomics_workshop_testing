@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Distances and Ordination – Data Science for Biology Workshop Series</title>
+<title>Differential Testing – Data Science for Biology Workshop Series</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -69,7 +69,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
 <link href="../../../materials/2-workshop2/5-enrichment/index.html" rel="next">
-<link href="../../../materials/2-workshop2/3-differential/index.html" rel="prev">
+<link href="../../../materials/2-workshop2/3-ordination/index.html" rel="prev">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/popper.min.js"></script>
@@ -164,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../materials/2-workshop2/0-welcome/index.html"><b>2. Multiomics: Microbiome and Host Gene Expression</b></a></li><li class="breadcrumb-item"><a href="../../../materials/2-workshop2/4-ordination/index.html"><b>Module 4</b>: Distances and Ordination</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../materials/2-workshop2/0-welcome/index.html"><b>2. Multiomics: Microbiome and Host Gene Expression</b></a></li><li class="breadcrumb-item"><a href="../../../materials/2-workshop2/4-differential/index.html"><b>Module 4</b>: Differential Testing</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -205,14 +205,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../materials/2-workshop2/3-differential/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><b>Module 3</b>: Differential Testing</span></a>
+  <a href="../../../materials/2-workshop2/3-ordination/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><b>Module 3</b>: Distances and Ordination</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../materials/2-workshop2/4-ordination/index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><b>Module 4</b>: Distances and Ordination</span></a>
+  <a href="../../../materials/2-workshop2/4-differential/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><b>Module 4</b>: Differential Testing</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -330,14 +330,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#slides" id="toc-slides" class="nav-link active" data-scroll-target="#slides">Slides</a></li>
-  <li><a href="#exercise-1-distances-and-ordination-on-the-species-table" id="toc-exercise-1-distances-and-ordination-on-the-species-table" class="nav-link" data-scroll-target="#exercise-1-distances-and-ordination-on-the-species-table">Exercise 1: Distances and ordination on the species table</a>
+  <li><a href="#exercise-1-test-the-gene-table-with-a-grouping-from-the-species-table" id="toc-exercise-1-test-the-gene-table-with-a-grouping-from-the-species-table" class="nav-link" data-scroll-target="#exercise-1-test-the-gene-table-with-a-grouping-from-the-species-table">Exercise 1: Test the gene table with a grouping from the species table</a>
   <ul class="collapse">
   <li><a href="#part-1-predict" id="toc-part-1-predict" class="nav-link" data-scroll-target="#part-1-predict">Part 1: Predict</a></li>
   <li><a href="#part-2-build" id="toc-part-2-build" class="nav-link" data-scroll-target="#part-2-build">Part 2: Build</a></li>
   <li><a href="#part-3-check-the-agent" id="toc-part-3-check-the-agent" class="nav-link" data-scroll-target="#part-3-check-the-agent">Part 3: Check the agent</a></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
   </ul></li>
-  <li><a href="#exercise-2-the-identical-pipeline-on-14000-genes" id="toc-exercise-2-the-identical-pipeline-on-14000-genes" class="nav-link" data-scroll-target="#exercise-2-the-identical-pipeline-on-14000-genes">Exercise 2: The identical pipeline on 14,000 genes</a>
+  <li><a href="#exercise-2-the-same-test-on-the-species-table" id="toc-exercise-2-the-same-test-on-the-species-table" class="nav-link" data-scroll-target="#exercise-2-the-same-test-on-the-species-table">Exercise 2: The same test, on the species table</a>
   <ul class="collapse">
   <li><a href="#part-1-predict-1" id="toc-part-1-predict-1" class="nav-link" data-scroll-target="#part-1-predict-1">Part 1: Predict</a></li>
   <li><a href="#part-2-build-1" id="toc-part-2-build-1" class="nav-link" data-scroll-target="#part-2-build-1">Part 2: Build</a></li>
@@ -345,15 +345,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#part-4-reach-optional" id="toc-part-4-reach-optional" class="nav-link" data-scroll-target="#part-4-reach-optional">Part 4: Reach (optional)</a></li>
   <li><a href="#discussion-1" id="toc-discussion-1" class="nav-link" data-scroll-target="#discussion-1">Discussion</a></li>
   </ul></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../materials/2-workshop2/0-welcome/index.html"><b>2. Multiomics: Microbiome and Host Gene Expression</b></a></li><li class="breadcrumb-item"><a href="../../../materials/2-workshop2/4-ordination/index.html"><b>Module 4</b>: Distances and Ordination</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../materials/2-workshop2/0-welcome/index.html"><b>2. Multiomics: Microbiome and Host Gene Expression</b></a></li><li class="breadcrumb-item"><a href="../../../materials/2-workshop2/4-differential/index.html"><b>Module 4</b>: Differential Testing</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Distances and Ordination</h1>
+<h1 class="title">Differential Testing</h1>
 </div>
 
 
@@ -371,109 +372,133 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <blockquote class="blockquote">
-<p>This module measures how similar whole samples are to each other. You pick a distance, draw the ordination, then put a number on whatever pattern you think you see.</p>
+<p>We test which features differ between two groups of samples, using one method on both tables, and then look closely at how much a significant result is worth.</p>
 </blockquote>
 <section id="slides" class="level2">
 <h2 class="anchored" data-anchor-id="slides">Slides</h2>
-<p><a href="../../../materials/2-workshop2/4-ordination/slides.html">Make slides full screen</a></p>
+<p><a href="../../../materials/2-workshop2/4-differential/slides.html">Make slides full screen</a></p>
 <iframe class="slide-deck" src="slides.html" height="420" width="747" style="border: 1px solid #2e3846;"></iframe>
 </section>
-<section id="exercise-1-distances-and-ordination-on-the-species-table" class="level2">
-<h2 class="anchored" data-anchor-id="exercise-1-distances-and-ordination-on-the-species-table">Exercise 1: Distances and ordination on the species table</h2>
-<p>Open <code>notebooks/04-ordination.qmd</code>.</p>
+<section id="exercise-1-test-the-gene-table-with-a-grouping-from-the-species-table" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1-test-the-gene-table-with-a-grouping-from-the-species-table">Exercise 1: Test the gene table with a grouping from the species table</h2>
+<p>Open <code>notebooks/04-differential.qmd</code>. Start by reading back the per-sample table you saved yesterday, the one with <code>lacto_fraction</code> and <code>community</code> in it. If you did not save it, rebuild it now; the slides from Module 2 have the recipe.</p>
 <section id="part-1-predict" class="level3">
 <h3 class="anchored" data-anchor-id="part-1-predict">Part 1: Predict</h3>
 <ol type="1">
-<li>Bray-Curtis uses abundances. Jaccard uses only presence and absence. Our species table is about 89% zeros. Which of the two do you expect to separate the two community types more clearly, and why?</li>
-<li>If you shuffled the <code>outcome</code> label randomly across all 471 samples, what <code>R2</code> would PERMANOVA report? Give a number.</li>
-<li>One sample has 438 reads. Where do you expect it to sit in a Bray-Curtis ordination?</li>
+<li>We will test 13,738 genes. If no gene were truly different between the two community types, how many would come out with a raw p-value below 0.05?</li>
+<li>You will test at week 18 only, which is 157 samples, 37 against 120. Would you rather have 157 samples at one visit or 471 samples across three visits? Say why before you look at anything.</li>
+<li>Of the genes that do come out significant, do you expect more to be higher in anaerobe-dominant samples or in Lactobacillus-dominant samples?</li>
 </ol>
 </section>
 <section id="part-2-build" class="level3">
 <h3 class="anchored" data-anchor-id="part-2-build">Part 2: Build</h3>
 <ol type="1">
-<li><p>Build the phyloseq object for the species table:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(microViz)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"R/count_tables.R"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>ps <span class="ot">&lt;-</span> <span class="fu">as_counts</span>(<span class="at">table =</span> <span class="st">"microbiome"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Inspect it. How many taxa, how many samples, how many sample variables? Add the <code>community</code> column you built on Tuesday if it is not already there.</p></li>
-<li><p>Run the pipeline three times, changing only the transform and the distance:</p>
-<ul>
-<li><code>"identity"</code> with <code>"bray"</code></li>
-<li><code>"binary"</code> with <code>"jaccard"</code></li>
-<li><code>"clr"</code> with <code>"euclidean"</code></li>
-</ul>
-<p>Plot all three, coloured by <code>community</code>. Put them side by side.</p></li>
-<li><p>Colour your Bray-Curtis ordination by <code>outcome</code> instead. Then by <code>time_point</code>. Then by <code>nugent</code>.</p></li>
-<li><p>Run <code>dist_permanova()</code> on the Bray-Curtis distance with <code>community</code>, <code>outcome</code>, <code>time_point</code> and <code>rnaseq_batch</code> as variables. Report the <code>R2</code> for each.</p></li>
-<li><p>Find your 438-read sample in the ordination. Was your Part 1 prediction right? Re-run the Bray-Curtis ordination with that sample removed and see whether anything else moves.</p></li>
-<li><p>Make a stacked bar plot of community composition with <code>comp_barplot(tax_level = "Genus", n_taxa = 10)</code>, faceted or ordered by <code>community</code>. Most 16S papers open with this figure.</p></li>
+<li><p>Subset both the metadata and the gene counts to <code>time_point == "week_18"</code>. Confirm you have 157 samples and that the column order of the count matrix matches the row order of the sample table. If they don’t match, DESeq2 gives you nonsense without any warning.</p></li>
+<li><p>Filter the genes. Keep a gene if it has a count of at least 10 in at least a quarter of the samples.</p></li>
+<li><p>Run the three lines:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromMatrix</span>(counts, sample_table, <span class="sc">~</span> community)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(dds)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast =</span> <span class="fu">c</span>(<span class="st">"community"</span>, <span class="st">"anaerobe"</span>, <span class="st">"lactobacillus"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p>How many genes have <code>padj &lt; 0.05</code>? How many of those have an absolute <code>log2FoldChange</code> above 1?</p></li>
+<li><p>Join <code>05_gene_annotation.csv</code> so your results carry gene symbols rather than Ensembl identifiers. Sort by <code>padj</code> and read the top twenty names out loud to your group.</p></li>
+<li><p>Draw a volcano plot: <code>log2FoldChange</code> on x, <code>-log10(padj)</code> on y, coloured by whether the gene passed.</p></li>
+<li><p>Pick the single top gene and plot its normalised counts as a boxplot by community. The direction of that plot must match the sign of its <code>log2FoldChange</code>. Check that it does.</p></li>
 </ol>
 </section>
 <section id="part-3-check-the-agent" class="level3">
 <h3 class="anchored" data-anchor-id="part-3-check-the-agent">Part 3: Check the agent</h3>
 <ul>
-<li>Ask Pi for the <code>R2</code> of <code>outcome</code>. Then ask it what the <code>R2</code> of a random label would be. If it does not say “close to zero but not zero”, push back.</li>
-<li>PERMANOVA with <code>by = "margin"</code> and <code>by = "terms"</code> give different answers when variables are correlated. Ask Pi which it used and why it matters.</li>
-<li>Ask it to interpret your ordination. It will produce a paragraph of confident biological narrative about axis 1. Then ask it what axis 1 actually is. Neither it nor you can tell from the plot alone.</li>
-<li>Ask it whether your three distance choices “agree”. Then look at the three plots yourself and decide if its answer matches what you see.</li>
+<li>Ask Pi how many genes were significant. Then ask it how many genes went into the test. If it can’t give you both numbers, it doesn’t know what it ran.</li>
+<li>Ask it to explain the sign convention of your contrast. Then verify against the boxplot from step 7. Getting the direction backwards is the most common error in this analysis, and it regularly gets through peer review.</li>
+<li>Ask it for the number of genes with <code>pvalue &lt; 0.05</code> as well as <code>padj &lt; 0.05</code>. The first number should be far larger. If it is not, something is wrong.</li>
+<li>Ask it to run the same test on CPM-normalised counts instead of raw counts. It will probably do it. Look at what happens to the results and work out why that is wrong.</li>
 </ul>
 </section>
 <section id="discussion" class="level3">
 <h3 class="anchored" data-anchor-id="discussion">Discussion</h3>
 <ul>
-<li>Which of the three distances would you publish? Defend it in one sentence.</li>
-<li><code>community</code> explains a very large share of this table. Is that a finding?</li>
-<li>Your ordination shows visit structure. Each participant appears three times. Does PERMANOVA know that, and does it matter?</li>
+<li>Did the direction of the effect surprise you?</li>
+<li>What do the top genes have in common? You do not need to know the genes; read the names in <code>gene_name</code> and describe the pattern in plain words.</li>
+<li>Someone will have used all 471 samples instead of 157. What is wrong with that, and how wrong is it?</li>
 </ul>
 </section>
 </section>
-<section id="exercise-2-the-identical-pipeline-on-14000-genes" class="level2">
-<h2 class="anchored" data-anchor-id="exercise-2-the-identical-pipeline-on-14000-genes">Exercise 2: The identical pipeline on 14,000 genes</h2>
-<p>Use the same notebook. Change three words in your code from Exercise 1 and run it again on a table sixty times larger.</p>
+<section id="exercise-2-the-same-test-on-the-species-table" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2-the-same-test-on-the-species-table">Exercise 2: The same test, on the species table</h2>
+<p>This is the second half of the same notebook. You run the same three lines of code on the 220-row species table instead of the 14,226-row gene table, with a grouping that comes from the clinic rather than from either count table.</p>
 <section id="part-1-predict-1" class="level3">
 <h3 class="anchored" data-anchor-id="part-1-predict-1">Part 1: Predict</h3>
 <ol type="1">
-<li>Bray-Curtis is standard for microbiome data. Would you use it on gene counts? Say why or why not before you try.</li>
-<li><code>community</code> explained about 18% of the species table. What share do you expect it to explain of the gene table?</li>
-<li>The gene table was produced in two sequencing batches. What share do you expect <code>rnaseq_batch</code> to explain?</li>
+<li>Why can you not test the species table using the <code>community</code> column you built yesterday? Answer in one sentence.</li>
+<li>You will test species against birth outcome. The species table has 220 rows, but most are nearly always absent. How many do you expect to survive a filter of “present in at least 10% of samples”? Of those, how many are present in every one of the 157 samples?</li>
+<li>If any species come out significant, do you expect them to be higher in the preterm group or the term group?</li>
 </ol>
 </section>
 <section id="part-2-build-1" class="level3">
 <h3 class="anchored" data-anchor-id="part-2-build-1">Part 2: Build</h3>
 <ol type="1">
-<li><p>Build the gene object, filtering as you go:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ps_genes <span class="ot">&lt;-</span> <span class="fu">as_counts</span>(<span class="at">table =</span> <span class="st">"rnaseq"</span>, <span class="at">min_count =</span> <span class="dv">10</span>, <span class="at">min_samples =</span> <span class="dv">100</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p>Run the pipeline with <code>"clr"</code> and <code>"euclidean"</code>, aggregating at <code>rank = "symbol"</code>. Plot it coloured by <code>community</code>, then <code>outcome</code>, then <code>rnaseq_batch</code>.</p></li>
-<li><p>Run <code>dist_permanova()</code> with the same four variables you used on the species table. Put the two sets of <code>R2</code> values side by side in one small table.</p></li>
-<li><p>Look at the batch row. Then do something about it: add <code>rnaseq_batch</code> to the PERMANOVA formula before <code>outcome</code> and see whether the outcome <code>R2</code> changes.</p></li>
-<li><p>Check whether batch is confounded with anything you care about. A cross-tabulation of <code>rnaseq_batch</code> against <code>outcome</code> and against <code>community</code> is enough. If the groups were unbalanced across batches, what would that mean for Tuesday’s differential results?</p></li>
-<li><p>Also try Bray-Curtis on the gene table, just to see. Compare it to your CLR ordination and decide which you believe.</p></li>
+<li><p>Subset to <code>time_point == "week_18"</code> again. Filter the species table to features present in at least 10% of samples.</p></li>
+<li><p>Run the same three lines with <code>design = ~ outcome</code> and <code>contrast = c("outcome", "preterm", "term")</code>. How many species are significant?</p></li>
+<li><p>Look at how DESeq2 normalised the samples. Count the species with no zero in any sample, <code>sum(rowSums(counts == 0) == 0)</code>. Then plot <code>sizeFactors(dds)</code> against each sample’s <em>L. iners</em> share, both on log scales. What are the size factors really measuring?</p></li>
+<li><p>Run it again with size factors built for a table full of zeros:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromMatrix</span>(counts, sample_table, <span class="sc">~</span> outcome)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">estimateSizeFactors</span>(dds, <span class="at">type =</span> <span class="st">"poscounts"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(dds)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast =</span> <span class="fu">c</span>(<span class="st">"outcome"</span>, <span class="st">"preterm"</span>, <span class="st">"term"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>How many species are significant now? Keep this version for the rest of the exercise and for tomorrow.</p></li>
+<li><p>Join <code>03_microbiome_taxonomy.csv</code> so you have readable names, and list the top ten species by <code>padj</code> with their fold changes, whether or not any pass. How many of the ten lean toward preterm?</p></li>
+<li><p>Plot the relative abundance of the top three species by outcome. Use proportions, not raw counts, and consider a log scale.</p></li>
+<li><p>Now run the test a second way, on the gene table, with the same <code>~ outcome</code> design. Compare the two result sets:</p>
+<ul>
+<li>how many features were tested in each</li>
+<li>how many were significant in each</li>
+<li>what share of the significant ones changed by more than a factor of two</li>
+</ul>
+<p>Write down what that comparison tells you about where the outcome signal lives.</p></li>
 </ol>
 </section>
 <section id="part-3-check-the-agent-1" class="level3">
 <h3 class="anchored" data-anchor-id="part-3-check-the-agent-1">Part 3: Check the agent</h3>
 <ul>
-<li>Ask Pi to compare the species and gene <code>R2</code> tables and tell you what it means. Its answer will probably say the gene table has “weaker biological signal”. That is a claim about biology drawn from an ordination. Is it justified, given that Tuesday found almost two thousand differentially expressed genes?</li>
-<li>Ask it whether you should remove the batch effect. Then ask it to actually do it. Look closely at what it does, because “batch correction” covers several very different operations with very different consequences.</li>
-<li>CLR cannot handle zeros without a pseudocount. Ask Pi what pseudocount it used and where that choice came from.</li>
+<li>A filter on a sparse table is easy to get wrong. Ask Pi how many species it kept and recompute that number yourself from <code>rowMeans(counts &gt; 0)</code>.</li>
+<li>Ask it whether DESeq2 is an appropriate method for microbiome counts. Read its answer critically. Researchers disagree about this, so a confident one-sided answer is a warning sign.</li>
+<li>Ask Pi how DESeq2 computed the size factors for the species table, and how many species went into them. Check its answer against your count from step 3.</li>
+<li>Ask it to name the top species. Then check two of them against <code>03_microbiome_taxonomy.csv</code> by hand. Agents invent plausible species names.</li>
+<li>Ask it to also run the test with <code>~ nugent &gt;= 7</code> as the grouping instead of outcome. Fewer samples have a Nugent score, so the sample count drops. Make sure it tells you that it dropped samples.</li>
 </ul>
 </section>
 <section id="part-4-reach-optional" class="level3">
 <h3 class="anchored" data-anchor-id="part-4-reach-optional">Part 4: Reach (optional)</h3>
-<p>Take the first two axes of your gene ordination and the first two of your species ordination, and plot gene axis 1 against species axis 1 for the same samples. Are they related?</p>
-<p>This scatter plot is the simplest form of multiomics integration. Friday morning starts from it.</p>
+<p>Run your species-by-outcome analysis on all 471 samples, with each participant appearing three times. Compare the number of significant species to your 157-sample result.</p>
+<p>More samples gave you more hits. Are they real? What assumption did you break?</p>
 </section>
 <section id="discussion-1" class="level3">
 <h3 class="anchored" data-anchor-id="discussion-1">Discussion</h3>
 <ul>
-<li>Both tables showed a significant outcome effect of about 2% or less. Would you write that in a paper, and how would you phrase it?</li>
-<li>The batch effect is as large as the biological effect. What should the people who generated this data have done differently?</li>
-<li>You now have two ordinations of the same 471 samples. What would it take to combine them, and what would you hope to gain?</li>
+<li>The default size factors gave a list of species that anyone who works on bacterial vaginosis would recognise. Why is a familiar-looking list not evidence that the method was right?</li>
+<li>One group found many more hits in the gene table than the species table, and another found the reverse depending on their filter. What does that say about how much of a differential analysis is decided before the test runs?</li>
+<li>At week 18 the gene table shows an outcome signal and the species table, one species at a time, does not. Does that mean the bacteria do not matter for preterm birth? What other way of looking at the species table could still find a signal?</li>
+</ul>
+</section>
+</section>
+<section id="further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>
+<p>On normalisation, with thanks to Afrah Khairallah, whose slides the size-factor example comes from:</p>
+<ul>
+<li>Anders and Huber 2010, <em>Genome Biology</em>: DESeq and the median-of-ratios size factor</li>
+<li>Love, Huber and Anders 2014, <em>Genome Biology</em>: DESeq2</li>
+<li>Robinson and Oshlack 2010, <em>Genome Biology</em>: TMM, edgeR’s equivalent</li>
+<li>Law et al.&nbsp;2014, <em>Genome Biology</em>: limma-voom</li>
+<li>Li et al.&nbsp;2010, <em>Bioinformatics</em>: TPM, for comparing genes within a sample</li>
+</ul>
+<p>For microbiome counts:</p>
+<ul>
+<li>Gloor et al.&nbsp;2017, <em>Frontiers in Microbiology</em>: “Microbiome datasets are compositional: and this is not optional”</li>
+<li>McMurdie and Holmes 2014, <em>PLoS Computational Biology</em>: the case against rarefying</li>
+<li>Nearing et al.&nbsp;2022, <em>Nature Communications</em>: fourteen differential abundance methods run on 38 datasets, and how much they disagree</li>
 </ul>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -879,8 +904,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../../materials/2-workshop2/3-differential/index.html" class="pagination-link" aria-label="<b>Module 3</b>: Differential Testing">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><b>Module 3</b>: Differential Testing</span>
+      <a href="../../../materials/2-workshop2/3-ordination/index.html" class="pagination-link" aria-label="<b>Module 3</b>: Distances and Ordination">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><b>Module 3</b>: Distances and Ordination</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
