@@ -48,10 +48,10 @@ website:
             href: materials/2-workshop2/1-reads-to-counts/index.qmd
           - text: "<b>Module 2</b>: Count Table Anatomy"
             href: materials/2-workshop2/2-count-table-anatomy/index.qmd
-          - text: "<b>Module 3</b>: Differential Testing"
-            href: materials/2-workshop2/3-differential/index.qmd
-          - text: "<b>Module 4</b>: Distances and Ordination"
-            href: materials/2-workshop2/4-ordination/index.qmd
+          - text: "<b>Module 3</b>: Distances and Ordination"
+            href: materials/2-workshop2/3-ordination/index.qmd
+          - text: "<b>Module 4</b>: Differential Testing"
+            href: materials/2-workshop2/4-differential/index.qmd
           - text: "<b>Module 5</b>: Sets and Enrichment"
             href: materials/2-workshop2/5-enrichment/index.qmd
           - text: "<b>Module 6</b>: Putting the Two Tables Together"

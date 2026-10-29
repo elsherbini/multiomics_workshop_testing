@@ -1,14 +1,14 @@
-# Precompute the Module 3 differential-testing results.
+# Precompute the Module 4 differential-testing results.
 #
 # Run by hand from the website root:
 #   RENV_CONFIG_AUTOLOADER_ENABLED=FALSE \
-#     Rscript materials/2-workshop2/3-differential/_build_results.R
+#     Rscript materials/2-workshop2/4-differential/_build_results.R
 #
 # Four contrasts, all at week_18 so there is one sample per person and no
 # repeated-measures question to answer in a 90-minute block.
 
 suppressPackageStartupMessages({library(tidyverse); library(DESeq2)})
-here <- "materials/2-workshop2/3-differential"
+here <- "materials/2-workshop2/4-differential"
 out <- file.path(here, "results"); dir.create(out, showWarnings = FALSE, recursive = TRUE)
 source("materials/2-workshop2/R/count_tables.R")
 
@@ -88,4 +88,4 @@ summary_tbl <- imap_dfr(runs, function(r, nm) {
 })
 write_csv(summary_tbl, file.path(out, "contrast_summary.csv"))
 print(summary_tbl)
-cat("module 3 results written to", out, "\n")
+cat("module 4 results written to", out, "\n")

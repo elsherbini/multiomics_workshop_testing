@@ -107,7 +107,7 @@ Ask the room:
   is the linkage rule, and software makes it for you.
 - Who had trouble finding a partner? Look at the **n** on their card.
 
-> This is hierarchical clustering. On Wednesday the distance gets a name,
+> This is hierarchical clustering. Tomorrow afternoon the distance gets a name,
 > Bray-Curtis, and the tree gets drawn by a computer.
 
 ### Round 2: the floor is a plot (10 min)
@@ -170,7 +170,7 @@ Ask the room:
 - Did your table show the pattern the room shows?
 - Was any group wrong, or just small?
 
-> Tomorrow afternoon you will put a p-value on this question and see how it
+> On Wednesday afternoon you will put a p-value on this question and see how it
 > changes with n.
 
 ### Close (5 min)

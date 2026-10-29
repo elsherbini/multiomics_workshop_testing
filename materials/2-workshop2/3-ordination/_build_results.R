@@ -1,8 +1,9 @@
-# Precompute the Module 4 ordination and PERMANOVA results.
+# Precompute the Module 3 ordination and PERMANOVA results.
 #
-# Run by hand from the website root:
+# Run by hand from the website root, AFTER module 4's build script, whose
+# sample_groups.csv this reads:
 #   RENV_CONFIG_AUTOLOADER_ENABLED=FALSE \
-#     Rscript materials/2-workshop2/4-ordination/_build_results.R
+#     Rscript materials/2-workshop2/3-ordination/_build_results.R
 #
 # The coordinates are taken from ord_plot()$data, so the figures on the slides
 # are exactly what the microViz pipeline shown on those slides produces.
@@ -13,12 +14,12 @@
 # (which is Aitchison distance). The gene table takes the third one.
 
 suppressPackageStartupMessages({library(tidyverse); library(microViz); library(phyloseq)})
-here <- "materials/2-workshop2/4-ordination"
+here <- "materials/2-workshop2/3-ordination"
 out <- file.path(here, "results"); dir.create(out, showWarnings = FALSE, recursive = TRUE)
 source("materials/2-workshop2/R/count_tables.R")
 
 d <- read_counts("instructional")
-groups <- read_csv("materials/2-workshop2/3-differential/results/sample_groups.csv",
+groups <- read_csv("materials/2-workshop2/4-differential/results/sample_groups.csv",
                    show_col_types = FALSE)
 
 add_groups <- function(ps) {
@@ -96,4 +97,4 @@ write_csv(bind_rows(
   eig(ps_gn, "symbol", "clr", "euclidean", "PCoA", "genes / Aitchison")
 ), file.path(out, "scree.csv"))
 
-cat("module 4 results written to", out, "\n")
+cat("module 3 results written to", out, "\n")

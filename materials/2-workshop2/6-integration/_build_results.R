@@ -1,6 +1,6 @@
 # Precompute the Module 6 integration results.
 #
-# Run by hand from the website root, after modules 3 and 5:
+# Run by hand from the website root, after modules 4 and 5:
 #   RENV_CONFIG_AUTOLOADER_ENABLED=FALSE \
 #     Rscript materials/2-workshop2/6-integration/_build_results.R
 #
@@ -14,7 +14,7 @@ out <- file.path(here, "results"); dir.create(out, showWarnings = FALSE, recursi
 source("materials/2-workshop2/R/count_tables.R")
 
 d <- read_counts("instructional")
-groups <- read_csv("materials/2-workshop2/3-differential/results/sample_groups.csv",
+groups <- read_csv("materials/2-workshop2/4-differential/results/sample_groups.csv",
                    show_col_types = FALSE)
 
 # Host score: mean z-scored log-CPM of two inflammatory Hallmark sets.

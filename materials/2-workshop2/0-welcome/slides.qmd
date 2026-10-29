@@ -38,9 +38,9 @@ blocks <- tribble(
   "Mon", "AM", "Welcome\nKeynote\nWet lab", "other",
   "Mon", "PM", "Reads to\ncount tables", "lecture",
   "Tue", "AM", "Count table\nanatomy", "module",
-  "Tue", "PM", "Differential\ntesting", "module",
+  "Tue", "PM", "Distances and\nordination", "module",
   "Wed", "AM", "Group\nproject I", "project",
-  "Wed", "PM", "Distances and\nordination", "module",
+  "Wed", "PM", "Differential\ntesting", "module",
   "Thu", "AM", "Group\nproject II", "project",
   "Thu", "PM", "Sets and\nenrichment", "module",
   "Fri", "AM", "Integration\n+ presentations", "lecture",
@@ -104,8 +104,8 @@ taught on one table and practised on the other, with the same code.
 |---|---|---|---|
 | How much did we sequence? | library size | library size | Tue AM |
 | What is here at all? | prevalence | expression level | Tue AM |
-| Which features differ between groups? | differential abundance | differential expression | Tue PM |
-| How similar are two samples? | beta diversity | sample distance | Wed PM |
+| How similar are two samples? | beta diversity | sample distance | Tue PM |
+| Which features differ between groups? | differential abundance | differential expression | Wed PM |
 | What do the hits have in common? | taxonomy | gene sets | Thu PM |
 
 : {tbl-colwidths="[38,24,24,14]"}

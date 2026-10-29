@@ -21,8 +21,8 @@ so explain your study before your result.
 
 | when | how long | what |
 |---|---|---|
-| Wednesday AM | 3 hours | meet, read the data, agree a question, first analysis |
-| Thursday AM | 3 hours | finish the analysis, build the figures, write the talk |
+| Wednesday AM | 3 hours | meet, read the data, agree a question, first analysis: Tuesday's ordination and PERMANOVA are a good place to start |
+| Thursday AM | 3 hours | add Wednesday's differential tests, finish the analysis, build the figures, write the talk |
 | Friday AM | 30 minutes | final preparation |
 | Friday AM | 1 hour | present to your paired group for 30 minutes, then listen to theirs for 30 |
 

@@ -1,6 +1,6 @@
 ---
 title: "Differential Testing"
-subtitle: "Workshop 2, Module 3"
+subtitle: "Workshop 2, Module 4"
 format: qmdrslides-revealjs
 editor: source
 execute:
@@ -25,6 +25,8 @@ sp <- read_csv(file.path(res, "species_by_outcome.csv"), show_col_types = FALSE)
 cs <- read_csv(file.path(res, "contrast_summary.csv"), show_col_types = FALSE)
 grp <- read_csv(file.path(res, "sample_groups.csv"), show_col_types = FALSE)
 tg <- read_csv(file.path(res, "top_gene_counts.csv"), show_col_types = FALSE)
+perm <- read_csv("../3-ordination/results/permanova.csv", show_col_types = FALSE)
+perm_outcome <- perm |> filter(table == "genes / Aitchison", term == "outcome")
 n_sig <- function(x) sum(x$padj < 0.05, na.rm = TRUE)
 n_big <- function(x) sum(x$padj < 0.05 & abs(x$log2FoldChange) > 1, na.rm = TRUE)
 
@@ -46,7 +48,7 @@ vol <- bind_rows(community = gc, outcome = go, .id = "contrast") |>
                             " significant, ", n_big(go), " more than 2-fold"))))
 ```
 
-## This morning you built a column {.center}
+## On Tuesday you built a column {.center}
 
 ```{r}
 #| echo: false
@@ -331,6 +333,21 @@ ggplot(vol, aes(log2FoldChange, -log10(padj), colour = call)) +
 Community moves a few hundred genes a long way. Birth outcome moves a great many
 genes a little.
 
+## Yesterday, birth outcome looked small
+
+PERMANOVA said birth outcome explains
+`r scales::percent(perm_outcome$R2, 0.1)` of the variation in the gene table,
+p = `r perm_outcome$p_value`.
+
+. . .
+
+Today the same question gives `r scales::comma(n_sig(go))` significant genes.
+
+. . .
+
+Both results hold. Many genes each shift a little, and small shifts in many
+genes still add up to a small share of a very large amount of variation.
+
 . . .
 
 Friday we come back to this: thousands of significant genes, and still a poor
@@ -407,7 +424,7 @@ of them are higher in the people who delivered early.
 
 ## Your turn {.your-turn}
 
-Open `notebooks/03-differential.qmd`.
+Open `notebooks/04-differential.qmd`.
 
 ```{r}
 #| echo: false

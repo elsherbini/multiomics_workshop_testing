@@ -399,7 +399,7 @@ length so you can compare genes within a sample.
 
 ::: {.incremental}
 - Good for: "is gene A higher than gene B in this sample?"
-- Wrong for: the statistical tests we run on Tuesday
+- Wrong for: the statistical tests we run on Wednesday
 :::
 
 . . .
@@ -528,12 +528,14 @@ else in that tube**, multiplied by how hard we looked.
 ::: {.incremental}
 1. How deeply was each sample sequenced?
 2. Which features are we even able to see?
-3. Only then: does anything differ between groups?
+3. How alike are whole samples, and what makes them alike?
+4. Only then: which features differ between groups?
 :::
 
 . . .
 
-Tomorrow morning covers the first two, on both tables at once.
+Tomorrow morning covers the first two, on both tables at once, and tomorrow
+afternoon the third. The fourth waits until Wednesday.
 
 ## Our gene table has a batch label
 
@@ -542,8 +544,8 @@ label in the metadata.
 
 . . .
 
-On Wednesday you will measure how much of the table the batch explains, and
-the answer is uncomfortable.
+Tomorrow afternoon you will measure how much of the table the batch explains,
+and the answer is uncomfortable.
 
 . . .
 

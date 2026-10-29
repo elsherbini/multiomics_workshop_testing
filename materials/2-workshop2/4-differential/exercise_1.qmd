@@ -1,6 +1,6 @@
 ## Exercise 1: Test the gene table with a grouping from the species table
 
-Open `notebooks/03-differential.qmd`. Start by reading back the per-sample table
+Open `notebooks/04-differential.qmd`. Start by reading back the per-sample table
 you saved yesterday, the one with `lacto_fraction` and `community` in it. If you
 did not save it, rebuild it now; the slides from Module 2 have the recipe.
 

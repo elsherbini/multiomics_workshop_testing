@@ -8,8 +8,8 @@ week is taught on one table and exercised on the other, with the same code.
 | module | teach on | exercise on |
 |---|---|---|
 | 2, count table anatomy | both at once | both at once |
-| 3, differential testing | genes | species |
-| 4, distances and ordination | species | genes |
+| 3, distances and ordination | species | genes |
+| 4, differential testing | genes | species |
 | 5, sets and enrichment | genes | species |
 | 6, integration | lecture only | no exercise |
 
@@ -43,14 +43,16 @@ RENV_CONFIG_AUTOLOADER_ENABLED=FALSE \
   Rscript materials/2-workshop2/2-count-table-anatomy/_build_results.R
 ```
 
-Run them in order, because later ones read earlier results:
+Run them in this order, because later ones read earlier results. Module 4's
+script writes the sample grouping, so it runs before Module 3's even though
+Module 3 is taught first:
 
 ```
 2-count-table-anatomy   independent
-3-differential          independent, writes sample_groups.csv
-4-ordination            reads 3's sample_groups.csv
-5-enrichment            reads 3's ranked results
-6-integration           reads 3's sample_groups.csv
+4-differential          independent, writes sample_groups.csv
+3-ordination            reads 4's sample_groups.csv
+5-enrichment            reads 4's ranked results
+6-integration           reads 4's sample_groups.csv
 ```
 
 You need: `tidyverse`, `vegan`, `DESeq2`, `phyloseq`, `microViz`, `fgsea`,

@@ -1,4 +1,4 @@
-## Exercise 2: Filtering, normalising, and one column you will need tomorrow
+## Exercise 2: Filtering, normalising, and one column you will need all week
 
 Same notebook, second half.
 
@@ -36,8 +36,8 @@ Same notebook, second half.
    - `anaerobe` if it is below 0.5
 
    Save your per-sample table, including `sample_id`, `lacto_fraction` and this
-   new column, to a csv in your repository. Tomorrow afternoon starts by reading
-   it back.
+   new column, to a csv in your repository. This afternoon's notebook reads it
+   back, and so does Wednesday's.
 
 6. How many samples land in each group? Does the split change across the three
    visits?

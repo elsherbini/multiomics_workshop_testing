@@ -13,7 +13,7 @@ features instead of 13,738, with sets built from taxonomy instead of curation.
 
 ### Part 2: Build
 
-1. Take your species-by-outcome DESeq2 results from Tuesday. Build the ranking
+1. Take your species-by-outcome DESeq2 results from yesterday. Build the ranking
    vector from `stat` as before.
 
 2. Join `03_microbiome_taxonomy.csv` so each species carries its `Genus` and

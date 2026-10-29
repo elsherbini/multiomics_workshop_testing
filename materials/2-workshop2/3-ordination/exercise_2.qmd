@@ -33,7 +33,8 @@ it again on a table sixty times larger.
 5. Check whether batch is confounded with anything you care about. A
    cross-tabulation of `rnaseq_batch` against `outcome` and against `community`
    is enough. If the groups were unbalanced across batches, what would that
-   mean for Tuesday's differential results?
+   mean for tomorrow's differential tests, which compare the groups one gene at
+   a time?
 
 6. Also try Bray-Curtis on the gene table, just to see. Compare it to your CLR
    ordination and decide which you believe.
@@ -42,8 +43,9 @@ it again on a table sixty times larger.
 
 - Ask Pi to compare the species and gene `R2` tables and tell you what it means.
   Its answer will probably say the gene table has "weaker biological signal".
-  That is a claim about biology drawn from an ordination. Is it justified, given
-  that Tuesday found almost two thousand differentially expressed genes?
+  That is a claim about biology drawn from an ordination. Is it justified? An
+  ordination summarises every gene at once. Tomorrow you test them one at a
+  time, so write down what you expect to find and check it then.
 - Ask it whether you should remove the batch effect. Then ask it to actually do
   it. Look closely at what it does, because "batch correction" covers several
   very different operations with very different consequences.

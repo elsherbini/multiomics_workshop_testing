@@ -39,8 +39,8 @@ ocol <- c(preterm = pal[["orange"]], term = pal[["navy"]])
 week <- tribble(
   ~day, ~what,
   "Tue AM", "shape, depth, filtering",
-  "Tue PM", "differential testing",
-  "Wed PM", "distances and ordination",
+  "Tue PM", "distances and ordination",
+  "Wed PM", "differential testing",
   "Thu PM", "sets and enrichment"
 ) |>
   mutate(x = row_number())
@@ -200,7 +200,7 @@ case for multiomics.
 
 :::: {.columns}
 ::: {.column width="55%"}
-On Tuesday, preterm versus term gave **1,698 significant genes**.
+On Wednesday, preterm versus term gave **1,698 significant genes**.
 
 ::: {.fragment}
 Today, those same genes predict the outcome with an AUC of

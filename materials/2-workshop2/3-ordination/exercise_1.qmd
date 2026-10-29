@@ -1,6 +1,6 @@
 ## Exercise 1: Distances and ordination on the species table
 
-Open `notebooks/04-ordination.qmd`.
+Open `notebooks/03-ordination.qmd`.
 
 ### Part 1: Predict
 
@@ -23,7 +23,7 @@ Open `notebooks/04-ordination.qmd`.
    ```
 
    Inspect it. How many taxa, how many samples, how many sample variables? Add
-   the `community` column you built on Tuesday if it is not already there.
+   the `community` column you built this morning if it is not already there.
 
 2. Run the pipeline three times, changing only the transform and the distance:
 

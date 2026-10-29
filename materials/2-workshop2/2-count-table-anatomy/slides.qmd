@@ -434,12 +434,13 @@ differ.
 1. Load both tables and check their shape against the metadata
 2. Compute library size, features detected and dominance for both
 3. Decide which samples and features to drop, and write down why
-4. Build the one column Tuesday afternoon depends on
+4. Build the one column the rest of the week depends on
 :::
 
 . . .
 
-Do not skip the last one. Tuesday afternoon starts from that column.
+Do not skip the last one. This afternoon you colour your ordinations by that
+column, and Wednesday afternoon starts from it.
 
 ## Your turn {.your-turn}
 

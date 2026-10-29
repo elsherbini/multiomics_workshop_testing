@@ -40,7 +40,7 @@ set_sizes <- bind_rows(
 ) |> mutate(table = factor(table, c("Hallmark gene sets", "genus sets")))
 ```
 
-## Tuesday you produced this {.center}
+## Yesterday you produced this {.center}
 
 1,698 genes with an adjusted p-value below 0.05.
 
@@ -256,7 +256,7 @@ statistics that gave you the list of 1,698 genes.
 
 ## Now try the community contrast
 
-Run the same analysis on Tuesday's other contrast, anaerobe versus
+Run the same analysis on yesterday's other contrast, anaerobe versus
 Lactobacillus.
 
 ::: {style="font-size: 0.8em;"}

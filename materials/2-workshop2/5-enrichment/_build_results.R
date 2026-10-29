@@ -1,6 +1,6 @@
 # Precompute the Module 5 enrichment results.
 #
-# Run by hand from the website root, AFTER module 3's build script, whose
+# Run by hand from the website root, AFTER module 4's build script, whose
 # ranked results this reads:
 #   RENV_CONFIG_AUTOLOADER_ENABLED=FALSE \
 #     Rscript materials/2-workshop2/5-enrichment/_build_results.R
@@ -12,7 +12,7 @@ suppressPackageStartupMessages({library(tidyverse); library(fgsea); library(msig
 here <- "materials/2-workshop2/5-enrichment"
 out <- file.path(here, "results"); dir.create(out, showWarnings = FALSE, recursive = TRUE)
 source("materials/2-workshop2/R/count_tables.R")
-m3 <- "materials/2-workshop2/3-differential/results"
+m4 <- "materials/2-workshop2/4-differential/results"
 set.seed(1)
 
 hallmark <- msigdbr(species = "Homo sapiens", collection = "H")
@@ -20,7 +20,7 @@ hallmark_sets <- split(hallmark$ensembl_gene, hallmark$gs_name)
 cat("Hallmark sets:", length(hallmark_sets), "\n")
 
 ranking <- function(file) {
-  res <- read_csv(file.path(m3, file), show_col_types = FALSE) |> filter(!is.na(stat))
+  res <- read_csv(file.path(m4, file), show_col_types = FALSE) |> filter(!is.na(stat))
   setNames(res$stat, res$feature)
 }
 
@@ -88,7 +88,7 @@ tail_balance <- imap_dfr(balance_inputs, function(st, nm) {
 write_csv(tail_balance, file.path(out, "ranking_balance.csv"))
 
 balance_summary <- imap_dfr(balance_inputs, function(st, nm) {
-  res <- read_csv(file.path(m3, if (nm == "preterm vs term") "genes_by_outcome.csv.gz"
+  res <- read_csv(file.path(m4, if (nm == "preterm vs term") "genes_by_outcome.csv.gz"
                             else "genes_by_community.csv.gz"), show_col_types = FALSE) |>
     filter(!is.na(stat))
   top500 <- res |> slice_max(abs(stat), n = 500)
@@ -103,7 +103,7 @@ write_csv(balance_summary, file.path(out, "ranking_balance_summary.csv"))
 print(balance_summary)
 
 # --- taxonomic ranks as sets over the species ranking -----------------------
-sp <- read_csv(file.path(m3, "species_by_outcome.csv"), show_col_types = FALSE) |> filter(!is.na(stat))
+sp <- read_csv(file.path(m4, "species_by_outcome.csv"), show_col_types = FALSE) |> filter(!is.na(stat))
 stat_sp <- setNames(sp$stat, sp$feature)
 genus_sets  <- split(sp$feature, sp$Genus)  |> keep(~ length(.x) >= 2)
 family_sets <- split(sp$feature, sp$Family) |> keep(~ length(.x) >= 2)

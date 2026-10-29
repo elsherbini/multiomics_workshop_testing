@@ -1,6 +1,6 @@
 ---
 title: "Distances and Ordination"
-subtitle: "Workshop 2, Module 4"
+subtitle: "Workshop 2, Module 3"
 format: qmdrslides-revealjs
 editor: source
 execute:
@@ -22,8 +22,6 @@ res <- "results"
 ords <- read_csv(file.path(res, "ordinations.csv"), show_col_types = FALSE)
 perm <- read_csv(file.path(res, "permanova.csv"), show_col_types = FALSE)
 scree <- read_csv(file.path(res, "scree.csv"), show_col_types = FALSE)
-cs <- read_csv("../3-differential/results/contrast_summary.csv", show_col_types = FALSE)
-n_genes_outcome <- cs$n_sig[cs$contrast == "genes_by_outcome"]
 
 ord_fig <- function(which_ord, colour_by, title = NULL, legend = "right") {
   d <- ords |> filter(ordination == which_ord)
@@ -57,8 +55,8 @@ term_labels <- c(community = "community", outcome = "birth outcome",
 
 ## From one feature to whole samples {.center}
 
-Yesterday you tested one feature at a time. Today the question is **how similar
-two whole samples are**.
+This morning you looked at one sample or one feature at a time. This afternoon
+the question is **how similar two whole samples are**.
 
 . . .
 
@@ -250,7 +248,7 @@ perm |>
 
 ## Now the gene table
 
-The species code from this morning:
+The species code from earlier:
 
 ```{r}
 #| eval: false
@@ -365,13 +363,9 @@ perm |>
 
 . . .
 
-Yesterday the same comparison gave `r scales::comma(n_genes_outcome)` significant genes.
-
-. . .
-
-Both results hold. Many genes each shift a little, and small shifts in many
-genes still add up to a small share of a very large amount of variation. We come
-back to this on Friday.
+Small is not the same as absent. Tomorrow afternoon you ask the same question
+one gene at a time, and the answer looks very different. Keep this number in
+mind until then.
 
 ## In the exercises
 
@@ -384,7 +378,7 @@ back to this on Friday.
 
 ## Your turn {.your-turn}
 
-Open `notebooks/04-ordination.qmd`.
+Open `notebooks/03-ordination.qmd`.
 
 ```{r}
 #| echo: false

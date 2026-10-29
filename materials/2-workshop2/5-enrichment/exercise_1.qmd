@@ -1,6 +1,6 @@
 ## Exercise 1: From a gene list to a sentence
 
-Open `notebooks/05-enrichment.qmd`. You need Tuesday's DESeq2 results. If you no
+Open `notebooks/05-enrichment.qmd`. You need yesterday's DESeq2 results. If you no
 longer have them, rerun the three lines that made them.
 
 ### Part 1: Predict
@@ -65,5 +65,5 @@ longer have them, rerun the three lines that made them.
 - Was your Part 1 prediction of the elevated program right?
 - Two of the top sets overlap heavily. How would you report them without double
   counting?
-- On Tuesday the outcome contrast gave you 1,698 genes and no clear story; today
+- Yesterday the outcome contrast gave you 1,698 genes and no clear story; today
   it gives you one sentence. What did enrichment add, and what did it hide?
